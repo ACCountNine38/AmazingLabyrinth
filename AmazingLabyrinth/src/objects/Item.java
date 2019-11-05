@@ -3,15 +3,15 @@ package objects;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
 public class Item {
 	
 	private static ArrayList<Item> items = new ArrayList<Item>();
 	
-	private BufferedImage img;
+	private ImageIcon img;
 	
-	private Item bat = new Item(new BufferedImage(0, 0, 0));
-	
-	public Item(BufferedImage img) {
+	public Item(ImageIcon img) {
 		
 		this.img = img;
 		initializeCards();
@@ -20,7 +20,7 @@ public class Item {
 	
 	public void initializeCards() {
 		
-		
+		//items.add();
 		
 	}
 
