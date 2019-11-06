@@ -52,24 +52,5 @@ public class CustomizationTool {
 		frame.setCursor(toolkit.createCustomCursor(mouse, new Point(0, 0), "Custom Cursor"));
 
 	}
-	
-	// http://javazquez.com/juan/2008/07/11/rotating-java-images/
-    static private ImageIcon rotateImageIcon(ImageIcon picture) {
-        // FOR YOU ...
-        int w = picture.getIconWidth();
-        int h = picture.getIconHeight();
-        int type = BufferedImage.TYPE_INT_RGB;  // other options, see api
-        BufferedImage image = new BufferedImage(h, w, type);
-        Graphics2D g2 = image.createGraphics();
-        double x = (h - w)/2.0;
-        double y = (w - h)/2.0;
-        AffineTransform at = AffineTransform.getTranslateInstance(x, y);
-        at.rotate(Math.toRadians(Math.PI/2), w/2.0, h/2.0);
-        g2.drawImage(picture.getImage(), at, null);
-        g2.dispose();
-        picture = new ImageIcon(image);
- 
-        return picture;
-    }
 
 }

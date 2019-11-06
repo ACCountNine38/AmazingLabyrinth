@@ -2,7 +2,10 @@ package states;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -39,14 +42,32 @@ public class GameState extends State {
 	 * up down left right - 12
 	 * 
 	*/
+	
 	private void fillMapBits() {
 		
-		for(int i = 0; i < board.length; i++) {
-			for(int j = 0; j < board.length; j++) {
-				
-				board[i][j] = (int)(Math.random()*11)+1;
-				
+		String filename = "mazes/pregeneratedMaze";
+		
+		Scanner input;
+		try {
+			input = new Scanner(new File(filename));
+			
+			for(int i = 0; i < board.length; i++) {
+				for(int j = 0; j < board.length; j++) {
+					
+					int pathID = input.nextInt();
+					
+					if(pathID == 0)
+						board[i][j] = (int)(Math.random()*11)+1;
+					else
+						board[i][j] = pathID;
+					
+				}
 			}
+			
+		} catch (FileNotFoundException e) {
+			
+			System.out.println("invalid maze file path");
+			
 		}
 		
 	}
@@ -54,16 +75,16 @@ public class GameState extends State {
 	@Override
 	public void init() {
 		
-		board = new int[9][9];
-		boardIcons = new JLabel[9][9];
+		board = new int[7][7];
+		boardIcons = new JLabel[7][7];
 		mapBits = new ArrayList<Integer>();
 		
-	}
+		fillMapBits();
+		
+	} 
 
 	@Override
 	public void addJComponents() {
-		
-		fillMapBits();
 		
 		menuPanel = new JPanel(null);
 		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/gameboard.png")
@@ -76,6 +97,7 @@ public class GameState extends State {
 		menuPanel.setBackground(Color.black);
 		menuPanel.setOpaque(true);
 		add(menuPanel);
+		
 		/*
 		 * method that fills the board tiles with integer IDs
 		 * 
@@ -98,7 +120,7 @@ public class GameState extends State {
 				String path = "images/path" + board[i][j] + ".png";
 				
 				boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
-						.getImage().getScaledInstance((650) / 9, (650) / 9, 0)));
+						.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
 				
 				boardIcons[i][j].setBounds(75 + boardIcons[i][j].getIcon().getIconWidth()*i, 75 + 
 						boardIcons[i][j].getIcon().getIconHeight()*j, 
