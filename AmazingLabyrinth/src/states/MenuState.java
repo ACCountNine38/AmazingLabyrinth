@@ -20,12 +20,17 @@ public class MenuState extends State {
 	}
 
 	@Override
-	public void addJComponents() {
-
+	public void init() {
+		
 		menuPanel = new JPanel(null);
 		startButton = new JButton(new ImageIcon(new ImageIcon
 				("images/gameboard.png").getImage().getScaledInstance(393/2, 170/2, 0)));
 		
+	}
+
+	@Override
+	public void addJComponents() {
+
 		// settings for the score panel and add it to the frame
 		menuPanel.setLayout(null);
 		menuPanel.setBounds(0, 0, State.ScreenWidth, State.ScreenHeight);
@@ -54,5 +59,6 @@ public class MenuState extends State {
 		}
 		
 	}
+
 
 }

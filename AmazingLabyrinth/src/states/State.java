@@ -13,6 +13,7 @@ public abstract class State extends JFrame implements ActionListener {
 	
 	public State() {
 		
+		init();
 		addJComponents();
 		CustomizationTool.frameSetup(this);
 		CustomizationTool.customCursor(this);
@@ -20,5 +21,7 @@ public abstract class State extends JFrame implements ActionListener {
 	}
 	
 	public abstract void addJComponents();
+	
+	public abstract void init();
 
 }
