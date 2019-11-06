@@ -42,12 +42,12 @@ public class GameState extends State {
 	 * up down left right - 12
 	 * 
 	*/
-	
 	private void fillMapBits() {
 		
 		String filename = "mazes/pregeneratedMaze";
 		
 		Scanner input;
+		
 		try {
 			input = new Scanner(new File(filename));
 			
