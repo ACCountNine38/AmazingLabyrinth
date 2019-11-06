@@ -42,7 +42,7 @@ public class CustomizationTool {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 
 		// load an image using ToolKit
-		Image mouse = toolkit.getImage("images/cursor.png");
+		Image mouse = toolkit.getImage("images/cursor.png").getScaledInstance(25, 40, 0);
 
 		// set the cursor icon giving a new image, point, and name
 		frame.setCursor(toolkit.createCustomCursor(mouse, new Point(0, 0), "Custom Cursor"));

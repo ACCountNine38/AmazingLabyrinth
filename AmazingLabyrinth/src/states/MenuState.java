@@ -24,11 +24,11 @@ public class MenuState extends State {
 
 		menuPanel = new JPanel(null);
 		startButton = new JButton(new ImageIcon(new ImageIcon
-				("images/blogamazeingmazecards.jpg").getImage().getScaledInstance(393/2, 170/2, 0)));
+				("images/gameboard.png").getImage().getScaledInstance(393/2, 170/2, 0)));
 		
 		// settings for the score panel and add it to the frame
 		menuPanel.setLayout(null);
-		menuPanel.setBounds(0, 0, 25 * 30, 25 * 28);
+		menuPanel.setBounds(0, 0, State.ScreenWidth, State.ScreenHeight);
 		menuPanel.setBackground(Color.black);
 		menuPanel.setOpaque(true);
 		add(menuPanel);
