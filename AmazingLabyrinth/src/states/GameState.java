@@ -1,7 +1,10 @@
 package states;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -11,19 +14,123 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class GameState extends State {
+import objects.Mover;
+import objects.Player;
+import objects.Tile;
+
+public class GameState extends State implements KeyListener, Mover {
 
 	private JPanel menuPanel;
 	private JLabel boardLabel;
 	
-	private int[][] board;
 	private JLabel[][] boardIcons;
+	private JLabel[] playerIcons;
+	private JLabel currentTurn;
+	
+	private Tile[][] board;
+	private Player players[];
 	private ArrayList<Integer> mapBits;
 	
-	public GameState() {
+	private int extraPieceID;
+	private int currentPlayer;
 
+	@Override
+	public void init() {
 		
+		// Initializing constants
+		currentPlayer = 0;
 		
+		// Initializing JComponents
+		board = new Tile[7][7];
+		boardIcons = new JLabel[7][7];
+		playerIcons = new JLabel[4];
+		
+		// Initializing others types
+		players = new Player[4];
+		mapBits = new ArrayList<Integer>();
+		extraPieceID = (int)(Math.random()*11)+1;
+		
+		addKeyListener(this);
+		
+		for(int i = 0; i < 4; i++)
+			players[i] = new Player(i);
+		
+		// Method Calls
+		fillMapBits();
+		
+	} 
+
+	@Override
+	public void addJComponents() {
+		
+		menuPanel = new JPanel(null);
+		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/gameboard.png")
+				.getImage().getScaledInstance(700, 700, 0)));
+		boardLabel.setBounds(50, 50, 700, 700);
+		
+		// settings for the score panel and add it to the frame
+		menuPanel.setLayout(null);
+		menuPanel.setBounds(0, 0, State.ScreenWidth, State.ScreenHeight);
+		menuPanel.setBackground(Color.black);
+		add(menuPanel);
+		
+		for(int i = 0; i < playerIcons.length; i++) {
+			
+			playerIcons[i] = new JLabel(new ImageIcon(players[i].getImage()
+					.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
+			
+			playerIcons[i].setBounds(75 + playerIcons[i].getIcon().getIconWidth()*players[i].getX(), 75 + 
+					playerIcons[i].getIcon().getIconHeight()*players[i].getY(), 
+					playerIcons[i].getIcon().getIconWidth(),
+					playerIcons[i].getIcon().getIconHeight());
+			
+			menuPanel.add(playerIcons[i]);
+			
+		}
+		
+		currentTurn = new JLabel("Current Turn: Player " + (currentPlayer + 1));
+		currentTurn.setBounds(825, 50, 500, 100);
+		currentTurn.setForeground(Color.red);
+		currentTurn.setFont(new Font("TimesRoman", Font.BOLD, 36));
+		menuPanel.add(currentTurn);
+		
+		/*
+		 * method that fills the board tiles with integer IDs
+		 * 
+		 * up down - 1
+		 * left right - 2
+		 * up right - 3
+		 * up left - 4
+		 * left down - 5
+		 * right down - 6
+		 * up down right - 7
+		 * up down left - 8
+		 * left right up - 9
+		 * left right down - 10
+		 * up down left right - 11
+		 * 
+		*/
+		for(int i = 0; i < boardIcons.length; i++) {
+			for(int j = 0; j < boardIcons[i].length; j++) {
+				
+				String path = board[i][j].getFilePath();
+				
+				boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
+						.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
+				
+				boardIcons[i][j].setBounds(75 + boardIcons[i][j].getIcon().getIconWidth()*i, 75 + 
+						boardIcons[i][j].getIcon().getIconHeight()*j, 
+						boardIcons[i][j].getIcon().getIconWidth(),
+						boardIcons[i][j].getIcon().getIconHeight());
+				
+				menuPanel.add(boardIcons[i][j]);
+				
+			}
+		}
+
+		// places the JComponents to the panel
+		menuPanel.add(boardLabel);
+
 	}
 	
 	/*
@@ -57,9 +164,9 @@ public class GameState extends State {
 					int pathID = input.nextInt();
 					
 					if(pathID == 0)
-						board[i][j] = (int)(Math.random()*11)+1;
+						board[i][j] = new Tile((int)(Math.random()*11)+1);
 					else
-						board[i][j] = pathID;
+						board[i][j] = new Tile(pathID);
 					
 				}
 			}
@@ -71,75 +178,150 @@ public class GameState extends State {
 		}
 		
 	}
-
+	
 	@Override
-	public void init() {
+	public void updatePosition(int x, int y) {
 		
-		board = new int[7][7];
-		boardIcons = new JLabel[7][7];
-		mapBits = new ArrayList<Integer>();
+		int moveX = players[currentPlayer].getX() + x;
+		int moveY = players[currentPlayer].getY() + y;
 		
-		fillMapBits();
+		if(x != 0 && moveX < board.length && moveX >= 0 && movable(x, y, moveX, moveY)) {
+			
+			players[currentPlayer].setX(moveX);
+			System.out.println(moveX + " " + moveY);
 		
-	} 
-
-	@Override
-	public void addJComponents() {
-		
-		menuPanel = new JPanel(null);
-		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/gameboard.png")
-				.getImage().getScaledInstance(700, 700, 0)));
-		boardLabel.setBounds(50, 50, 700, 700);
-		
-		// settings for the score panel and add it to the frame
-		menuPanel.setLayout(null);
-		menuPanel.setBounds(0, 0, State.ScreenWidth, State.ScreenHeight);
-		menuPanel.setBackground(Color.black);
-		menuPanel.setOpaque(true);
-		add(menuPanel);
-		
-		/*
-		 * method that fills the board tiles with integer IDs
-		 * 
-		 * up down - 1
-		 * left right - 2
-		 * up right - 3
-		 * up left - 4
-		 * left down - 5
-		 * right down - 6
-		 * up down right - 7
-		 * up down left - 8
-		 * left right up - 9
-		 * left right down - 10
-		 * up down left right - 11
-		 * 
-		*/
-		for(int i = 0; i < boardIcons.length; i++) {
-			for(int j = 0; j < boardIcons[i].length; j++) {
-				
-				String path = "images/path" + board[i][j] + ".png";
-				
-				boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
-						.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
-				
-				boardIcons[i][j].setBounds(75 + boardIcons[i][j].getIcon().getIconWidth()*i, 75 + 
-						boardIcons[i][j].getIcon().getIconHeight()*j, 
-						boardIcons[i][j].getIcon().getIconWidth(),
-						boardIcons[i][j].getIcon().getIconHeight());
-				
-				menuPanel.add(boardIcons[i][j]);
-				
-			}
 		}
 		
-		// places the JComponents to the panel
-		menuPanel.add(boardLabel);
-
+		if(y != 0 && moveY < board.length && moveY >= 0 && movable(x, y, moveX, moveY)) {
+			
+			players[currentPlayer].setY(moveY);
+			System.out.println(moveX + " " + moveY);
+		
+		}
+		
+		playerIcons[currentPlayer].setBounds(75 + playerIcons[currentPlayer].getIcon().getIconWidth()*
+				players[currentPlayer].getX(), 75 + playerIcons[currentPlayer].getIcon().getIconHeight()*players[currentPlayer].getY(), 
+				playerIcons[currentPlayer].getIcon().getIconWidth(), playerIcons[currentPlayer].getIcon().getIconHeight());
+		
+	}
+	
+	@Override
+	public boolean movable(int x, int y, int moveX, int moveY) {
+		
+		System.out.println(board[moveY][moveX].isUp() + " " + board[moveY][moveX].isDown() + " " + board[moveY][moveX].isLeft() + " " + board[moveY][moveX].isRight());
+		
+		Tile currentTile = board[players[currentPlayer].getX()][players[currentPlayer].getY()];
+		
+		// moving down, top block must have down connection
+		if(y > 0 && currentTile.isDown()) {
+			
+			return board[moveX][moveY].isUp();
+			
+		} 
+		
+		// moving up, top block must have up connection
+		else if(y < 0 && currentTile.isUp()) {
+			
+			return board[moveX][moveY].isDown();
+			
+		}
+		
+		// moving right, right block must have left connection
+		if(x > 0 && currentTile.isRight()) {
+			
+			return board[moveX][moveY].isLeft();
+			
+		}
+		
+		// moving left, left block must have right connection
+		else if(x < 0 && currentTile.isLeft()) {
+			
+			return board[moveX][moveY].isRight();
+			
+		}
+		
+		return false;
+		
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent event) {
+		
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent key) {
+		
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent key) {
+		
+		if(key.getKeyCode() == KeyEvent.VK_W) {
+			
+			updatePosition(0, -1);
+			
+		}
+		
+		else if(key.getKeyCode() == KeyEvent.VK_S) {
+			
+			updatePosition(0, 1);
+			
+		}
+		
+		else if(key.getKeyCode() == KeyEvent.VK_A) {
+			
+			updatePosition(-1, 0);
+			
+		}
+		
+		else if(key.getKeyCode() == KeyEvent.VK_D) {
+	
+			updatePosition(1, 0);
+	
+		}
+		
+		else if(key.getKeyCode() == KeyEvent.VK_ENTER) {
+			
+			// default player color
+			Color playerColor = Color.red; 
+			
+			if(currentPlayer == 3) {
+				
+				currentPlayer = 0;
+				
+			} else {
+				
+				currentPlayer++;
+				
+				if(currentPlayer == 1) {
+					
+					playerColor = Color.blue;
+					
+				} else if(currentPlayer == 2) {
+					
+					playerColor = Color.YELLOW;
+					
+				} else if(currentPlayer == 3) {
+					
+					playerColor = Color.green;
+					
+				}
+				
+			}
+			
+			currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
+			currentTurn.setForeground(playerColor);
+			
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent key) {
+		
 		
 	}
 
