@@ -30,6 +30,7 @@ public class GameState extends State implements KeyListener, Mover {
 	private Tile[][] board;
 	private Player players[];
 	private ArrayList<Integer> mapBits;
+	private JLabel extraPieceLabel;
 	
 	private int extraPieceID;
 	private int currentPlayer;
@@ -44,6 +45,7 @@ public class GameState extends State implements KeyListener, Mover {
 		board = new Tile[7][7];
 		boardIcons = new JLabel[7][7];
 		playerIcons = new JLabel[4];
+		extraPieceLabel = new JLabel(new ImageIcon(""));
 		
 		// Initializing others types
 		players = new Player[4];
@@ -58,13 +60,13 @@ public class GameState extends State implements KeyListener, Mover {
 		// Method Calls
 		fillMapBits();
 		
-	} 
+	}
 
 	@Override
 	public void addJComponents() {
 		
 		menuPanel = new JPanel(null);
-		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/gameboard.png")
+		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/blogamazeingboard.jpg")
 				.getImage().getScaledInstance(700, 700, 0)));
 		boardLabel.setBounds(50, 50, 700, 700);
 		
@@ -113,17 +115,19 @@ public class GameState extends State implements KeyListener, Mover {
 		for(int i = 0; i < boardIcons.length; i++) {
 			for(int j = 0; j < boardIcons[i].length; j++) {
 				
-				String path = board[i][j].getFilePath();
-				
-				boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
-						.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
-				
-				boardIcons[i][j].setBounds(75 + boardIcons[i][j].getIcon().getIconWidth()*i, 75 + 
-						boardIcons[i][j].getIcon().getIconHeight()*j, 
-						boardIcons[i][j].getIcon().getIconWidth(),
-						boardIcons[i][j].getIcon().getIconHeight());
-				
-				menuPanel.add(boardIcons[i][j]);
+				if(board[i][j] != null) {
+					String path = board[i][j].getFilePath();
+					
+					boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
+							.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
+					
+					boardIcons[i][j].setBounds(75 + boardIcons[i][j].getIcon().getIconWidth()*i, 75 + 
+							boardIcons[i][j].getIcon().getIconHeight()*j, 
+							boardIcons[i][j].getIcon().getIconWidth(),
+							boardIcons[i][j].getIcon().getIconHeight());
+					
+					menuPanel.add(boardIcons[i][j]);
+				}
 				
 			}
 		}
@@ -151,6 +155,52 @@ public class GameState extends State implements KeyListener, Mover {
 	*/
 	private void fillMapBits() {
 		
+		// generating fixed tiles
+		
+		board[0][2] = new Tile(6, 1);
+		board[0][4] = new Tile(6, 2);
+		
+		board[2][0] = new Tile(9, 3);
+		board[2][2] = new Tile(9, 4);
+		board[2][4] = new Tile(6, 5);
+		board[2][6] = new Tile(7, 6);
+		
+		board[4][4] = new Tile(9, 7);
+		board[4][2] = new Tile(8, 8);
+		board[4][4] = new Tile(7, 9);
+		board[4][6] = new Tile(7, 10);
+		
+		board[6][2] = new Tile(8, 11);
+		board[6][4] = new Tile(8, 12);
+		
+		ArrayList<Tile> avaliableTiles = new ArrayList<Tile>();
+		
+		for(int count = 0; count < 12; count++) {
+			
+			avaliableTiles.add(new Tile((int)(Math.random()*2), 0));
+			
+		}
+		
+		for(int count = 0; count < 10; count++) {
+			
+			avaliableTiles.add(new Tile((int)(Math.random()*4) + 2 , 0));
+			
+		}
+		
+		// generating random tiles
+		
+		for(int i = 0; i < board.length; i++) {
+			for(int j = 0; j < board.length; j++) {
+				
+				if(board[i][j] == null) {
+					
+					board[i][j] = new Tile((int)(Math.random()*5)+1, (int)(Math.random()*13)+7);
+				
+				}
+				
+			}
+		}
+		/*
 		String filename = "mazes/pregeneratedMaze";
 		
 		Scanner input;
@@ -161,12 +211,13 @@ public class GameState extends State implements KeyListener, Mover {
 			for(int i = 0; i < board.length; i++) {
 				for(int j = 0; j < board.length; j++) {
 					
-					int pathID = input.nextInt();
+					if(board[i][j] == null) {
+						
+						int pathID = input.nextInt();
+						
+						board[i][j] = new Tile((int)(Math.random()*6)+1, 0);
 					
-					if(pathID == 0)
-						board[i][j] = new Tile((int)(Math.random()*11)+1);
-					else
-						board[i][j] = new Tile(pathID);
+					}
 					
 				}
 			}
@@ -176,7 +227,7 @@ public class GameState extends State implements KeyListener, Mover {
 			System.out.println("invalid maze file path");
 			
 		}
-		
+		*/
 	}
 	
 	@Override
@@ -188,14 +239,12 @@ public class GameState extends State implements KeyListener, Mover {
 		if(x != 0 && moveX < board.length && moveX >= 0 && movable(x, y, moveX, moveY)) {
 			
 			players[currentPlayer].setX(moveX);
-			System.out.println(moveX + " " + moveY);
 		
 		}
 		
 		if(y != 0 && moveY < board.length && moveY >= 0 && movable(x, y, moveX, moveY)) {
 			
 			players[currentPlayer].setY(moveY);
-			System.out.println(moveX + " " + moveY);
 		
 		}
 		
@@ -207,8 +256,6 @@ public class GameState extends State implements KeyListener, Mover {
 	
 	@Override
 	public boolean movable(int x, int y, int moveX, int moveY) {
-		
-		System.out.println(board[moveY][moveX].isUp() + " " + board[moveY][moveX].isDown() + " " + board[moveY][moveX].isLeft() + " " + board[moveY][moveX].isRight());
 		
 		Tile currentTile = board[players[currentPlayer].getX()][players[currentPlayer].getY()];
 		
