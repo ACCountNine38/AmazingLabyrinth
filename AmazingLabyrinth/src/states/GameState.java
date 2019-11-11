@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 import javax.swing.ImageIcon;
@@ -115,7 +116,7 @@ public class GameState extends State implements KeyListener, Mover {
 		for(int i = 0; i < boardIcons.length; i++) {
 			for(int j = 0; j < boardIcons[i].length; j++) {
 				
-				if(board[i][j] != null) {
+				if(board[i][j].isCanMove()) {
 					String path = board[i][j].getFilePath();
 					
 					boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
@@ -157,45 +158,67 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		// generating fixed tiles
 		
-		board[0][2] = new Tile(6, 1);
-		board[0][4] = new Tile(6, 2);
+		board[0][0] = new Tile(3, 0, false);
+		board[0][6] = new Tile(4, 0, false);
+		board[6][6] = new Tile(5, 0, false);
+		board[6][0] = new Tile(6, 0, false);
 		
-		board[2][0] = new Tile(9, 3);
-		board[2][2] = new Tile(9, 4);
-		board[2][4] = new Tile(6, 5);
-		board[2][6] = new Tile(7, 6);
+		board[0][2] = new Tile(6, 1, false);
+		board[0][4] = new Tile(6, 2, false);
 		
-		board[4][4] = new Tile(9, 7);
-		board[4][2] = new Tile(8, 8);
-		board[4][4] = new Tile(7, 9);
-		board[4][6] = new Tile(7, 10);
+		board[2][0] = new Tile(9, 3, false);
+		board[2][2] = new Tile(9, 4, false);
+		board[2][4] = new Tile(6, 5, false);
+		board[2][6] = new Tile(7, 6, false);
 		
-		board[6][2] = new Tile(8, 11);
-		board[6][4] = new Tile(8, 12);
+		board[4][4] = new Tile(9, 7, false);
+		board[4][2] = new Tile(8, 8, false);
+		board[4][4] = new Tile(7, 9, false);
+		board[4][6] = new Tile(7, 10, false);
+		
+		board[6][2] = new Tile(8, 11, false);
+		board[6][4] = new Tile(8, 12, false);
 		
 		ArrayList<Tile> avaliableTiles = new ArrayList<Tile>();
 		
 		for(int count = 0; count < 12; count++) {
 			
-			avaliableTiles.add(new Tile((int)(Math.random()*2), 0));
+			avaliableTiles.add(new Tile((int)(Math.random()*2), 0, true));
 			
 		}
 		
 		for(int count = 0; count < 10; count++) {
 			
-			avaliableTiles.add(new Tile((int)(Math.random()*4) + 2 , 0));
+			avaliableTiles.add(new Tile((int)(Math.random()*4) + 2 , 0, true));
 			
 		}
+		
+		for(int count = 13; count <= 18; count++) {
+			
+			avaliableTiles.add(new Tile((int)(Math.random()*2) , count, true));
+			
+		}
+		
+		for(int count = 19; count <= 24; count++) {
+			
+			avaliableTiles.add(new Tile((int)(Math.random()*4) + 2 , count, true));
+			
+		}
+		
+		Collections.shuffle(avaliableTiles);
+		
+		int index = 0;
 		
 		// generating random tiles
 		
 		for(int i = 0; i < board.length; i++) {
-			for(int j = 0; j < board.length; j++) {
+			for(int j = 0; j < board[i].length; j++) {
 				
 				if(board[i][j] == null) {
 					
-					board[i][j] = new Tile((int)(Math.random()*5)+1, (int)(Math.random()*13)+7);
-				
+					board[i][j] = avaliableTiles.get(index);
+					index++;
+					
 				}
 				
 			}

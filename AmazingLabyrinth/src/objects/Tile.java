@@ -4,11 +4,12 @@ public class Tile {
 
 	private int id, item;
 	private String filePath;
-	private boolean up, down, left, right;
+	private boolean up, down, left, right, canMove;
 	
-	public Tile(int id, int item) {
+	public Tile(int id, int item, boolean canMove) {
 		
 		this.item = item;
+		this.canMove = canMove;
 		
 		setId(id);
 		
@@ -226,6 +227,22 @@ public class Tile {
 
 	public void setRight(boolean right) {
 		this.right = right;
+	}
+
+	public int getItem() {
+		return item;
+	}
+
+	public void setItem(int item) {
+		this.item = item;
+	}
+
+	public boolean isCanMove() {
+		return canMove;
+	}
+
+	public void setCanMove(boolean canMove) {
+		this.canMove = canMove;
 	}
 
 }
