@@ -161,7 +161,7 @@ public class GameState extends State implements KeyListener, Mover {
 		board[0][0] = new Tile(3, 0, false);
 		board[0][6] = new Tile(4, 0, false);
 		board[6][6] = new Tile(5, 0, false);
-		board[6][0] = new Tile(6, 0, false);
+		board[6][0] = new Tile(2, 0, false);
 		
 		board[0][2] = new Tile(6, 1, false);
 		board[0][4] = new Tile(6, 2, false);
@@ -171,7 +171,7 @@ public class GameState extends State implements KeyListener, Mover {
 		board[2][4] = new Tile(6, 5, false);
 		board[2][6] = new Tile(7, 6, false);
 		
-		board[4][4] = new Tile(9, 7, false);
+		board[4][0] = new Tile(9, 7, false);
 		board[4][2] = new Tile(8, 8, false);
 		board[4][4] = new Tile(7, 9, false);
 		board[4][6] = new Tile(7, 10, false);
@@ -195,13 +195,13 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		for(int count = 13; count <= 18; count++) {
 			
-			avaliableTiles.add(new Tile((int)(Math.random()*2) , count, true));
+			avaliableTiles.add(new Tile((int)(Math.random()*4) + 2 , count, true));
 			
 		}
 		
 		for(int count = 19; count <= 24; count++) {
 			
-			avaliableTiles.add(new Tile((int)(Math.random()*4) + 2 , count, true));
+			avaliableTiles.add(new Tile((int)(Math.random()*4) + 6 , count, true));
 			
 		}
 		
@@ -223,6 +223,7 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 		}
+		System.out.println(avaliableTiles.size() + " " + index);
 		/*
 		String filename = "mazes/pregeneratedMaze";
 		
