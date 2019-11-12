@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Scanner;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -32,8 +33,9 @@ public class GameState extends State implements KeyListener, Mover {
 	private Player players[];
 	private ArrayList<Integer> mapBits;
 	private JLabel extraPieceLabel;
+	private JButton rotatePieceButton;
 	
-	private int extraPieceID;
+	private Tile extraPiece;
 	private int currentPlayer;
 
 	@Override
@@ -51,7 +53,6 @@ public class GameState extends State implements KeyListener, Mover {
 		// Initializing others types
 		players = new Player[4];
 		mapBits = new ArrayList<Integer>();
-		extraPieceID = (int)(Math.random()*11)+1;
 		
 		addKeyListener(this);
 		
@@ -97,22 +98,6 @@ public class GameState extends State implements KeyListener, Mover {
 		currentTurn.setFont(new Font("TimesRoman", Font.BOLD, 36));
 		menuPanel.add(currentTurn);
 		
-		/*
-		 * method that fills the board tiles with integer IDs
-		 * 
-		 * up down - 1
-		 * left right - 2
-		 * up right - 3
-		 * up left - 4
-		 * left down - 5
-		 * right down - 6
-		 * up down right - 7
-		 * up down left - 8
-		 * left right up - 9
-		 * left right down - 10
-		 * up down left right - 11
-		 * 
-		*/
 		for(int i = 0; i < boardIcons.length; i++) {
 			for(int j = 0; j < boardIcons[i].length; j++) {
 				
@@ -120,18 +105,33 @@ public class GameState extends State implements KeyListener, Mover {
 					String path = board[i][j].getFilePath();
 					
 					boardIcons[i][j] = new JLabel(new ImageIcon(new ImageIcon(path)
-							.getImage().getScaledInstance((840) / 9, (840) / 9, 0)));
+							.getImage().getScaledInstance(92, 92, 0)));
 					
-					boardIcons[i][j].setBounds(75 + boardIcons[i][j].getIcon().getIconWidth()*i, 75 + 
+					boardIcons[i][j].setBounds(76 + boardIcons[i][j].getIcon().getIconWidth()*i, 80 + 
 							boardIcons[i][j].getIcon().getIconHeight()*j, 
 							boardIcons[i][j].getIcon().getIconWidth(),
 							boardIcons[i][j].getIcon().getIconHeight());
 					
 					menuPanel.add(boardIcons[i][j]);
+					
 				}
 				
 			}
 		}
+		
+		extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+				.getImage().getScaledInstance(92, 92, 0)));
+		
+		extraPieceLabel.setBounds(850, 200, extraPieceLabel.getIcon().getIconWidth(), extraPieceLabel.getIcon().getIconHeight());
+		
+		menuPanel.add(extraPieceLabel);
+		
+		rotatePieceButton = new JButton("rotate tile");
+		
+		rotatePieceButton.setBounds(1050, 200, 200, 50);
+		rotatePieceButton.addActionListener(this);
+		
+		menuPanel.add(rotatePieceButton);
 
 		// places the JComponents to the panel
 		menuPanel.add(boardLabel);
@@ -224,34 +224,8 @@ public class GameState extends State implements KeyListener, Mover {
 			}
 		}
 		
-		/*
-		String filename = "mazes/pregeneratedMaze";
+		extraPiece = avaliableTiles.get(avaliableTiles.size()-1);
 		
-		Scanner input;
-		
-		try {
-			input = new Scanner(new File(filename));
-			
-			for(int i = 0; i < board.length; i++) {
-				for(int j = 0; j < board.length; j++) {
-					
-					if(board[i][j] == null) {
-						
-						int pathID = input.nextInt();
-						
-						board[i][j] = new Tile((int)(Math.random()*6)+1, 0);
-					
-					}
-					
-				}
-			}
-			
-		} catch (FileNotFoundException e) {
-			
-			System.out.println("invalid maze file path");
-			
-		}
-		*/
 	}
 	
 	@Override
@@ -314,10 +288,24 @@ public class GameState extends State implements KeyListener, Mover {
 		return false;
 		
 	}
+	
+	public void rotatePiece() {
+		
+		extraPiece.rotateTile();
+		
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		
+		if(event.getSource().equals(rotatePieceButton)) {
+			
+			rotatePiece();
+			
+			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+					.getImage().getScaledInstance(92, 92, 0)));
+			
+		}
 		
 	}
 

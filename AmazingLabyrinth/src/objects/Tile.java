@@ -15,38 +15,37 @@ public class Tile {
 		
 	}
 	
-	public void rotateTile(Tile tile, boolean random) {
+	public void rotateTile() {
 		
-		if(!random) {
-			
-			if(tile.getId() == 1)
-				setId(2);
-			
-			else if(tile.getId() == 2)
-				setId(1);
-			
-			else if(tile.getId() == 3) 
-				setId(4);
-			
-			else if(tile.getId() == 4) 
-				setId(5);
-			
-			else if(tile.getId() == 5) 
-				setId(6);
-			
-			else if(tile.getId() == 6) 
-				setId(3);
-			
-			
-		}
+		if(getId() == 0)
+			setId(1);
 		
-		else  {
+		else if(getId() == 1)
+			setId(0);
 		
-			int numRotation = (int)(Math.random()*4);
-			
-		}
+		else if(getId() == 2) 
+			setId(3);
 		
+		else if(getId() == 3) 
+			setId(4);
 		
+		else if(getId() == 4) 
+			setId(5);
+		
+		else if(getId() == 5) 
+			setId(2);
+		
+		else if(getId() == 6) 
+			setId(7);
+		
+		else if(getId() == 7) 
+			setId(8);
+		
+		else if(getId() == 8) 
+			setId(9);
+		
+		else if(getId() == 9) 
+			setId(6);
 		
 	}
 
