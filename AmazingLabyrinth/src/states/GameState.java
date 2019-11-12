@@ -159,25 +159,25 @@ public class GameState extends State implements KeyListener, Mover {
 		// generating fixed tiles
 		
 		board[0][0] = new Tile(3, 0, false);
-		board[0][6] = new Tile(4, 0, false);
+		board[0][6] = new Tile(2, 0, false);
 		board[6][6] = new Tile(5, 0, false);
-		board[6][0] = new Tile(2, 0, false);
+		board[6][0] = new Tile(4, 0, false);
 		
-		board[0][2] = new Tile(6, 1, false);
-		board[0][4] = new Tile(6, 2, false);
+		board[0][2] = new Tile(9, 1, false);
+		board[0][4] = new Tile(9, 2, false);
 		
-		board[2][0] = new Tile(9, 3, false);
+		board[2][0] = new Tile(6, 3, false);
 		board[2][2] = new Tile(9, 4, false);
-		board[2][4] = new Tile(6, 5, false);
-		board[2][6] = new Tile(7, 6, false);
+		board[2][4] = new Tile(8, 5, false);
+		board[2][6] = new Tile(8, 6, false);
 		
-		board[4][0] = new Tile(9, 7, false);
-		board[4][2] = new Tile(8, 8, false);
+		board[4][0] = new Tile(6, 7, false);
+		board[4][2] = new Tile(6, 8, false);
 		board[4][4] = new Tile(7, 9, false);
-		board[4][6] = new Tile(7, 10, false);
+		board[4][6] = new Tile(8, 10, false);
 		
-		board[6][2] = new Tile(8, 11, false);
-		board[6][4] = new Tile(8, 12, false);
+		board[6][2] = new Tile(7, 11, false);
+		board[6][4] = new Tile(7, 12, false);
 		
 		ArrayList<Tile> avaliableTiles = new ArrayList<Tile>();
 		
@@ -223,7 +223,7 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 		}
-		System.out.println(avaliableTiles.size() + " " + index);
+		
 		/*
 		String filename = "mazes/pregeneratedMaze";
 		
@@ -386,6 +386,10 @@ public class GameState extends State implements KeyListener, Mover {
 			currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
 			currentTurn.setForeground(playerColor);
 			
+		}
+		else if(key.getKeyCode() == KeyEvent.VK_I) {
+			
+			fillMapBits();
 		}
 		
 	}
