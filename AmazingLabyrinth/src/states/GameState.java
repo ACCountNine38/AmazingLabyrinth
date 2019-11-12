@@ -126,12 +126,13 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		menuPanel.add(extraPieceLabel);
 		
-		rotatePieceButton = new JButton("rotate tile");
 		
+		rotatePieceButton = new JButton("rotate tile");	
 		rotatePieceButton.setBounds(1050, 200, 200, 50);
 		rotatePieceButton.addActionListener(this);
-		
 		menuPanel.add(rotatePieceButton);
+		
+		rotatePieceButton.setFocusable(false);
 
 		// places the JComponents to the panel
 		menuPanel.add(boardLabel);
@@ -318,9 +319,12 @@ public class GameState extends State implements KeyListener, Mover {
 	@Override
 	public void keyPressed(KeyEvent key) {
 		
+		
+		
 		if(key.getKeyCode() == KeyEvent.VK_W) {
 			
 			updatePosition(0, -1);
+
 			
 		}
 		
@@ -337,12 +341,14 @@ public class GameState extends State implements KeyListener, Mover {
 		}
 		
 		else if(key.getKeyCode() == KeyEvent.VK_D) {
-	
+			
 			updatePosition(1, 0);
 	
 		}
 		
 		else if(key.getKeyCode() == KeyEvent.VK_ENTER) {
+			
+			System.out.println("Hello");
 			
 			// default player color
 			Color playerColor = Color.red; 

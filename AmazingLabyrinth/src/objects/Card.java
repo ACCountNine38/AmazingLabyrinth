@@ -43,10 +43,13 @@ public class Card {
 		cards.add(new Card(new ImageIcon("images/cards/22.png"), false));
 		cards.add(new Card(new ImageIcon("images/cards/23.png"), false));
 		cards.add(new Card(new ImageIcon("images/cards/24.png"), false));
+		
 	}
 	static ArrayList<Card> getshuffle() {
+		
 		Collections.shuffle(cards,new Random());
 		return cards;
-}
+	}
+	
 }
 
