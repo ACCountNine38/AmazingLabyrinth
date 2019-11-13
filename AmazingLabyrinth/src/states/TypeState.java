@@ -43,7 +43,7 @@ public class TypeState extends State {
 		
 	}
 
-	
+	//
 	public void actionPerformed(ActionEvent event) {
 		if (event.getSource().equals(playButton)) {
 			new GameState();
