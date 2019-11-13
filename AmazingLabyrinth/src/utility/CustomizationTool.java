@@ -31,6 +31,7 @@ public class CustomizationTool {
 
 		// disables auto layout, center program, exit frame when programcloses
 		frame.setLayout(null);
+		frame.setFocusable(true);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
