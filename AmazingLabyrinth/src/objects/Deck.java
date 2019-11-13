@@ -13,7 +13,6 @@ public class Deck {
 	public Deck() {
 		
 		initializeCards();
-		System.out.println("Hello world");
 		
 	}
 
@@ -45,8 +44,8 @@ public class Deck {
 	
 	public static ArrayList<ImageIcon> getCards() {
 		
-		System.out.println(cards.size());
 		return cards;
+		
 	}
 
 	public static void setCards(ArrayList<ImageIcon> cards) {

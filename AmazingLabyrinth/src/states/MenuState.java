@@ -9,26 +9,29 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class MenuState extends State {
-
+	
 	private JPanel menuPanel;
 	private JButton startButton;
+	private JButton optionsButton;
+	private JButton exitButton;
+	//create new screen with both AI and 4 player button options
 	
 	public MenuState() {
-		
-		
 
 	}
 
-	@Override
+	
 	public void init() {
 		
-		menuPanel = new JPanel(null);
-		startButton = new JButton(new ImageIcon(new ImageIcon
-				("images/gameboard.png").getImage().getScaledInstance(393/2, 170/2, 0)));
+		menuPanel = new JPanel();
+		optionsButton = new JButton("OPTIONS"); 
+		startButton = new JButton("START");
+		exitButton = new JButton("EXIT");
+		
 		
 	}
 
-	@Override
+	
 	public void addJComponents() {
 
 		// settings for the score panel and add it to the frame
@@ -37,27 +40,38 @@ public class MenuState extends State {
 		menuPanel.setBackground(Color.black);
 		menuPanel.setOpaque(true);
 		add(menuPanel);
-
+		
 		// set the required informations for all the JComponents
-		startButton.setBounds(270, 280, startButton.getIcon().getIconWidth(), startButton.getIcon().getIconHeight());
+		startButton.setBounds(550, 280, 197, 80);
 		startButton.addActionListener(this);
-
+		optionsButton.setBounds(550, 420, 197, 80);
+		optionsButton.addActionListener(this);
+		exitButton.setBounds(550, 560, 197, 80);
+		exitButton.addActionListener(this);
+		
+		
 		// places the JComponents to the panel
 		menuPanel.add(startButton);
-
+		menuPanel.add(optionsButton);
+		menuPanel.add(exitButton);
+		
 	}
 
-	@Override
+	
 	public void actionPerformed(ActionEvent event) {
-		
 		if (event.getSource().equals(startButton)) {
-			
-			new GameState();
-			
+			new TypeState();
 			this.dispose();
-			
 		}
 		
+		else if (event.getSource().equals(exitButton)) {
+			System.exit(DO_NOTHING_ON_CLOSE);
+			
+		}
+		else if (event.getSource().equals(optionsButton)) {
+			new OptionState();
+			this.dispose();
+		}
 	}
 
 
