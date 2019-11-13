@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import objects.Mover;
 import objects.Player;
 import objects.Tile;
-import utility.TileButton;
 
 public class GameState extends State implements KeyListener, Mover {
 
@@ -355,7 +354,7 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		for(int i = 0; i < tileButtons.size(); i++) {
 			
-			// move first movable column down
+			// move 1st to 3rd movable column down
 			if(event.getSource().equals(tileButtons.get(i)) && i >= 0 && i <= 2) {
 				
 				Tile tempExtraPiece = board[1 + i*2][board.length-1];
@@ -379,6 +378,30 @@ public class GameState extends State implements KeyListener, Mover {
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}
+			// move 4th to 5th movable column down
+			else if(event.getSource().equals(tileButtons.get(i)) && i >= 3 && i <= 5) {
+				
+				Tile tempExtraPiece = board[1 + i*2][board.length-1];
+				
+				for(int j = board.length - 1; j > 0; j--) {
+					
+					board[1 + i*2][j] = board[1 + i*2][j-1];
+					
+					boardIcons[1 + i*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][j].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}
+				
+				board[1 + i*2][0] = extraPiece;
+				boardIcons[1 + i*2][0].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][0].getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+				extraPiece = tempExtraPiece;
+				
+				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+			}	
 			
 		}
 		
