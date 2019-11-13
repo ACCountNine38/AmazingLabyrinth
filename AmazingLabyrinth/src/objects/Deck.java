@@ -60,6 +60,7 @@ public class Deck {
 	public static ArrayList<ImageIcon> getCards() {
 		
 		return cards;
+		
 	}
 
 	public static void setCards(ArrayList<ImageIcon> cards) {

@@ -64,6 +64,9 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		CardsImage = new JLabel[24];
 		
+		tileButtons = new ArrayList<JButton>();
+
+		CardsImage = new JLabel[10];
 		cardObeject.initializeCards();
 		cards = cardObeject.getCards();
 		
@@ -85,6 +88,11 @@ public class GameState extends State implements KeyListener, Mover {
 	public void addJComponents() {
 		
 		menuPanel = new JPanel(null);
+
+		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/blogamazeingboard.jpg")
+				.getImage().getScaledInstance(700, 700, 0)));
+		boardLabel.setBounds(50, 50, 700, 700);
+	
 		// settings for the score panel and add it to the frame
 		menuPanel.setLayout(null);
 		menuPanel.setBounds(0, 0, State.ScreenWidth, State.ScreenHeight);
@@ -95,6 +103,22 @@ public class GameState extends State implements KeyListener, Mover {
 				.getImage().getScaledInstance(700, 700, 0)));
 		boardLabel.setBounds(50, 50, 700, 700);
 		
+		for(int a = 0; a < 5; a++) {
+
+			CardsImage[a] = new JLabel(cards.get(a));
+			CardsImage[a].setBounds(800+a*70, 350, 200, 100);
+			menuPanel.add(CardsImage[a]);
+
+			for(int i = 5; i < 10; i++) {
+
+				CardsImage[i] = new JLabel(cards.get(i));
+				CardsImage[i].setBounds(800+a*70, 450, 200, 100);
+				menuPanel.add(CardsImage[i]);
+
+			}
+
+		}
+
 		for(int i = 0; i < playerIcons.length; i++) {
 			
 			playerIcons[i] = new JLabel(new ImageIcon(players[i].getImage()
@@ -182,7 +206,77 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		rotatePieceButton = new JButton("rotate tile");
 		rotatePieceButton.setBounds(1000, 170, 200, 50);
+
+		rotatePieceButton = new JButton("rotate tile");
+
+		rotatePieceButton = new JButton("rotate tile");	
+		
+		rotatePieceButton.setBounds(1050, 200, 200, 50);
+
 		rotatePieceButton.addActionListener(this);
+		rotatePieceButton.setFocusable(false);
+		menuPanel.add(rotatePieceButton);
+		
+		for(int i = 0; i < 12; i++) {
+			
+			tileButtons.add(new JButton(""));
+			
+			if(i == 0) {
+				
+				tileButtons.get(i).setBounds(200, 50, 50, 50);
+				
+			} else if(i == 1) {
+				
+				tileButtons.get(i).setBounds(400, 50, 50, 50);
+				
+			} else if(i == 2) {
+				
+				tileButtons.get(i).setBounds(600, 50, 50, 50);
+				
+			} else if(i == 3) {
+				
+				tileButtons.get(i).setBounds(700, 200, 50, 50);
+				
+			} else if(i == 4) {
+				
+				tileButtons.get(i).setBounds(700, 400, 50, 50);
+				
+			} else if(i == 5) {
+				
+				tileButtons.get(i).setBounds(700, 600, 50, 50);
+				
+			} else if(i == 6) {
+				
+				tileButtons.get(i).setBounds(200, 700, 50, 50);
+				
+			} else if(i == 7) {
+				
+				tileButtons.get(i).setBounds(400, 700, 50, 50);
+				
+			} else if(i == 8) {
+				
+				tileButtons.get(i).setBounds(600, 700, 50, 50);
+				
+			} else if(i == 9) {
+				
+				tileButtons.get(i).setBounds(50, 200, 50, 50);
+				
+			} else if(i == 10) {
+				
+				tileButtons.get(i).setBounds(50, 400, 50, 50);
+				
+			} else if(i == 11) {
+				
+				tileButtons.get(i).setBounds(50, 600, 50, 50);
+				
+			}
+			
+			tileButtons.get(i).addActionListener(this);
+			tileButtons.get(i).setFocusable(false);
+			menuPanel.add(tileButtons.get(i));
+			
+		}
+
 		rotatePieceButton.setFocusable(false);
 		menuPanel.add(rotatePieceButton);
 		
@@ -469,6 +563,110 @@ public class GameState extends State implements KeyListener, Mover {
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}	
+		
+			// move the movable columns downwards
+			if(event.getSource().equals(tileButtons.get(i)) && i >= 0 && i <= 2) {
+				
+				Tile tempExtraPiece = board[1 + i*2][board.length-1];
+				
+				for(int j = board.length - 1; j > 0; j--) {
+					
+					board[1 + i*2][j] = board[1 + i*2][j-1];
+					
+					boardIcons[1 + i*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][j].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}
+				
+				board[1 + i*2][0] = extraPiece;
+				boardIcons[1 + i*2][0].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][0].getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+				extraPiece = tempExtraPiece;
+				
+				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+			}
+			
+			// move movable rows leftwards
+			else if(event.getSource().equals(tileButtons.get(i)) && i >= 3 && i <= 5) {
+				
+				Tile tempExtraPiece = board[0][1 + (i-3)*2];
+				
+				for(int j = 0; j < board.length-1; j++) {
+					
+					board[j][1 + (i-3)*2] = board[j+1][1 + (i-3)*2];
+					
+					boardIcons[j][1 + (i-3)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (i-3)*2].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}
+				
+				board[board.length-1][1 + (i-3)*2] = extraPiece;
+				boardIcons[board.length-1][1 + (i-3)*2].setIcon(new ImageIcon(new ImageIcon(board[board.length-1][1 + (i-3)*2].getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+				extraPiece = tempExtraPiece;
+				
+				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+			}	
+			
+			// move the movable columns upwards
+			else if(event.getSource().equals(tileButtons.get(i)) && i >= 6 && i <= 8) {
+				
+				Tile tempExtraPiece = board[1 + (i-6)*2][0];
+				
+				for(int j = 0; j < board.length - 1; j++) {
+					
+					board[1 + (i-6)*2][j] = board[1 + (i-6)*2][j+1];
+					
+					boardIcons[1 + (i-6)*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + (i-6)*2][j].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}
+				
+				board[1 + (i-6)*2][board.length-1] = extraPiece;
+				boardIcons[1 + (i-6)*2][board.length-1].setIcon(new ImageIcon(new ImageIcon(board[1 + (i-6)*2][board.length-1].getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+				extraPiece = tempExtraPiece;
+				
+				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+			}
+			
+			// move movable rows rightwards
+			else if(event.getSource().equals(tileButtons.get(i)) && i >= 9 && i <= 11) {
+				
+				Tile tempExtraPiece = board[board.length - 1][1 + (i-9)*2];
+				
+				for(int j = board.length - 1; j > 0; j--) {
+					
+					board[j][1 + (i-9)*2] = board[j-1][1 + (i-9)*2];
+					
+					boardIcons[j][1 + (i-9)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (i-9)*2].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}
+				
+				board[0][1 + (i-9)*2] = extraPiece;
+				boardIcons[0][1 + (i-9)*2].setIcon(new ImageIcon(new ImageIcon(board[0][1 + (i-9)*2].getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+				extraPiece = tempExtraPiece;
+				
+				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+						.getImage().getScaledInstance(92, 92, 0)));
+				
+			}	
+
+			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+					.getImage().getScaledInstance(92, 92, 0)));
+
 			
 		}
 		
@@ -543,6 +741,10 @@ public class GameState extends State implements KeyListener, Mover {
 			
 			rotateExtraTile();
 			
+		} else if(key.getKeyCode() == KeyEvent.VK_R) {
+			
+			rotateExtraTile();
+		
 		}
 		
 	}
