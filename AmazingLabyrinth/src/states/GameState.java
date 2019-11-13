@@ -378,7 +378,7 @@ public class GameState extends State implements KeyListener, Mover {
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}
-			// move 4th to 5th movable column down
+			// move 4th to 5th movable column downddd
 			else if(event.getSource().equals(tileButtons.get(i)) && i >= 3 && i <= 5) {
 				
 				Tile tempExtraPiece = board[1 + i*2][board.length-1];
