@@ -5,11 +5,8 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,7 +20,10 @@ import objects.Tile;
 
 public class GameState extends State implements KeyListener, Mover {
 
-	Deck cardObeject = new Deck();
+	// final variables
+	private static final int BOARD_SIZE = 7;
+	
+	private Deck cardObeject = new Deck();
 	private ArrayList<ImageIcon> cards;
 
 	private JPanel menuPanel;
@@ -48,6 +48,7 @@ public class GameState extends State implements KeyListener, Mover {
 	
 	private Tile extraPiece;
 	private int currentPlayer;
+	private boolean canClick;
 
 	@Override
 	public void init() {
@@ -56,8 +57,8 @@ public class GameState extends State implements KeyListener, Mover {
 		currentPlayer = 0;
 
 		// Initializing JComponents
-		board = new Tile[7][7];
-		boardIcons = new JLabel[7][7];
+		board = new Tile[BOARD_SIZE][BOARD_SIZE];
+		boardIcons = new JLabel[BOARD_SIZE][BOARD_SIZE];
 		playerIcons = new JLabel[4];
 		extraPieceLabel = new JLabel(new ImageIcon(""));
 
@@ -70,6 +71,7 @@ public class GameState extends State implements KeyListener, Mover {
 		// Initializing others types
 		players = new Player[4];
 		mapBits = new ArrayList<Integer>();
+		canClick = true;
 
 		addKeyListener(this);
 
@@ -86,18 +88,14 @@ public class GameState extends State implements KeyListener, Mover {
 
 		menuPanel = new JPanel(null);
 
-		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/blogamazeingboard.jpg")
-				.getImage().getScaledInstance(700, 700, 0)));
-		boardLabel.setBounds(50, 50, 700, 700);
-		
 		// settings for the score panel and add it to the frame
 		menuPanel.setLayout(null);
 		menuPanel.setBounds(0, 0, State.ScreenWidth, State.ScreenHeight);
 		menuPanel.setBackground(Color.black);
 		add(menuPanel);
-		
 		boardLabel = new JLabel(new ImageIcon(new ImageIcon("images/blogamazeingboard.jpg")
 				.getImage().getScaledInstance(700, 700, 0)));
+		
 		boardLabel.setBounds(50, 50, 700, 700);
 		
 		for(int a = 0; a < 5; a++) {
@@ -259,7 +257,6 @@ public class GameState extends State implements KeyListener, Mover {
 	private void fillMapBits() {
 
 		// generating fixed tiles
-
 		board[0][0] = new Tile(3, 0, false);
 		board[0][6] = new Tile(2, 0, false);
 		board[6][6] = new Tile(5, 0, false);
@@ -313,8 +310,8 @@ public class GameState extends State implements KeyListener, Mover {
 
 		// generating random tiles
 
-		for(int i = 0; i < board.length; i++) {
-			for(int j = 0; j < board[i].length; j++) {
+		for(int i = 0; i < BOARD_SIZE; i++) {
+			for(int j = 0; j < BOARD_SIZE; j++) {
 
 				if(board[i][j] == null) {
 
@@ -336,13 +333,13 @@ public class GameState extends State implements KeyListener, Mover {
 		int moveX = players[currentPlayer].getX() + x;
 		int moveY = players[currentPlayer].getY() + y;
 
-		if(x != 0 && moveX < board.length && moveX >= 0 && movable(x, y, moveX, moveY)) {
+		if(x != 0 && moveX < BOARD_SIZE && moveX >= 0 && movable(x, y, moveX, moveY)) {
 
 			players[currentPlayer].setX(moveX);
 
 		}
 
-		if(y != 0 && moveY < board.length && moveY >= 0 && movable(x, y, moveX, moveY)) {
+		if(y != 0 && moveY < BOARD_SIZE && moveY >= 0 && movable(x, y, moveX, moveY)) {
 
 			players[currentPlayer].setY(moveY);
 
@@ -411,110 +408,205 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		for(int i = 0; i < tileButtons.size(); i++) {
 			
-			// move the movable columns downwards
-			if(event.getSource().equals(tileButtons.get(i)) && i >= 0 && i <= 2) {
-				
-				Tile tempExtraPiece = board[1 + i*2][board.length-1];
-				
-				for(int j = board.length - 1; j > 0; j--) {
+			if(canClick && event.getSource().equals(tileButtons.get(i))) {
+				// move the movable columns downwards
+				if(i >= 0 && i <= 2) {
 					
-					board[1 + i*2][j] = board[1 + i*2][j-1];
+					Tile tempExtraPiece = board[1 + i*2][BOARD_SIZE-1];
 					
-					boardIcons[1 + i*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][j].getFilePath())
+					for(int j = BOARD_SIZE - 1; j > 0; j--) {
+						
+						board[1 + i*2][j] = board[1 + i*2][j-1];
+						
+						boardIcons[1 + i*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][j].getFilePath())
+								.getImage().getScaledInstance(92, 92, 0)));
+						
+					}
+					
+					for(int index = 0; index < players.length; index++) {
+						
+						if(players[index].getX() == 1 + i*2) {
+							
+							shiftPlayer(players[index], index, 1);
+							
+						}
+						
+					}
+					
+					board[1 + i*2][0] = extraPiece;
+					boardIcons[1 + i*2][0].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][0].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+					extraPiece = tempExtraPiece;
+					
+					extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 							.getImage().getScaledInstance(92, 92, 0)));
 					
 				}
 				
-				board[1 + i*2][0] = extraPiece;
-				boardIcons[1 + i*2][0].setIcon(new ImageIcon(new ImageIcon(board[1 + i*2][0].getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
+				// move movable rows leftwards
+				else if(i >= 3 && i <= 5) {
+					
+					Tile tempExtraPiece = board[0][1 + (i-3)*2];
+					
+					for(int j = 0; j < BOARD_SIZE-1; j++) {
+						
+						board[j][1 + (i-3)*2] = board[j+1][1 + (i-3)*2];
+						
+						boardIcons[j][1 + (i-3)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (i-3)*2].getFilePath())
+								.getImage().getScaledInstance(92, 92, 0)));
+						
+					}
+					
+					for(int index = 0; index < players.length; index++) {
+						
+						if(players[index].getY() == 1 + (i-3)*2) {
+							
+							shiftPlayer(players[index], index, 2);
+							
+						}
+						
+					}
+					
+					board[BOARD_SIZE-1][1 + (i-3)*2] = extraPiece;
+					boardIcons[BOARD_SIZE-1][1 + (i-3)*2].setIcon(new ImageIcon(new ImageIcon(board[BOARD_SIZE-1][1 + (i-3)*2].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+					extraPiece = tempExtraPiece;
+					
+					extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}	
 				
-				extraPiece = tempExtraPiece;
+				// move the movable columns upwards
+				else if(i >= 6 && i <= 8) {
+					
+					Tile tempExtraPiece = board[1 + (i-6)*2][0];
+					
+					for(int j = 0; j < BOARD_SIZE - 1; j++) {
+						
+						board[1 + (i-6)*2][j] = board[1 + (i-6)*2][j+1];
+						
+						boardIcons[1 + (i-6)*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + (i-6)*2][j].getFilePath())
+								.getImage().getScaledInstance(92, 92, 0)));
+						
+					}
+					
+					for(int index = 0; index < players.length; index++) {
+						
+						if(players[index].getX() == 1 + (i-6)*2) {
+							
+							shiftPlayer(players[index], index, 3);
+							
+						}
+						
+					}
+					
+					board[1 + (i-6)*2][BOARD_SIZE-1] = extraPiece;
+					boardIcons[1 + (i-6)*2][BOARD_SIZE-1].setIcon(new ImageIcon(new ImageIcon(board[1 + (i-6)*2][BOARD_SIZE-1].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+					extraPiece = tempExtraPiece;
+					
+					extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}
 				
+				// move movable rows rightwards
+				else if(i >= 9 && i <= 11) {
+					
+					Tile tempExtraPiece = board[BOARD_SIZE - 1][1 + (i-9)*2];
+					
+					for(int j = BOARD_SIZE - 1; j > 0; j--) {
+						
+						board[j][1 + (i-9)*2] = board[j-1][1 + (i-9)*2];
+						
+						boardIcons[j][1 + (i-9)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (i-9)*2].getFilePath())
+								.getImage().getScaledInstance(92, 92, 0)));
+						
+					}
+					
+					for(int index = 0; index < players.length; index++) {
+						
+						if(players[index].getY() == 1 + (i-9)*2) {
+							
+							shiftPlayer(players[index], index, 4);
+							
+						}
+						
+					}
+					
+					board[0][1 + (i-9)*2] = extraPiece;
+					boardIcons[0][1 + (i-9)*2].setIcon(new ImageIcon(new ImageIcon(board[0][1 + (i-9)*2].getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+					extraPiece = tempExtraPiece;
+					
+					extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+							.getImage().getScaledInstance(92, 92, 0)));
+					
+				}	
+	
 				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 						.getImage().getScaledInstance(92, 92, 0)));
+				
+				canClick = false;
 				
 			}
 			
-			// move movable rows leftwards
-			else if(event.getSource().equals(tileButtons.get(i)) && i >= 3 && i <= 5) {
-				
-				Tile tempExtraPiece = board[0][1 + (i-3)*2];
-				
-				for(int j = 0; j < board.length-1; j++) {
-					
-					board[j][1 + (i-3)*2] = board[j+1][1 + (i-3)*2];
-					
-					boardIcons[j][1 + (i-3)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (i-3)*2].getFilePath())
-							.getImage().getScaledInstance(92, 92, 0)));
-					
-				}
-				
-				board[board.length-1][1 + (i-3)*2] = extraPiece;
-				boardIcons[board.length-1][1 + (i-3)*2].setIcon(new ImageIcon(new ImageIcon(board[board.length-1][1 + (i-3)*2].getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
-				
-				extraPiece = tempExtraPiece;
-				
-				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
-				
-			}	
-			
-			// move the movable columns upwards
-			else if(event.getSource().equals(tileButtons.get(i)) && i >= 6 && i <= 8) {
-				
-				Tile tempExtraPiece = board[1 + (i-6)*2][0];
-				
-				for(int j = 0; j < board.length - 1; j++) {
-					
-					board[1 + (i-6)*2][j] = board[1 + (i-6)*2][j+1];
-					
-					boardIcons[1 + (i-6)*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + (i-6)*2][j].getFilePath())
-							.getImage().getScaledInstance(92, 92, 0)));
-					
-				}
-				
-				board[1 + (i-6)*2][board.length-1] = extraPiece;
-				boardIcons[1 + (i-6)*2][board.length-1].setIcon(new ImageIcon(new ImageIcon(board[1 + (i-6)*2][board.length-1].getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
-				
-				extraPiece = tempExtraPiece;
-				
-				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
-				
-			}
-			
-			// move movable rows rightwards
-			else if(event.getSource().equals(tileButtons.get(i)) && i >= 9 && i <= 11) {
-				
-				Tile tempExtraPiece = board[board.length - 1][1 + (i-9)*2];
-				
-				for(int j = board.length - 1; j > 0; j--) {
-					
-					board[j][1 + (i-9)*2] = board[j-1][1 + (i-9)*2];
-					
-					boardIcons[j][1 + (i-9)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (i-9)*2].getFilePath())
-							.getImage().getScaledInstance(92, 92, 0)));
-					
-				}
-				
-				board[0][1 + (i-9)*2] = extraPiece;
-				boardIcons[0][1 + (i-9)*2].setIcon(new ImageIcon(new ImageIcon(board[0][1 + (i-9)*2].getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
-				
-				extraPiece = tempExtraPiece;
-				
-				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-						.getImage().getScaledInstance(92, 92, 0)));
-				
-			}	
-
-			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
-
 		}
+
+	}
+	
+	private void shiftPlayer(Player player, int playerID, int direction) {
+		
+		if(direction == 1) {
+			
+			player.setY(player.getY() + 1);
+			
+			if(player.getY() >= BOARD_SIZE) {
+				
+				player.setY(0);
+				
+			} 
+			
+		} else if(direction == 2) {
+			
+			player.setX(player.getX() - 1);
+			
+			if(player.getX() < 0) {
+				
+				player.setX(BOARD_SIZE-1);
+				
+			} 
+			
+		} else if(direction == 3) {
+			
+			player.setY(player.getY() - 1);
+			
+			if(player.getY() < 0) {
+				
+				player.setY(BOARD_SIZE-1);
+				
+			} 
+			
+		} else if(direction == 4) {
+			
+			player.setX(player.getX() + 1);
+			
+			if(player.getX() >= BOARD_SIZE) {
+				
+				player.setX(0);
+				
+			} 
+			
+		}
+		
+		playerIcons[playerID].setBounds(75 + playerIcons[playerID].getIcon().getIconWidth()*
+				players[playerID].getX(), 75 + playerIcons[playerID].getIcon().getIconHeight()*players[playerID].getY(), 
+				playerIcons[playerID].getIcon().getIconWidth(), playerIcons[playerID].getIcon().getIconHeight());
 
 	}
 
@@ -556,9 +648,8 @@ public class GameState extends State implements KeyListener, Mover {
 
 		else if(key.getKeyCode() == KeyEvent.VK_ENTER) {
 			
-			// default player color
-			Color playerColor = Color.red; 
-
+			canClick = true;
+			
 			if(currentPlayer == 3) {
 
 				currentPlayer = 0;
@@ -567,25 +658,10 @@ public class GameState extends State implements KeyListener, Mover {
 
 				currentPlayer++;
 
-				if(currentPlayer == 1) {
-
-					playerColor = Color.blue;
-
-				} else if(currentPlayer == 2) {
-
-					playerColor = Color.YELLOW;
-
-				} else if(currentPlayer == 3) {
-
-					playerColor = Color.green;
-
-				}
-
 			}
 
 			currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
-			currentTurn.setForeground(playerColor);
-
+			currentTurn.setForeground(players[currentPlayer].getColorID());
 			
 		} else if(key.getKeyCode() == KeyEvent.VK_R) {
 			
