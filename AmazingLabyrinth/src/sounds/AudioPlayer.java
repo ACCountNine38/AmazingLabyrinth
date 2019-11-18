@@ -14,9 +14,10 @@ import javax.sound.sampled.Clip;
 public class AudioPlayer {
 
 	// Variable for the music, stored as a clip
-	static Clip clip;
-	static AudioInputStream audioInput;
-	static boolean mute;
+	private static Clip clip;
+	private static AudioInputStream audioInput;
+	
+	public static boolean mute;
 
 	// Methods that create/play the music, takes in the location of the music
 	public static void playAudio(String audioLocation) {
