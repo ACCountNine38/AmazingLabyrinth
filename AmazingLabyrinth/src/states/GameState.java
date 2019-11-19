@@ -56,7 +56,7 @@ public class GameState extends State implements KeyListener, Mover {
 	private JLabel Player2Label;
 	private JLabel Player3Label;
 	private JLabel Player4Label;
-		
+	
 	private Tile extraPiece;
 	private int currentPlayer;
 	private int playerMoveAmount;
