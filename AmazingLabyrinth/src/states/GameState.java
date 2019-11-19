@@ -1274,7 +1274,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 17){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 15) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1282,7 +1288,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 17){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 15) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1290,7 +1302,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 17){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 15) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1298,7 +1316,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 17){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 15) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1307,7 +1331,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 13){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 4) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1315,7 +1345,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 13){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 4) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1323,7 +1359,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 13){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 4) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1331,7 +1373,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 13){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 4) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1340,7 +1388,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 14){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 13) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1348,7 +1402,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 14){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 13) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1356,7 +1416,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 14){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 13) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1364,7 +1430,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 14){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 13) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1373,7 +1445,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 15){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 22) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1381,7 +1459,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 15){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 22) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1389,7 +1473,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 15){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 22) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1397,7 +1487,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 15){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 22) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1406,7 +1502,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 16){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 5) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1414,7 +1516,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 16){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 5) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1422,7 +1530,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 16){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 5) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1430,7 +1544,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 16){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 5) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1439,7 +1559,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 18){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 7) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1447,7 +1573,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 18){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 7) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1455,7 +1587,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 18){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 7) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1463,7 +1601,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 18){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 7) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1472,7 +1616,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 19){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 18) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1480,7 +1630,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 19){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 18) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1488,7 +1644,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 19){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 18) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1496,7 +1658,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 19){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 18) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1505,7 +1673,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 20){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 6) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1513,7 +1687,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 20){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 6) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1521,7 +1701,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 20){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 6) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1529,7 +1715,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 20){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 6) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1538,7 +1730,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 21){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 19) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1546,7 +1744,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 21){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 19) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1554,7 +1758,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 21){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 19) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1562,7 +1772,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 21){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 19) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1571,7 +1787,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 22){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 16) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1579,7 +1801,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 22){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 16) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1587,7 +1815,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 22){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 16) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1595,7 +1829,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 22){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 16) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1604,7 +1844,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 23){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 14) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1612,7 +1858,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 23){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 14) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1620,7 +1872,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 23){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 14) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1628,7 +1886,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 23){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 14) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1637,7 +1901,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player0X][player0Y].getItem() == 24){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 1) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1645,7 +1915,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player1X][player1Y].getItem() == 24){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 1) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1653,7 +1929,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player2X][player2Y].getItem() == 24){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 1) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1661,7 +1943,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if(board[player3X][player3Y].getItem() == 24){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 1) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1686,7 +1974,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 0 && player0Y == 2){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 17) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1694,7 +1988,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 0 && player1Y == 2){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 17) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1702,7 +2002,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 0 && player2Y == 2){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 17) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1710,7 +2016,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 0 && player3Y == 2){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 17) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1718,7 +2030,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 2 && player0Y == 0){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 3) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1726,7 +2044,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 2 && player1Y == 0){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 3) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1734,7 +2058,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 2 && player2Y == 0){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 3) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1742,7 +2072,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 2 && player3Y == 0){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 3) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1750,7 +2086,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 2 && player0Y == 2){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 0) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1758,7 +2100,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 2 && player1Y == 2){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 0) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1766,7 +2114,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 2 && player2Y == 2){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 0) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1774,7 +2128,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 2 && player3Y == 2){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 0) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1783,7 +2143,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 4 && player0Y == 0){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 12) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1791,7 +2157,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 4 && player1Y == 0){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 12) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1799,7 +2171,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 4 && player2Y == 0){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 12) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1807,7 +2185,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 4 && player3Y == 0){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 12) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1816,7 +2200,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 4 && player0Y == 2){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 9) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1824,7 +2214,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 4 && player1Y == 2){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 9) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1832,7 +2228,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 4 && player2Y == 2){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 9) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1840,7 +2242,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 4 && player3Y == 2){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 9) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1848,7 +2256,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 6 && player0Y == 2){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 23) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1856,7 +2270,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 6 && player1Y == 2){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 23) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1864,7 +2284,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 6 && player2Y == 2){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 23) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1872,7 +2298,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 6 && player3Y == 2){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 23) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1880,7 +2312,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 0 && player0Y == 4){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 2) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1888,7 +2326,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 0 && player1Y == 4){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 2) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1896,7 +2340,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 0 && player2Y == 4){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 2) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1904,7 +2354,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 0 && player3Y == 4){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 2) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1912,7 +2368,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 2 && player0Y == 4){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 21) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1920,7 +2382,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 2 && player1Y == 4){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 21) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1928,7 +2396,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 2 && player2Y == 4){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 21) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1936,7 +2410,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 2 && player3Y == 4){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 21) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1944,7 +2424,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 4 && player0Y == 4){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 8) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1952,7 +2438,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 4 && player1Y == 4){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 8) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1960,7 +2452,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 4 && player2Y == 4){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 8) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1968,7 +2466,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 4 && player3Y == 4){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 8) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1976,7 +2480,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 6 && player0Y == 4){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 11) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1984,7 +2494,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 6 && player1Y == 4){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 11) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -1992,7 +2508,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 6 && player2Y == 4){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 11) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2000,7 +2522,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 6 && player3Y == 4){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 11) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2008,7 +2536,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 2 && player0Y == 6){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 20) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2016,7 +2550,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 2 && player1Y == 6){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 20) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2024,7 +2564,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 2 && player2Y == 6){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 20) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2032,7 +2578,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 2 && player3Y == 6){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 20) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2040,7 +2592,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player0X == 4 && player0Y == 6){
 			for (int i=0; i<5; i++) {
 				if (CardNumber.get(i) == 10) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2048,7 +2606,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player1X == 4 && player1Y == 6){
 			for (int i=5; i<10; i++) {
 				if (CardNumber.get(i) == 10) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2056,7 +2620,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player2X == 4 && player2Y == 6){
 			for (int i=10; i<15; i++) {
 				if (CardNumber.get(i) == 10) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
@@ -2064,7 +2634,13 @@ public class GameState extends State implements KeyListener, Mover {
 		if (player3X == 4 && player3Y == 6){
 			for (int i=15; i<20; i++) {
 				if (CardNumber.get(i) == 10) {
+					
+					if(!CardsImage[i].getIcon().equals(iconLogo)) {
+						AudioPlayer.playAudio("audio/cardCollected.wav");
+					}
+					
 					CardsImage[i].setIcon(iconLogo);
+					
 				}
 			}
 		}
