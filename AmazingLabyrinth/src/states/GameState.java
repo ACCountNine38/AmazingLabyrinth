@@ -36,6 +36,9 @@ public class GameState extends State implements KeyListener, Mover {
 	
 	private Deck cardObeject = new Deck();
 	private ArrayList<ImageIcon> cards;
+	private ArrayList<Integer> CardNumber;
+
+	ImageIcon iconLogo = new ImageIcon("cards/CardBack.jpg");
 
 	private JPanel gamePanel;
 
@@ -56,7 +59,7 @@ public class GameState extends State implements KeyListener, Mover {
 	private JLabel Player2Label;
 	private JLabel Player3Label;
 	private JLabel Player4Label;
-		
+	
 	private Tile extraPiece;
 	private int currentPlayer;
 	private int playerMoveAmount;
@@ -66,6 +69,7 @@ public class GameState extends State implements KeyListener, Mover {
 	private String playerMoveDirection;
 
 	private ArrayList<LinkedList<String>> possiblePath;
+	private ArrayList<Player> shiftedPlayers;
 	private Queue<String> AIMoveSet;
 	
 	private Timer AITimer;
@@ -91,15 +95,18 @@ public class GameState extends State implements KeyListener, Mover {
 
 		tileButtons = new ArrayList<JButton>();
 
-		CardsImage = new JLabel[10];
+		CardsImage = new JLabel[24];
+
 		cardObeject.initializeCards();
 		cards = cardObeject.getCards();
+		CardNumber = cardObeject.getIDNumber();
 		
 		// Initializing others types
 		players = new Player[4];
 		mapBits = new ArrayList<Integer>();
 		canShift = true;
 		possiblePath = new ArrayList<LinkedList<String>>();
+		shiftedPlayers = new ArrayList<Player>();
 		AIMoveSet = new LinkedList<String>();
 				
 		AITimer = new Timer(300, this);
@@ -137,21 +144,39 @@ public class GameState extends State implements KeyListener, Mover {
 		// add panel to the frame
 		add(gamePanel);
 		
-		for(int a = 0; a < 5; a++) {
+		for(int a = 0; a <=19; a++) {
 
-			CardsImage[a] = new JLabel(cards.get(a));
-			CardsImage[a].setBounds(800+a*70, 350, 200, 100);
-			gamePanel.add(CardsImage[a]);
+			if (a<5){
+				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(92, 92, 0)));
+				CardsImage[a].setBounds(850+a*70, 300, 60, 90);
+				gamePanel.add(CardsImage[a]);
+			}
+			else{
 
-			for(int i = 5; i < 10; i++) {
-
-				CardsImage[i] = new JLabel(cards.get(i));
-				CardsImage[i].setBounds(800+a*70, 450, 200, 100);
-				gamePanel.add(CardsImage[i]);
+				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(92, 92, 0)));
+				gamePanel.add(CardsImage[a]);			
 
 			}
 
 		}
+
+		CardsImage[5].setBounds(850, 400, 60, 90);
+		CardsImage[6].setBounds(920, 400, 60, 90);
+		CardsImage[7].setBounds(990, 400, 60, 90);
+		CardsImage[8].setBounds(1060, 400, 60, 90);
+		CardsImage[9].setBounds(1130, 400, 60, 90);
+
+		CardsImage[10].setBounds(850, 500, 60, 90);
+		CardsImage[11].setBounds(920, 500, 60, 90);
+		CardsImage[12].setBounds(990, 500, 60, 90);
+		CardsImage[13].setBounds(1060, 500, 60, 90);
+		CardsImage[14].setBounds(1130, 500, 60, 90);
+
+		CardsImage[15].setBounds(850, 600, 60, 90);
+		CardsImage[16].setBounds(920, 600, 60, 90);
+		CardsImage[17].setBounds(990, 600, 60, 90);
+		CardsImage[18].setBounds(1060, 600, 60, 90);
+		CardsImage[19].setBounds(1130, 600, 60, 90);
 		
 		// label created to display the current player's turn
 		currentTurn = new JLabel("Current Turn: Player " + (currentPlayer + 1));
@@ -763,46 +788,6 @@ public class GameState extends State implements KeyListener, Mover {
 				
 				playerShiftTimer.stop();
 				
-				// if player is being shifted above the tiles, reset location to the bottom
-				if(playerIcons[currentPlayer].getY() < boardIcons[0][0].getY()) {
-					
-					playerIcons[currentPlayer].setBounds(playerIcons[currentPlayer].getX(), boardIcons[0][BOARD_SIZE-1].getY(),
-							tileIconSize, tileIconSize);
-					
-					playerIcons[currentPlayer].repaint();
-					
-				}
-				
-				// if player is being shifted below the tiles, reset location to the top
-				if(playerIcons[currentPlayer].getY() > boardIcons[0][BOARD_SIZE-1].getY()) {
-					
-					playerIcons[currentPlayer].setBounds(playerIcons[currentPlayer].getX(), boardIcons[0][0].getY(),
-							tileIconSize, tileIconSize);
-					
-					playerIcons[currentPlayer].repaint();
-					
-				}
-				
-				// if player is being shifted left of the tiles, reset location to the right
-				if(playerIcons[currentPlayer].getX() < boardIcons[0][0].getX()) {
-					
-					playerIcons[currentPlayer].setBounds(boardIcons[BOARD_SIZE-1][0].getX(), playerIcons[currentPlayer].getY(),
-							tileIconSize, tileIconSize);
-					
-					playerIcons[currentPlayer].repaint();
-					
-				}
-				
-				// if player is being shifted right of the tiles, reset location to the left
-				if(playerIcons[currentPlayer].getX() > boardIcons[BOARD_SIZE-1][0].getX()) {
-					
-					playerIcons[currentPlayer].setBounds(boardIcons[0][0].getX(), playerIcons[currentPlayer].getY(),
-							tileIconSize, tileIconSize);
-					
-					playerIcons[currentPlayer].repaint();
-					
-				}
-				
 				canClick = true;
 				
 			}
@@ -822,6 +807,14 @@ public class GameState extends State implements KeyListener, Mover {
 					
 				}
 				
+				for(Player player: shiftedPlayers) {
+					
+					playerIcons[player.getId()].setBounds(playerIcons[player.getId()].getX(), playerIcons[player.getId()].getY() + 2, tileIconSize, tileIconSize);
+
+					playerIcons[player.getId()].repaint();
+					
+				}
+				
 			} else if(shiftID <= 5) {
 
 				extraPieceLabel.setBounds(extraPieceLabel.getX() - 2, extraPieceLabel.getY(), tileIconSize, tileIconSize);
@@ -831,6 +824,13 @@ public class GameState extends State implements KeyListener, Mover {
 					boardIcons[i][(shiftID-3)*2 + 1].setBounds(boardIcons[i][(shiftID-3)*2 + 1].getX() - 2, boardIcons[i][(shiftID-3)*2 + 1].getY(), tileIconSize, tileIconSize);
 					boardIcons[i][(shiftID-3)*2 + 1].repaint();
 					extraPieceLabel.repaint();
+					
+				}
+				
+				for(Player player: shiftedPlayers) {
+					
+					playerIcons[player.getId()].setBounds(playerIcons[player.getId()].getX() - 2, playerIcons[player.getId()].getY(), tileIconSize, tileIconSize);
+					playerIcons[player.getId()].repaint();
 					
 				}
 				
@@ -846,6 +846,13 @@ public class GameState extends State implements KeyListener, Mover {
 					
 				}
 				
+				for(Player player: shiftedPlayers) {
+					
+					playerIcons[player.getId()].setBounds(playerIcons[player.getId()].getX(), playerIcons[player.getId()].getY() - 2, tileIconSize, tileIconSize);
+					playerIcons[player.getId()].repaint();
+					
+				}
+				
 			} else if(shiftID <= 11) {
 				
 				extraPieceLabel.setBounds(extraPieceLabel.getX() + 2, extraPieceLabel.getY(), tileIconSize, tileIconSize);
@@ -855,6 +862,13 @@ public class GameState extends State implements KeyListener, Mover {
 					boardIcons[i][(shiftID-9)*2 + 1].setBounds(boardIcons[i][(shiftID-9)*2 + 1].getX() + 2, boardIcons[i][(shiftID-9)*2 + 1].getY(), tileIconSize, tileIconSize);
 					boardIcons[i][(shiftID-9)*2 + 1].repaint();
 					extraPieceLabel.repaint();
+					
+				}
+				
+				for(Player player: shiftedPlayers) {
+					
+					playerIcons[player.getId()].setBounds(playerIcons[player.getId()].getX() + 2, playerIcons[player.getId()].getY(), tileIconSize, tileIconSize);
+					playerIcons[player.getId()].repaint();
 					
 				}
 				
@@ -880,6 +894,14 @@ public class GameState extends State implements KeyListener, Mover {
 
 					}
 				}
+				
+				for(Player player: shiftedPlayers) {
+					
+					playerShiftValidation(player.getId());
+					
+				}
+				
+				shiftedPlayers.clear();
 				
 				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
@@ -909,6 +931,50 @@ public class GameState extends State implements KeyListener, Mover {
 			
 		}
 
+	}
+	
+	private void playerShiftValidation(int id) {
+		
+		// if player is being shifted above the tiles, reset location to the bottom
+		if(playerIcons[id].getY() < boardIcons[0][0].getY()) {
+			
+			playerIcons[id].setBounds(playerIcons[id].getX(), boardIcons[0][BOARD_SIZE-1].getY(),
+					tileIconSize, tileIconSize);
+			
+			playerIcons[id].repaint();
+			
+		}
+		
+		// if player is being shifted below the tiles, reset location to the top
+		if(playerIcons[id].getY() > boardIcons[0][BOARD_SIZE-1].getY()) {
+			
+			playerIcons[id].setBounds(playerIcons[id].getX(), boardIcons[0][0].getY(),
+					tileIconSize, tileIconSize);
+			
+			playerIcons[id].repaint();
+			
+		}
+		
+		// if player is being shifted left of the tiles, reset location to the right
+		if(playerIcons[id].getX() < boardIcons[0][0].getX()) {
+			
+			playerIcons[id].setBounds(boardIcons[BOARD_SIZE-1][0].getX(), playerIcons[id].getY(),
+					tileIconSize, tileIconSize);
+			
+			playerIcons[id].repaint();
+			
+		}
+		
+		// if player is being shifted right of the tiles, reset location to the left
+		if(playerIcons[id].getX() > boardIcons[BOARD_SIZE-1][0].getX()) {
+			
+			playerIcons[id].setBounds(boardIcons[0][0].getX(), playerIcons[id].getY(),
+					tileIconSize, tileIconSize);
+			
+			playerIcons[id].repaint();
+			
+		}
+		
 	}
 	
 	private void shiftButtonClick() {
@@ -1083,7 +1149,7 @@ public class GameState extends State implements KeyListener, Mover {
 	
 	private void shiftPlayer(Player player, int playerID, int direction) {
 		
-		playerShiftTimer.start();
+		shiftedPlayers.add(player);
 		
 		if(direction == 1) {
 			
@@ -1140,7 +1206,6 @@ public class GameState extends State implements KeyListener, Mover {
 	@Override
 	public void keyTyped(KeyEvent key) {
 
-
 	}
 
 	@Override
@@ -1149,25 +1214,34 @@ public class GameState extends State implements KeyListener, Mover {
 		if(key.getKeyCode() == KeyEvent.VK_W) {
 
 			updatePosition(0, -1);
-			
+			CheckCards(0, -1);
+			CheckMoveableCards(0, -1);
+
+
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_S) {
 
 			updatePosition(0, 1);
+			CheckCards(0, 1);
+			CheckMoveableCards(0, 1);
 
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_A) {
 
 			updatePosition(-1, 0);
+			CheckCards(-1, 0);
+			CheckMoveableCards(-1, 0);
 
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_D) {
 
 			updatePosition(1, 0);
-			
+			CheckCards(1, 0);
+			CheckMoveableCards(1, 0);
+
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -1182,6 +1256,821 @@ public class GameState extends State implements KeyListener, Mover {
 		
 	}
 
+	public void CheckMoveableCards(int x, int y) {
+
+		int player0X = players[0].getX();
+		int player0Y = players[0].getY();
+
+		int player1X = players[1].getX();
+		int player1Y = players[1].getY();
+
+		int player2X = players[2].getX();
+		int player2Y = players[2].getY();
+
+		int player3X = players[3].getX();
+		int player3Y = players[3].getY();
+
+		//Card for Spider
+		if(board[player0X][player0Y].getItem() == 17){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 15) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 17){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 15) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 17){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 15) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 17){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 15) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for Owl
+		if(board[player0X][player0Y].getItem() == 13){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 4) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 13){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 4) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 13){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 4) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 13){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 4) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for rat
+		if(board[player0X][player0Y].getItem() == 14){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 13) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 14){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 13) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 14){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 13) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 14){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 13) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for moth
+		if(board[player0X][player0Y].getItem() == 15){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 22) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 15){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 22) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 15){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 22) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 15){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 22) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for lizard
+		if(board[player0X][player0Y].getItem() == 16){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 5) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 16){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 5) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 16){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 5) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 16){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 5) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for Beetles
+		if(board[player0X][player0Y].getItem() == 18){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 7) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 18){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 7) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 18){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 7) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 18){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 7) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for smoke
+		if(board[player0X][player0Y].getItem() == 19){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 18) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 19){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 18) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 19){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 18) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 19){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 18) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for LadyPig
+		if(board[player0X][player0Y].getItem() == 20){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 6) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 20){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 6) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 20){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 6) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 20){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 6) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for ghost
+		if(board[player0X][player0Y].getItem() == 21){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 19) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 21){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 19) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 21){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 19) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 21){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 19) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for witch
+		if(board[player0X][player0Y].getItem() == 22){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 16) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 22){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 16) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 22){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 16) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 22){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 16) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for Bat
+		if(board[player0X][player0Y].getItem() == 23){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 14) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 23){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 14) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 23){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 14) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 23){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 14) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		//Card for Dargon
+		if(board[player0X][player0Y].getItem() == 24){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 1) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player1X][player1Y].getItem() == 24){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 1) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player2X][player2Y].getItem() == 24){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 1) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+		if(board[player3X][player3Y].getItem() == 24){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 1) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		
+	}
+
+	public void CheckCards(int x, int y) {
+
+		int player0X = players[0].getX();
+		int player0Y = players[0].getY();
+
+		int player1X = players[1].getX();
+		int player1Y = players[1].getY();
+
+		int player2X = players[2].getX();
+		int player2Y = players[2].getY();
+
+		int player3X = players[3].getX();
+		int player3Y = players[3].getY();
+
+		//card for map	
+		if (player0X == 0 && player0Y == 2){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 17) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 0 && player1Y == 2){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 17) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 0 && player2Y == 2){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 17) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 0 && player3Y == 2){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 17) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//Card for book
+		if (player0X == 2 && player0Y == 0){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 3) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 2 && player1Y == 0){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 3) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 2 && player2Y == 0){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 3) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 2 && player3Y == 0){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 3) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for crown
+		if (player0X == 2 && player0Y == 2){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 0) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 2 && player1Y == 2){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 0) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 2 && player2Y == 2){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 0) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 2 && player3Y == 2){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 0) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		//card for Bag of Coins	
+		if (player0X == 4 && player0Y == 0){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 12) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 4 && player1Y == 0){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 12) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 4 && player2Y == 0){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 12) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 4 && player3Y == 0){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 12) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		//card for Keys
+		if (player0X == 4 && player0Y == 2){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 9) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 4 && player1Y == 2){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 9) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 4 && player2Y == 2){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 9) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 4 && player3Y == 2){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 9) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for Skull
+		if (player0X == 6 && player0Y == 2){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 23) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 6 && player1Y == 2){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 23) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 6 && player2Y == 2){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 23) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 6 && player3Y == 2){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 23) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for Ring
+		if (player0X == 0 && player0Y == 4){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 2) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 0 && player1Y == 4){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 2) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 0 && player2Y == 4){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 2) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 0 && player3Y == 4){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 2) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for Side way box
+		if (player0X == 2 && player0Y == 4){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 21) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 2 && player1Y == 4){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 21) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 2 && player2Y == 4){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 21) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 2 && player3Y == 4){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 21) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for Green Gem
+		if (player0X == 4 && player0Y == 4){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 8) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 4 && player1Y == 4){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 8) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 4 && player2Y == 4){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 8) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 4 && player3Y == 4){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 8) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for Green Sword
+		if (player0X == 6 && player0Y == 4){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 11) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 6 && player1Y == 4){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 11) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 6 && player2Y == 4){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 11) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 6 && player3Y == 4){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 11) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for Candle
+		if (player0X == 2 && player0Y == 6){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 20) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 2 && player1Y == 6){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 20) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 2 && player2Y == 6){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 20) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 2 && player3Y == 6){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 20) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+		//card for 11.png
+		if (player0X == 4 && player0Y == 6){
+			for (int i=0; i<5; i++) {
+				if (CardNumber.get(i) == 10) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player1X == 4 && player1Y == 6){
+			for (int i=5; i<10; i++) {
+				if (CardNumber.get(i) == 10) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player2X == 4 && player2Y == 6){
+			for (int i=10; i<15; i++) {
+				if (CardNumber.get(i) == 10) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+		if (player3X == 4 && player3Y == 6){
+			for (int i=15; i<20; i++) {
+				if (CardNumber.get(i) == 10) {
+					CardsImage[i].setIcon(iconLogo);
+				}
+			}
+		}
+
+	}
+
 	@Override
 	public void keyReleased(KeyEvent key) {
 
@@ -1189,3 +2078,4 @@ public class GameState extends State implements KeyListener, Mover {
 	}
 
 }
+
