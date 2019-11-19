@@ -4,18 +4,22 @@ public class Tile {
 
 	private int id, item;
 	private String filePath;
-	private boolean up, down, left, right, canMove;
+	private boolean up, down, left, right;
 	
-	public Tile(int id, int item, boolean canMove) {
+	public Tile(int id, int item) {
 		
 		this.item = item;
-		this.canMove = canMove;
 		
 		setId(id);
 		
 	}
 	
 	public void rotateTile() {
+		
+		up = false;
+		down = false;
+		left = false;
+		right = false;
 		
 		if(getId() == 0)
 			setId(1);
@@ -134,7 +138,55 @@ public class Tile {
 		
 		if(item != 0) {
 			
-			if(item == 13) {
+			if(item == 1) {
+				
+				filePath = "images/BookWithClasp0.png";
+				
+			} else if(item == 2) {
+				
+				filePath = "images/BagOfCoins0.png";
+				
+			} else if(item == 3) {
+				
+				filePath = "images/TreasureMap3.png";
+				
+			} else if(item == 4) {
+				
+				filePath = "images/GoldCrown3.png";
+				
+			} else if(item == 5) {
+				
+				filePath = "images/SetOfKeys0.png";
+				
+			} else if(item == 6) {
+				
+				filePath = "images/Skull1.png";
+				
+			} else if(item == 7) {
+				
+				filePath = "images/GoldRing3.png";
+				
+			} else if(item == 8) {
+				
+				filePath = "images/TreasureChest2.png";
+				
+			} else if(item == 9) {
+				
+				filePath = "images/Jewel1.png";
+				
+			} else if(item == 10) {
+				
+				filePath = "images/Sword1.png";
+				
+			} else if(item == 11) {
+				
+				filePath = "images/GoldMenorah2.png";
+				
+			} else if(item == 12) {
+				
+				filePath = "images/Helmet2.png";
+				
+			} else if(item == 13) {
 				
 				filePath = "images/Owl" + (id-2) + ".png";
 				
@@ -182,7 +234,23 @@ public class Tile {
 				
 				filePath = "images/Dragon" + (id-6) + ".png";
 				
-			} 
+			} else if(item == 25) {
+				
+				filePath = "images/RedL1.png";
+				
+			} else if(item == 26) {
+				
+				filePath = "images/YellowL2.png";
+				
+			} else if(item == 27) {
+				
+				filePath = "images/GreenL0.png";
+				
+			} else if(item == 28) {
+				
+				filePath = "images/BlueL3.png";
+				
+			}
 			
 		}
 		
@@ -234,14 +302,6 @@ public class Tile {
 
 	public void setItem(int item) {
 		this.item = item;
-	}
-
-	public boolean isCanMove() {
-		return canMove;
-	}
-
-	public void setCanMove(boolean canMove) {
-		this.canMove = canMove;
 	}
 
 }
