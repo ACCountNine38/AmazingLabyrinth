@@ -59,13 +59,18 @@ public class GameState extends State implements KeyListener, Mover {
 		
 	private Tile extraPiece;
 	private int currentPlayer;
-	private boolean canShift;
+	private int playerMoveAmount;
+	private int tileMoveAmount;
+	private int shiftID;
+	private boolean canShift, canClick;
+	private String playerMoveDirection;
 
 	private ArrayList<LinkedList<String>> possiblePath;
 	private Queue<String> AIMoveSet;
 	
 	private Timer AITimer;
 	private Timer playerShiftTimer;
+	private Timer tileShiftTimer;
 
 	@Override
 	public void init() {
@@ -98,7 +103,10 @@ public class GameState extends State implements KeyListener, Mover {
 		AIMoveSet = new LinkedList<String>();
 				
 		AITimer = new Timer(300, this);
-		playerShiftTimer = new Timer(100, this);
+		playerShiftTimer = new Timer(1, this);
+		tileShiftTimer = new Timer(1, this);
+		
+		canClick = true;
 
 		addKeyListener(this);
 
@@ -578,6 +586,12 @@ public class GameState extends State implements KeyListener, Mover {
 	@Override
 	public void updatePosition(int x, int y) {
 
+		if(!canClick) {
+			
+			return;
+			
+		}
+		
 		int moveX = players[currentPlayer].getX() + x;
 		int moveY = players[currentPlayer].getY() + y;
 		
@@ -586,6 +600,14 @@ public class GameState extends State implements KeyListener, Mover {
 
 			players[currentPlayer].setX(moveX);
 			
+			if(x > 0)
+				playerMoveDirection = "right";
+			else
+				playerMoveDirection = "left";
+			
+			playerMoveAmount = tileIconSize;
+			playerShiftTimer.start();
+
 			AudioPlayer.playAudio("audio/move.wav");
 			
 		}
@@ -595,14 +617,17 @@ public class GameState extends State implements KeyListener, Mover {
 
 			players[currentPlayer].setY(moveY);
 			
+			if(y > 0)
+				playerMoveDirection = "down";
+			else
+				playerMoveDirection = "up";
+			
+			playerMoveAmount = tileIconSize;
+			playerShiftTimer.start();
+			
 			AudioPlayer.playAudio("audio/move.wav");
 
 		}
-
-
-		playerIcons[currentPlayer].setBounds(tileIconSize + playerIcons[currentPlayer].getIcon().getIconWidth()*
-				players[currentPlayer].getX(), tileIconSize + playerIcons[currentPlayer].getIcon().getIconHeight()*players[currentPlayer].getY(), 
-				playerIcons[currentPlayer].getIcon().getIconWidth(), playerIcons[currentPlayer].getIcon().getIconHeight());
 
 	}
 
@@ -659,11 +684,17 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		if (event.getSource() == AITimer) {
 			
+			if(!canClick) {
+				
+				return;
+				
+			}
+			
 			if(canShift) {
 					
-				int buttonIndex = (int)(Math.random()*12);
+				shiftID = (int)(Math.random()*12);
 				
-				shiftButtonClick(buttonIndex);
+				shiftButtonClick();
 				
 				return;
 				
@@ -697,9 +728,170 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 			
-		}
-		
-		else if(event.getSource().equals(rotatePieceButton)) {
+		} else if (event.getSource() == playerShiftTimer) {
+			
+			canClick = false;
+			
+			if(playerMoveDirection.equals("up")) {
+				
+				playerIcons[currentPlayer].setBounds(
+						playerIcons[currentPlayer].getX(), playerIcons[currentPlayer].getY() - 2, tileIconSize, tileIconSize);
+				
+				
+			} else if(playerMoveDirection.equals("down")) {
+				
+				playerIcons[currentPlayer].setBounds(
+						playerIcons[currentPlayer].getX(), playerIcons[currentPlayer].getY() + 2, tileIconSize, tileIconSize);
+				
+			} else if(playerMoveDirection.equals("left")) {
+				
+				playerIcons[currentPlayer].setBounds(
+						playerIcons[currentPlayer].getX() - 2, playerIcons[currentPlayer].getY(), tileIconSize, tileIconSize);
+				
+			} else if(playerMoveDirection.equals("right")) {
+				
+				playerIcons[currentPlayer].setBounds(
+						playerIcons[currentPlayer].getX() + 2, playerIcons[currentPlayer].getY(), tileIconSize, tileIconSize);
+				
+			}
+			
+			playerMoveAmount -= 2;
+			
+			playerIcons[currentPlayer].repaint();
+			
+			if(playerMoveAmount == 0) {
+				
+				playerShiftTimer.stop();
+				
+				// if player is being shifted above the tiles, reset location to the bottom
+				if(playerIcons[currentPlayer].getY() < boardIcons[0][0].getY()) {
+					
+					playerIcons[currentPlayer].setBounds(playerIcons[currentPlayer].getX(), boardIcons[0][BOARD_SIZE-1].getY(),
+							tileIconSize, tileIconSize);
+					
+					playerIcons[currentPlayer].repaint();
+					
+				}
+				
+				// if player is being shifted below the tiles, reset location to the top
+				if(playerIcons[currentPlayer].getY() > boardIcons[0][BOARD_SIZE-1].getY()) {
+					
+					playerIcons[currentPlayer].setBounds(playerIcons[currentPlayer].getX(), boardIcons[0][0].getY(),
+							tileIconSize, tileIconSize);
+					
+					playerIcons[currentPlayer].repaint();
+					
+				}
+				
+				// if player is being shifted left of the tiles, reset location to the right
+				if(playerIcons[currentPlayer].getX() < boardIcons[0][0].getX()) {
+					
+					playerIcons[currentPlayer].setBounds(boardIcons[BOARD_SIZE-1][0].getX(), playerIcons[currentPlayer].getY(),
+							tileIconSize, tileIconSize);
+					
+					playerIcons[currentPlayer].repaint();
+					
+				}
+				
+				// if player is being shifted right of the tiles, reset location to the left
+				if(playerIcons[currentPlayer].getX() > boardIcons[BOARD_SIZE-1][0].getX()) {
+					
+					playerIcons[currentPlayer].setBounds(boardIcons[0][0].getX(), playerIcons[currentPlayer].getY(),
+							tileIconSize, tileIconSize);
+					
+					playerIcons[currentPlayer].repaint();
+					
+				}
+				
+				canClick = true;
+				
+			}
+			
+		} else if(event.getSource() == tileShiftTimer) {
+			
+			canClick = false;
+			
+			if(shiftID <= 2) {
+
+				extraPieceLabel.setBounds(extraPieceLabel.getX(), extraPieceLabel.getY() + 2, tileIconSize, tileIconSize);
+				
+				for(int i = 0; i < BOARD_SIZE; i++) {
+					
+					boardIcons[shiftID*2 + 1][i].setBounds(boardIcons[shiftID*2 + 1][i].getX(), boardIcons[shiftID*2 + 1][i].getY() + 2, tileIconSize, tileIconSize);
+					boardIcons[shiftID*2 + 1][i].repaint();
+					
+				}
+				
+			} else if(shiftID <= 5) {
+
+				extraPieceLabel.setBounds(extraPieceLabel.getX() - 2, extraPieceLabel.getY(), tileIconSize, tileIconSize);
+				
+				for(int i = 0; i < BOARD_SIZE; i++) {
+					
+					boardIcons[i][(shiftID-3)*2 + 1].setBounds(boardIcons[i][(shiftID-3)*2 + 1].getX() - 2, boardIcons[i][(shiftID-3)*2 + 1].getY(), tileIconSize, tileIconSize);
+					boardIcons[i][(shiftID-3)*2 + 1].repaint();
+					extraPieceLabel.repaint();
+					
+				}
+				
+			} else if(shiftID <= 8) {
+				
+				extraPieceLabel.setBounds(extraPieceLabel.getX(), extraPieceLabel.getY() - 2, tileIconSize, tileIconSize);
+				
+				for(int i = 0; i < BOARD_SIZE; i++) {
+					
+					boardIcons[(shiftID-6)*2 + 1][i].setBounds(boardIcons[(shiftID-6)*2 + 1][i].getX(), boardIcons[(shiftID-6)*2 + 1][i].getY() - 2, tileIconSize, tileIconSize);
+					boardIcons[(shiftID-6)*2 + 1][i].repaint();
+					extraPieceLabel.repaint();
+					
+				}
+				
+			} else if(shiftID <= 11) {
+				
+				extraPieceLabel.setBounds(extraPieceLabel.getX() + 2, extraPieceLabel.getY(), tileIconSize, tileIconSize);
+				
+				for(int i = 0; i < BOARD_SIZE; i++) {
+					
+					boardIcons[i][(shiftID-9)*2 + 1].setBounds(boardIcons[i][(shiftID-9)*2 + 1].getX() + 2, boardIcons[i][(shiftID-9)*2 + 1].getY(), tileIconSize, tileIconSize);
+					boardIcons[i][(shiftID-9)*2 + 1].repaint();
+					extraPieceLabel.repaint();
+					
+				}
+				
+			}
+			
+			tileMoveAmount -= 2;
+			
+			if(tileMoveAmount == 0) {
+				
+				tileShiftTimer.stop();
+				
+				// regenerate all game tiles to its original position
+				for(int i = 0; i < BOARD_SIZE; i++) {
+					for(int j = 0; j < BOARD_SIZE; j++) {
+						
+						boardIcons[i][j].setIcon(new ImageIcon(new ImageIcon(board[i][j].getFilePath())
+								.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+						
+						boardIcons[i][j].setBounds(scaledOrginX + tileIconSize + tileIconSize*i, 
+								scaledOrginY + tileIconSize + tileIconSize*j, tileIconSize, tileIconSize);
+						
+						boardIcons[i][j].repaint();
+
+					}
+				}
+				
+				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+				
+				extraPieceLabel.setBounds(850, 200, tileIconSize, tileIconSize);
+				extraPieceLabel.repaint();
+				
+				canClick = true;
+				
+			}
+			
+		} else if(event.getSource().equals(rotatePieceButton)) {
 			
 			rotateExtraTile();
 			
@@ -709,7 +901,9 @@ public class GameState extends State implements KeyListener, Mover {
 			
 			if(canShift && event.getSource().equals(tileButtons.get(button))) {
 				
-				shiftButtonClick(button);
+				shiftID = button;
+				
+				shiftButtonClick();
 				
 			}
 			
@@ -717,25 +911,28 @@ public class GameState extends State implements KeyListener, Mover {
 
 	}
 	
-	private void shiftButtonClick(int button) {
+	private void shiftButtonClick() {
 		
 		// move the movable columns downwards
-		if(button >= 0 && button <= 2) {
+		if(shiftID >= 0 && shiftID <= 2) {
 			
-			Tile tempExtraPiece = board[1 + button*2][BOARD_SIZE-1];
+			Tile tempExtraPiece = board[1 + shiftID*2][BOARD_SIZE-1];
 			
 			for(int j = BOARD_SIZE - 1; j > 0; j--) {
 				
-				board[1 + button*2][j] = board[1 + button*2][j-1];
+				board[1 + shiftID*2][j] = board[1 + shiftID*2][j-1];
 				
-				boardIcons[1 + button*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + button*2][j].getFilePath())
+				boardIcons[1 + shiftID*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + shiftID*2][j].getFilePath())
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}
 			
+			extraPieceLabel.setBounds(boardIcons[1 + shiftID*2][0].getX(), 
+					boardIcons[1 + shiftID*2][0].getY() - tileIconSize, tileIconSize, tileIconSize);
+			
 			for(int index = 0; index < players.length; index++) {
 				
-				if(players[index].getX() == 1 + button*2) {
+				if(players[index].getX() == 1 + shiftID*2) {
 					
 					shiftPlayer(players[index], index, 1);
 					
@@ -743,34 +940,32 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 			
-			board[1 + button*2][0] = extraPiece;
-			boardIcons[1 + button*2][0].setIcon(new ImageIcon(new ImageIcon(board[1 + button*2][0].getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
+			board[1 + shiftID*2][0] = extraPiece;
 			
 			extraPiece = tempExtraPiece;
-			
-			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
 			
 		}
 		
 		// move movable rows leftwards
-		else if(button >= 3 && button <= 5) {
+		else if(shiftID >= 3 && shiftID <= 5) {
 			
-			Tile tempExtraPiece = board[0][1 + (button-3)*2];
+			Tile tempExtraPiece = board[0][1 + (shiftID-3)*2];
 			
 			for(int j = 0; j < BOARD_SIZE-1; j++) {
 				
-				board[j][1 + (button-3)*2] = board[j+1][1 + (button-3)*2];
+				board[j][1 + (shiftID-3)*2] = board[j+1][1 + (shiftID-3)*2];
 				
-				boardIcons[j][1 + (button-3)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (button-3)*2].getFilePath())
+				boardIcons[j][1 + (shiftID-3)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (shiftID-3)*2].getFilePath())
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}
 			
+			extraPieceLabel.setBounds(boardIcons[boardIcons.length - 1][1 + (shiftID-3)*2].getX() + tileIconSize, 
+					boardIcons[boardIcons.length - 1][1 + (shiftID-3)*2].getY(), tileIconSize, tileIconSize);
+			
 			for(int index = 0; index < players.length; index++) {
 				
-				if(players[index].getY() == 1 + (button-3)*2) {
+				if(players[index].getY() == 1 + (shiftID-3)*2) {
 					
 					shiftPlayer(players[index], index, 2);
 					
@@ -778,34 +973,32 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 			
-			board[BOARD_SIZE-1][1 + (button-3)*2] = extraPiece;
-			boardIcons[BOARD_SIZE-1][1 + (button-3)*2].setIcon(new ImageIcon(new ImageIcon(board[BOARD_SIZE-1][1 + (button-3)*2].getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
+			board[BOARD_SIZE-1][1 + (shiftID-3)*2] = extraPiece;
 			
 			extraPiece = tempExtraPiece;
-			
-			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
 			
 		}	
 		
 		// move the movable columns upwards
-		else if(button >= 6 && button <= 8) {
+		else if(shiftID >= 6 && shiftID <= 8) {
 			
-			Tile tempExtraPiece = board[1 + (button-6)*2][0];
+			Tile tempExtraPiece = board[1 + (shiftID-6)*2][0];
 			
 			for(int j = 0; j < BOARD_SIZE - 1; j++) {
 				
-				board[1 + (button-6)*2][j] = board[1 + (button-6)*2][j+1];
+				board[1 + (shiftID-6)*2][j] = board[1 + (shiftID-6)*2][j+1];
 				
-				boardIcons[1 + (button-6)*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + (button-6)*2][j].getFilePath())
+				boardIcons[1 + (shiftID-6)*2][j].setIcon(new ImageIcon(new ImageIcon(board[1 + (shiftID-6)*2][j].getFilePath())
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}
 			
+			extraPieceLabel.setBounds(boardIcons[1 + (shiftID-6)*2][boardIcons.length - 1].getX(), 
+					boardIcons[1 + (shiftID-6)*2][boardIcons.length - 1].getY() + tileIconSize, tileIconSize, tileIconSize);
+			
 			for(int index = 0; index < players.length; index++) {
 				
-				if(players[index].getX() == 1 + (button-6)*2) {
+				if(players[index].getX() == 1 + (shiftID-6)*2) {
 					
 					shiftPlayer(players[index], index, 3);
 					
@@ -813,34 +1006,32 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 			
-			board[1 + (button-6)*2][BOARD_SIZE-1] = extraPiece;
-			boardIcons[1 + (button-6)*2][BOARD_SIZE-1].setIcon(new ImageIcon(new ImageIcon(board[1 + (button-6)*2][BOARD_SIZE-1].getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
+			board[1 + (shiftID-6)*2][BOARD_SIZE-1] = extraPiece;
 			
 			extraPiece = tempExtraPiece;
-			
-			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
 			
 		}
 		
 		// move movable rows rightwards
-		else if(button >= 9 && button <= 11) {
+		else if(shiftID >= 9 && shiftID <= 11) {
 			
-			Tile tempExtraPiece = board[BOARD_SIZE - 1][1 + (button-9)*2];
+			Tile tempExtraPiece = board[BOARD_SIZE - 1][1 + (shiftID-9)*2];
 			
 			for(int j = BOARD_SIZE - 1; j > 0; j--) {
 				
-				board[j][1 + (button-9)*2] = board[j-1][1 + (button-9)*2];
+				board[j][1 + (shiftID-9)*2] = board[j-1][1 + (shiftID-9)*2];
 				
-				boardIcons[j][1 + (button-9)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (button-9)*2].getFilePath())
+				boardIcons[j][1 + (shiftID-9)*2].setIcon(new ImageIcon(new ImageIcon(board[j][1 + (shiftID-9)*2].getFilePath())
 						.getImage().getScaledInstance(92, 92, 0)));
 				
 			}
 			
+			extraPieceLabel.setBounds(boardIcons[0][1 + (shiftID-9)*2].getX() - tileIconSize, 
+					boardIcons[0][1 + (shiftID-9)*2].getY(), tileIconSize, tileIconSize);
+			
 			for(int index = 0; index < players.length; index++) {
 				
-				if(players[index].getY() == 1 + (button-9)*2) {
+				if(players[index].getY() == 1 + (shiftID-9)*2) {
 					
 					shiftPlayer(players[index], index, 4);
 					
@@ -848,19 +1039,13 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 			
-			board[0][1 + (button-9)*2] = extraPiece;
-			boardIcons[0][1 + (button-9)*2].setIcon(new ImageIcon(new ImageIcon(board[0][1 + (button-9)*2].getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
+			board[0][1 + (shiftID-9)*2] = extraPiece;
 			
 			extraPiece = tempExtraPiece;
 			
-			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-					.getImage().getScaledInstance(92, 92, 0)));
-			
 		}	
 
-		extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-				.getImage().getScaledInstance(92, 92, 0)));
+		tileMoveAmount = tileIconSize;
 		
 		canShift = false;
 		
@@ -888,6 +1073,9 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		possiblePath.clear();
 		
+		playerMoveAmount = tileIconSize;
+		tileShiftTimer.start();
+		
 		AudioPlayer.playAudio("audio/buttonSlide.wav");
 		
 		
@@ -895,7 +1083,11 @@ public class GameState extends State implements KeyListener, Mover {
 	
 	private void shiftPlayer(Player player, int playerID, int direction) {
 		
+		playerShiftTimer.start();
+		
 		if(direction == 1) {
+			
+			playerMoveDirection = "down";
 			
 			player.setY(player.getY() + 1);
 			
@@ -907,6 +1099,8 @@ public class GameState extends State implements KeyListener, Mover {
 			
 		} else if(direction == 2) {
 			
+			playerMoveDirection = "left";
+			
 			player.setX(player.getX() - 1);
 			
 			if(player.getX() < 0) {
@@ -916,6 +1110,8 @@ public class GameState extends State implements KeyListener, Mover {
 			} 
 			
 		} else if(direction == 3) {
+			
+			playerMoveDirection = "up";
 			
 			player.setY(player.getY() - 1);
 			
@@ -927,6 +1123,8 @@ public class GameState extends State implements KeyListener, Mover {
 			
 		} else if(direction == 4) {
 			
+			playerMoveDirection = "right";
+			
 			player.setX(player.getX() + 1);
 			
 			if(player.getX() >= BOARD_SIZE) {
@@ -936,10 +1134,6 @@ public class GameState extends State implements KeyListener, Mover {
 			} 
 			
 		}
-		
-		playerIcons[playerID].setBounds(tileIconSize + playerIcons[playerID].getIcon().getIconWidth()*
-				players[playerID].getX(), tileIconSize + playerIcons[playerID].getIcon().getIconHeight()*players[playerID].getY(), 
-				playerIcons[playerID].getIcon().getIconWidth(), playerIcons[playerID].getIcon().getIconHeight());
 
 	}
 
@@ -973,7 +1167,7 @@ public class GameState extends State implements KeyListener, Mover {
 		else if(key.getKeyCode() == KeyEvent.VK_D) {
 
 			updatePosition(1, 0);
-
+			
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_ENTER) {
