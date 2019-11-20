@@ -1495,7 +1495,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-<<<<<<< HEAD
 		
 	}
 
