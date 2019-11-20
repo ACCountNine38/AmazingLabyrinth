@@ -7,25 +7,25 @@ import javax.swing.ImageIcon;
 import java.io.File;
 
 public class Deck {
-	
+
 	private static ArrayList<ImageIcon> cards = new ArrayList<ImageIcon>();
 	private static ArrayList<Integer> IDNumber = new ArrayList<Integer>();
 
 	public static void initializID() {
-		
+
 		for (int i=0; i< 24; i++) {
 			IDNumber.add(i);
 		}
-		
+
 	}
 
 	public static void initializeCards() {
-				
+
 		initializID();	
 		Collections.shuffle(IDNumber);
 
 		for (int i=0; i<24; i++) {
-			
+
 			if (IDNumber.get(i) == 0) {
 				cards.add(i, new ImageIcon("cards/4.png"));
 			}
@@ -99,31 +99,27 @@ public class Deck {
 			else if(IDNumber.get(i) == 23) {
 				cards.add(i, new ImageIcon("cards/2.png"));
 			}
-				
+
 		}
-		
-//		for (int i=1; i<=24; i++) {
-//
-//			cards.add(new ImageIcon("cards/" + i +".png"));
-//
-//		}
+
 
 	}
-	
-	
+
+
 	public static ArrayList<ImageIcon> getCards() {
-		
+
 		return cards;
-		
+
 	}
 
 	public static void setCards(ArrayList<ImageIcon> cards) {
 		Deck.cards = cards;
 	}
-	
+
 	public static ArrayList<Integer> getIDNumber() {
 		return IDNumber;
 	}
+
 
 	public static void setIDNumber(ArrayList<Integer> iDNumber) {
 		IDNumber = iDNumber;

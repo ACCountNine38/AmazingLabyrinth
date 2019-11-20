@@ -98,6 +98,4 @@ public class Player {
 	public void setAI(boolean aI) {
 		AI = aI;
 	}
-
 }
-
