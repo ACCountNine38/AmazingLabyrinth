@@ -23,6 +23,7 @@ import objects.Point;
 import objects.Tile;
 import sounds.AudioPlayer;
 import sounds.MusicPlayer;
+import utility.PathTrackingButton;
 
 /*
  * The game state holds all functions and properties of the actual game of Amazing Labyrinth
@@ -51,9 +52,10 @@ public class GameState extends State implements KeyListener, Mover {
 	private Player players[];
 	private ArrayList<Integer> mapBits;
 	private JLabel extraPieceLabel;
+	private JLabel boardBoarder;
 	private JButton rotatePieceButton;
-	private ArrayList<JButton> tileButtons;
-	private ArrayList<JLabel> walkLines;
+	private ArrayList<JButton> tileShiftButtons;
+	private ArrayList<PathTrackingButton> potentialPathways;
 	
 	private JLabel Player1Label;
 	private JLabel Player2Label;
@@ -72,7 +74,7 @@ public class GameState extends State implements KeyListener, Mover {
 	private ArrayList<Player> shiftedPlayers;
 	private Queue<String> AIMoveSet;
 	
-	private Timer AITimer;
+	private Timer autoMoveTimer;
 	private Timer playerShiftTimer;
 	private Timer tileShiftTimer;
 
@@ -91,9 +93,9 @@ public class GameState extends State implements KeyListener, Mover {
 		boardIcons = new JLabel[BOARD_SIZE][BOARD_SIZE];
 		playerIcons = new JLabel[4];
 		extraPieceLabel = new JLabel(new ImageIcon(""));
-		walkLines = new ArrayList<JLabel>();
+		potentialPathways = new ArrayList<PathTrackingButton>();
 
-		tileButtons = new ArrayList<JButton>();
+		tileShiftButtons = new ArrayList<JButton>();
 
 		CardsImage = new JLabel[24];
 
@@ -109,7 +111,7 @@ public class GameState extends State implements KeyListener, Mover {
 		shiftedPlayers = new ArrayList<Player>();
 		AIMoveSet = new LinkedList<String>();
 				
-		AITimer = new Timer(300, this);
+		autoMoveTimer = new Timer(300, this);
 		playerShiftTimer = new Timer(1, this);
 		tileShiftTimer = new Timer(1, this);
 		
@@ -119,9 +121,6 @@ public class GameState extends State implements KeyListener, Mover {
 
 		for(int i = 0; i < 4; i++)
 			players[i] = new Player(i, false);
-		
-		players[1] = new Player(1,true);
-		players[3] = new Player(3,true);
 
 		// Method Calls
 		fillMapBits();
@@ -203,7 +202,7 @@ public class GameState extends State implements KeyListener, Mover {
 
 			}
 		}
-
+		
 		// creating the label to display the extra piece
 		extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
@@ -224,75 +223,71 @@ public class GameState extends State implements KeyListener, Mover {
 		gamePanel.add(rotatePieceButton);
 		
 		// adding all 12 shift tile buttons, assigning each tile at a location
-		for(int i = 0; i < 12; i++) {
+		/*
+		 * index 0 - 2: top buttons
+		 * index 3 - 5: right buttons
+		 * index 6 - 8: bottom buttons
+		 * index 8 - 11: left buttons
+		 */
+		for(int i = 0; i <= 2; i++) {
 			
 			// adding the current shift button to the array, assigning its index as id for later use
-			tileButtons.add(new JButton(""));
+			tileShiftButtons.add(new JButton());
 			
-			/*
-			 * index 0 - 2: top buttons
-			 * index 3 - 5: right buttons
-			 * index 6 - 8: bottom buttons
-			 * index 8 - 11: left buttons
-			 */
-			if(i == 0) {
-				
-				// positioning the buttons
-				tileButtons.get(i).setBounds(200, 50, 50, 50);
-				
-			} else if(i == 1) {
-				
-				tileButtons.get(i).setBounds(400, 50, 50, 50);
-				
-			} else if(i == 2) {
-				
-				tileButtons.get(i).setBounds(600, 50, 50, 50);
-				
-			} else if(i == 3) {
-				
-				tileButtons.get(i).setBounds(700, 200, 50, 50);
-				
-			} else if(i == 4) {
-				
-				tileButtons.get(i).setBounds(700, 400, 50, 50);
-				
-			} else if(i == 5) {
-				
-				tileButtons.get(i).setBounds(700, 600, 50, 50);
-				
-			} else if(i == 6) {
-				
-				tileButtons.get(i).setBounds(200, 700, 50, 50);
-				
-			} else if(i == 7) {
-				
-				tileButtons.get(i).setBounds(400, 700, 50, 50);
-				
-			} else if(i == 8) {
-				
-				tileButtons.get(i).setBounds(600, 700, 50, 50);
-				
-			} else if(i == 9) {
-				
-				tileButtons.get(i).setBounds(50, 200, 50, 50);
-				
-			} else if(i == 10) {
-				
-				tileButtons.get(i).setBounds(50, 400, 50, 50);
-				
-			} else if(i == 11) {
-				
-				tileButtons.get(i).setBounds(50, 600, 50, 50);
-				
-			}
-			
+			// positioning the buttons
+			tileShiftButtons.get(i).setBounds(boardIcons[1][0].getX() + tileIconSize*i*2, 
+					boardIcons[1][0].getY() - tileIconSize, tileIconSize, tileIconSize);
+						
 			// enable action listener and disable auto focus for the current button
-			tileButtons.get(i).addActionListener(this);
-			tileButtons.get(i).setFocusable(false);
-			
-			gamePanel.add(tileButtons.get(i));
-			
+			tileShiftButtons.get(i).addActionListener(this);
+			tileShiftButtons.get(i).setFocusable(false);
+			gamePanel.add(tileShiftButtons.get(i));
+						
 		}
+		
+		for(int i = 3; i <= 5; i++) {
+
+			tileShiftButtons.add(new JButton());
+			
+			tileShiftButtons.get(i).setBounds(boardIcons[BOARD_SIZE-1][0].getX() + tileIconSize, 
+					boardIcons[BOARD_SIZE-1][1].getY() + (i-3)*tileIconSize*2, tileIconSize, tileIconSize);
+			
+			tileShiftButtons.get(i).addActionListener(this);
+			tileShiftButtons.get(i).setFocusable(false);
+			gamePanel.add(tileShiftButtons.get(i));
+						
+						
+		}
+		
+		for(int i = 6; i <= 8; i++) {
+
+			tileShiftButtons.add(new JButton());
+			
+			tileShiftButtons.get(i).setBounds(boardIcons[1][BOARD_SIZE-1].getX() + tileIconSize*(i-6)*2, 
+					boardIcons[0][BOARD_SIZE-1].getY() + tileIconSize, tileIconSize, tileIconSize);
+			
+			tileShiftButtons.get(i).addActionListener(this);
+			tileShiftButtons.get(i).setFocusable(false);
+			gamePanel.add(tileShiftButtons.get(i));
+						
+						
+		}
+		
+		for(int i = 9; i <= 11; i++) {
+
+			tileShiftButtons.add(new JButton());
+			
+			tileShiftButtons.get(i).setBounds(boardIcons[0][1].getX() - tileIconSize, 
+					boardIcons[0][1].getY() + tileIconSize*(i-9)*2, tileIconSize, tileIconSize);
+			
+			tileShiftButtons.get(i).addActionListener(this);
+			tileShiftButtons.get(i).setFocusable(false);
+			gamePanel.add(tileShiftButtons.get(i));
+						
+						
+		}
+		
+		updateTileShiftButtonIcon();
 		
 		// displaying the player icons on the screen
 		for(int i = 0; i < playerIcons.length; i++) {
@@ -309,6 +304,12 @@ public class GameState extends State implements KeyListener, Mover {
 			gamePanel.add(playerIcons[i], 0);
 
 		}
+		
+		// add the board boarder to the panel
+		boardBoarder = new JLabel(new ImageIcon(new ImageIcon("images/boardBoarder.png")
+				.getImage().getScaledInstance(tileIconSize*9, tileIconSize*9, 0)));
+		boardBoarder.setBounds(scaledOrginX, scaledOrginY, 9*tileIconSize, 9*tileIconSize);
+		gamePanel.add(boardBoarder);
 		
 		// displaing a series of player icons for their deck
 		Player1Label = new JLabel(new ImageIcon("images/player1.png"));
@@ -328,6 +329,52 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		// generate the walkable paths
 		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+		
+	}
+	
+	private void updateTileShiftButtonIcon() {
+		
+		if(!canShift) {
+			
+			for(int i = 0; i < tileShiftButtons.size(); i++) {
+				
+				tileShiftButtons.get(i).setIcon(new ImageIcon(new ImageIcon("images/invalid.png")
+						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+				
+			}
+			
+		} else {
+		
+			for(int i = 0; i <= 2; i++) {
+				
+				tileShiftButtons.get(i).setIcon(new ImageIcon(new ImageIcon("images/arrowDown.png")
+						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+							
+			}
+			
+			for(int i = 3; i <= 5; i++) {
+	
+				tileShiftButtons.get(i).setIcon(new ImageIcon(new ImageIcon("images/arrowLeft.png")
+						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+							
+							
+			}
+			
+			for(int i = 6; i <= 8; i++) {
+	
+				tileShiftButtons.get(i).setIcon(new ImageIcon(new ImageIcon("images/arrowUp.png")
+						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+							
+			}
+			
+			for(int i = 9; i <= 11; i++) {
+	
+				tileShiftButtons.get(i).setIcon(new ImageIcon(new ImageIcon("images/arrowRight.png")
+						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+							
+			}
+		
+		}
 		
 	}
 	
@@ -428,19 +475,22 @@ public class GameState extends State implements KeyListener, Mover {
 		if(y > 0 && board[x][y].isUp() && board[x][y-1].isDown()) {
 			
 			// draw the path that leads the player to the walkable direction
-			JLabel upPath = new JLabel(new ImageIcon(new ImageIcon("images/pathUp.png")
+			JButton upPath = new JButton(new ImageIcon(new ImageIcon("images/pathUp.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
+			upPath.setBorderPainted(false);
+			upPath.setFocusable(false);
+			upPath.addActionListener(this);
 			upPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
 			// because the path will be erased after turn ends, it will be added to an array
-			walkLines.add(upPath);
+			potentialPathways.add(new PathTrackingButton(upPath, newPath));
 			
 			// draw the path at index 4 on the panel so that the 4 players are drawn on top of it
 			gamePanel.add(upPath, 4);
 			
 			// if the previous direction is 2(down), then exit the statement to avoid going back and forth
-			if(previousDirection != 2 && movable(x, y, 0, -1)) {
+			if(previousDirection != 2) {
 				
 				// creating a temporary linked list to be passed to the next recursive call
 				// this is used in a Queue for the AI to seek to a location without confusion 
@@ -462,15 +512,18 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the tile current player is on can go down and the top tile can go up, then there is a path
 		if(y < BOARD_SIZE-1 && board[x][y].isDown() && board[x][y+1].isUp()) {
 			
-			JLabel downPath = new JLabel(new ImageIcon(new ImageIcon("images/pathDown.png")
+			JButton downPath = new JButton(new ImageIcon(new ImageIcon("images/pathDown.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
+			downPath.setBorderPainted(false);
+			downPath.setFocusable(false);
+			downPath.addActionListener(this);
 			downPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
-			walkLines.add(downPath);
+			potentialPathways.add(new PathTrackingButton(downPath, newPath));
 			gamePanel.add(downPath, 4);
 			
-			if(previousDirection != 1 && movable(x, y, 0, 1)) {
+			if(previousDirection != 1) {
 				
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("down");
@@ -488,15 +541,18 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the tile current player is on can go left and the top tile can go right, then there is a path
 		if(x > 0 && board[x][y].isLeft() && board[x-1][y].isRight()) {
 			
-			JLabel leftPath = new JLabel(new ImageIcon(new ImageIcon("images/pathLeft.png")
+			JButton leftPath = new JButton(new ImageIcon(new ImageIcon("images/pathLeft.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
+			leftPath.setBorderPainted(false);
+			leftPath.setFocusable(false);
+			leftPath.addActionListener(this);
 			leftPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
-			walkLines.add(leftPath);
+			potentialPathways.add(new PathTrackingButton(leftPath, newPath));
 			gamePanel.add(leftPath, 4);
 			
-			if(previousDirection != 4 && movable(x, y, -1, 0)) {
+			if(previousDirection != 4) {
 				
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("left");
@@ -514,15 +570,18 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the tile current player is on can go right and the top tile can go left, then there is a path
 		if(x < BOARD_SIZE-1 && board[x][y].isRight() && board[x+1][y].isLeft()) {
 			
-			JLabel rightPath = new JLabel(new ImageIcon(new ImageIcon("images/pathRight.png")
+			JButton rightPath = new JButton(new ImageIcon(new ImageIcon("images/pathRight.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
+			rightPath.setBorderPainted(false);
+			rightPath.setFocusable(false);
+			rightPath.addActionListener(this);
 			rightPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
-			walkLines.add(rightPath);
+			potentialPathways.add(new PathTrackingButton(rightPath, newPath));
 			gamePanel.add(rightPath, 4);
 			
-			if(previousDirection != 3 && movable(x, y, 1, 0)) {
+			if(previousDirection != 3) {
 				
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("right");
@@ -543,9 +602,9 @@ public class GameState extends State implements KeyListener, Mover {
 	private void clearWalkLines() {
 		
 		// remove every path lines in the panel 
-		for(JLabel path: walkLines) {
+		for(PathTrackingButton path: potentialPathways) {
 			
-			gamePanel.remove(path);
+			gamePanel.remove(path.getButton());
 			
 		}
 		
@@ -553,7 +612,7 @@ public class GameState extends State implements KeyListener, Mover {
 		gamePanel.repaint();
 		
 		// empty the list after all elements are removed
-		walkLines.clear();
+		potentialPathways.clear();
 		
 	}
 
@@ -567,7 +626,7 @@ public class GameState extends State implements KeyListener, Mover {
 		if(players[currentPlayer].isAI()) {
 			
 			// stop the AI movement by shutting down the timer
-			AITimer.stop();
+			autoMoveTimer.stop();
 			
 		}
 		
@@ -595,7 +654,7 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the current player is AI, then start the timer for it to make actions
 		if(players[currentPlayer].isAI()) {
 			
-			AITimer.start();
+			autoMoveTimer.start();
 			// clear the previous AI path lines
 			possiblePath.clear();
 			
@@ -606,6 +665,8 @@ public class GameState extends State implements KeyListener, Mover {
 			
 		}
 				
+		updateTileShiftButtonIcon();
+		
 	}
 	
 	@Override
@@ -707,7 +768,22 @@ public class GameState extends State implements KeyListener, Mover {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		
-		if (event.getSource() == AITimer) {
+		for(int index = 0; index < potentialPathways.size(); index++) {
+			
+			if(event.getSource() == potentialPathways.get(index).getButton()) {
+				
+				AIMoveSet = potentialPathways.get(index).getTrack();
+				autoMoveTimer.start();
+				
+				clearWalkLines();
+				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+				possiblePath.clear();
+				
+			}
+			
+		}
+		
+		if (event.getSource() == autoMoveTimer) {
 			
 			if(!canClick) {
 				
@@ -715,7 +791,7 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			}
 			
-			if(canShift) {
+			if(canShift && players[currentPlayer].isAI()) {
 					
 				shiftID = (int)(Math.random()*12);
 				
@@ -749,7 +825,11 @@ public class GameState extends State implements KeyListener, Mover {
 				
 			} else {
 				
-				endTurn();
+				if(players[currentPlayer].isAI()) {
+					
+					endTurn();
+					
+				}
 				
 			}
 			
@@ -919,9 +999,9 @@ public class GameState extends State implements KeyListener, Mover {
 			
 		} 
 		
-		for(int button = 0; button < tileButtons.size(); button++) {
+		for(int button = 0; button < tileShiftButtons.size(); button++) {
 			
-			if(canShift && event.getSource().equals(tileButtons.get(button))) {
+			if(canShift && event.getSource().equals(tileShiftButtons.get(button))) {
 				
 				shiftID = button;
 				
@@ -1131,13 +1211,15 @@ public class GameState extends State implements KeyListener, Mover {
 					
 				}
 				
-				AITimer.start();
+				autoMoveTimer.start();
 				
 			}
 			
 		}
 		
 		possiblePath.clear();
+		
+		updateTileShiftButtonIcon();
 		
 		playerMoveAmount = tileIconSize;
 		tileShiftTimer.start();

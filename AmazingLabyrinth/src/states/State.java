@@ -59,13 +59,14 @@ public abstract class State extends JFrame implements ActionListener {
 		// calculating the modified screen dimensions
 		ScreenWidth = (int) (1280 * scale);
 		ScreenHeight = (int) (800 * scale);
+		
+		// calculating the tile icon size
+		tileIconSize = (int)(ScreenHeight/9.5);
+		
 		//scaledOrginX = (int)(State.unscaledScreenWidth - State.ScreenWidth)/2;
 		//scaledOrginY = (int)(State.unscaledScreenHeight - State.ScreenHeight)/2;
 		scaledOrginX = 0;
 		scaledOrginY = 0;
-		
-		// calculating the tile icon size
-		tileIconSize = 92;
 
 		// method call of all the abstract and initialization methods
 		init();

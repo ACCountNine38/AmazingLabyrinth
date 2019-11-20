@@ -11,13 +11,6 @@ public class Deck {
 	private static ArrayList<ImageIcon> cards = new ArrayList<ImageIcon>();
 	private static ArrayList<Integer> IDNumber = new ArrayList<Integer>();
 
-	public Deck() {
-		
-		//initializeCards();
-		System.out.println(IDNumber);
-		
-	}
-
 	public static void initializID() {
 		
 		for (int i=0; i< 24; i++) {
