@@ -42,4 +42,11 @@ public class ControlState extends State{
 		
 	}
 	
+	@Override
+	public void saveGame() {
+		
+		
+		
+	}
+	
 }

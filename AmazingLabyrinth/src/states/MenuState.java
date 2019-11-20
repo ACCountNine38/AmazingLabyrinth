@@ -15,7 +15,7 @@ public class MenuState extends State {
 	private JPanel menuPanel;
 	private JButton startButton;
 	private JButton optionsButton;
-	private JButton exitButton;
+	private JButton loadGameButton;
 	//create new screen with both AI and 4 player button options
 	
 	public MenuState() {
@@ -27,8 +27,8 @@ public class MenuState extends State {
 		
 		menuPanel = new JPanel();
 		optionsButton = new JButton("OPTIONS"); 
+		loadGameButton = new JButton("LOAD GAME");
 		startButton = new JButton("START");
-		exitButton = new JButton("EXIT");
 		
 		MusicPlayer.playMusic("audio/menuTheme.wav");
 		
@@ -47,16 +47,16 @@ public class MenuState extends State {
 		// set the required informations for all the JComponents
 		startButton.setBounds(550, 280, 197, 80);
 		startButton.addActionListener(this);
-		optionsButton.setBounds(550, 420, 197, 80);
+		optionsButton.setBounds(550, 560, 197, 80);
 		optionsButton.addActionListener(this);
-		exitButton.setBounds(550, 560, 197, 80);
-		exitButton.addActionListener(this);
+		loadGameButton.setBounds(550, 420, 197, 80);
+		loadGameButton.addActionListener(this);
 		
 		
 		// places the JComponents to the panel
 		menuPanel.add(startButton);
 		menuPanel.add(optionsButton);
-		menuPanel.add(exitButton);
+		menuPanel.add(loadGameButton);
 		
 	}
 
@@ -67,9 +67,9 @@ public class MenuState extends State {
 			this.dispose();
 		}
 		
-		else if (event.getSource().equals(exitButton)) {
-			System.exit(DO_NOTHING_ON_CLOSE);
-			
+		else if (event.getSource().equals(loadGameButton)) {
+			new LoadState();
+			this.dispose();
 		}
 		else if (event.getSource().equals(optionsButton)) {
 			new OptionState();
@@ -77,5 +77,11 @@ public class MenuState extends State {
 		}
 	}
 
+	@Override
+	public void saveGame() {
+		
+		
+		
+	}
 
 }

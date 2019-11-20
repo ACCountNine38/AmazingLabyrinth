@@ -23,7 +23,6 @@ public class Deck {
 				
 		initializID();	
 		Collections.shuffle(IDNumber);
-		
 
 		for (int i=0; i<24; i++) {
 			

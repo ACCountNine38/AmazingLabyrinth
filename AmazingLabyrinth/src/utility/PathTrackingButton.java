@@ -3,25 +3,26 @@ package utility;
 import java.util.LinkedList;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 public class PathTrackingButton {
 
-	private JButton button;
+	private JLabel label;
 	private LinkedList<String> track;
 	
-	public PathTrackingButton(JButton button, LinkedList<String> track) {
+	public PathTrackingButton(JLabel label, LinkedList<String> track) {
 		
-		this.button = button;
+		this.label = label;
 		this.track = track;
 		
 	}
 
-	public JButton getButton() {
-		return button;
+	public JLabel getLabel() {
+		return label;
 	}
 
-	public void setButton(JButton button) {
-		this.button = button;
+	public void setLabel(JLabel label) {
+		this.label = label;
 	}
 
 	public LinkedList<String> getTrack() {

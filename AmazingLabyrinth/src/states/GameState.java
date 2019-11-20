@@ -5,6 +5,11 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
 
 import objects.Deck;
@@ -30,7 +36,7 @@ import utility.PathTrackingButton;
  * Able to listen to actions with keys, mouse, and buttons
  * Can be played with up to 4 players of AIs
  */
-public class GameState extends State implements KeyListener, Mover {
+public class GameState extends State implements KeyListener, MouseListener, Mover {
 
 	// final variables
 	private static final int BOARD_SIZE = 7;
@@ -56,6 +62,8 @@ public class GameState extends State implements KeyListener, Mover {
 	private JButton rotatePieceButton;
 	private ArrayList<JButton> tileShiftButtons;
 	private ArrayList<PathTrackingButton> potentialPathways;
+	private JTextArea saveGameName;
+	private JButton saveButton;
 	
 	private JLabel Player1Label;
 	private JLabel Player2Label;
@@ -111,7 +119,7 @@ public class GameState extends State implements KeyListener, Mover {
 		possiblePath = new ArrayList<LinkedList<String>>();
 		shiftedPlayers = new ArrayList<Player>();
 		AIMoveSet = new LinkedList<String>();
-				
+		
 		autoMoveTimer = new Timer(300, this);
 		playerShiftTimer = new Timer(1, this);
 		tileShiftTimer = new Timer(1, this);
@@ -143,8 +151,6 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		// add panel to the frame
 		add(gamePanel);
-		
-		System.out.println(cards);
 		
 		for(int a = 0; a <=19; a++) {
 
@@ -314,6 +320,18 @@ public class GameState extends State implements KeyListener, Mover {
 		boardBoarder.setBounds(scaledOrginX, scaledOrginY, 9*tileIconSize, 9*tileIconSize);
 		gamePanel.add(boardBoarder);
 		
+		saveGameName = new JTextArea();
+		saveGameName.setBounds(scaledOrginX + 800, scaledOrginY + 50, 200, 35);
+		saveGameName.addMouseListener(this);
+		saveGameName.setFocusable(false);
+		gamePanel.add(saveGameName);
+		
+		saveButton = new JButton();
+		saveButton.setBounds(scaledOrginX + 1000, scaledOrginY + 50, 100, 35);
+		saveButton.addActionListener(this);
+		saveButton.setFocusable(false);
+		gamePanel.add(saveButton);
+		
 		// displaing a series of player icons for their deck
 		Player1Label = new JLabel(new ImageIcon("images/player1.png"));
 		Player2Label = new JLabel(new ImageIcon("images/player2.png"));
@@ -478,12 +496,11 @@ public class GameState extends State implements KeyListener, Mover {
 		if(y > 0 && board[x][y].isUp() && board[x][y-1].isDown()) {
 			
 			// draw the path that leads the player to the walkable direction
-			JButton upPath = new JButton(new ImageIcon(new ImageIcon("images/pathUp.png")
+			JLabel upPath = new JLabel(new ImageIcon(new ImageIcon("images/pathUp.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-			upPath.setBorderPainted(false);
 			upPath.setFocusable(false);
-			upPath.addActionListener(this);
+			upPath.addMouseListener(this);
 			upPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
 			// because the path will be erased after turn ends, it will be added to an array
@@ -515,12 +532,11 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the tile current player is on can go down and the top tile can go up, then there is a path
 		if(y < BOARD_SIZE-1 && board[x][y].isDown() && board[x][y+1].isUp()) {
 			
-			JButton downPath = new JButton(new ImageIcon(new ImageIcon("images/pathDown.png")
+			JLabel downPath = new JLabel(new ImageIcon(new ImageIcon("images/pathDown.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-			downPath.setBorderPainted(false);
 			downPath.setFocusable(false);
-			downPath.addActionListener(this);
+			downPath.addMouseListener(this);
 			downPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
 			potentialPathways.add(new PathTrackingButton(downPath, newPath));
@@ -544,12 +560,11 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the tile current player is on can go left and the top tile can go right, then there is a path
 		if(x > 0 && board[x][y].isLeft() && board[x-1][y].isRight()) {
 			
-			JButton leftPath = new JButton(new ImageIcon(new ImageIcon("images/pathLeft.png")
+			JLabel leftPath = new JLabel(new ImageIcon(new ImageIcon("images/pathLeft.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-			leftPath.setBorderPainted(false);
 			leftPath.setFocusable(false);
-			leftPath.addActionListener(this);
+			leftPath.addMouseListener(this);
 			leftPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
 			potentialPathways.add(new PathTrackingButton(leftPath, newPath));
@@ -573,12 +588,11 @@ public class GameState extends State implements KeyListener, Mover {
 		// if the tile current player is on can go right and the top tile can go left, then there is a path
 		if(x < BOARD_SIZE-1 && board[x][y].isRight() && board[x+1][y].isLeft()) {
 			
-			JButton rightPath = new JButton(new ImageIcon(new ImageIcon("images/pathRight.png")
+			JLabel rightPath = new JLabel(new ImageIcon(new ImageIcon("images/pathRight.png")
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-			rightPath.setBorderPainted(false);
 			rightPath.setFocusable(false);
-			rightPath.addActionListener(this);
+			rightPath.addMouseListener(this);
 			rightPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 			
 			potentialPathways.add(new PathTrackingButton(rightPath, newPath));
@@ -607,7 +621,7 @@ public class GameState extends State implements KeyListener, Mover {
 		// remove every path lines in the panel 
 		for(PathTrackingButton path: potentialPathways) {
 			
-			gamePanel.remove(path.getButton());
+			gamePanel.remove(path.getLabel());
 			
 		}
 		
@@ -675,6 +689,9 @@ public class GameState extends State implements KeyListener, Mover {
 	@Override
 	public void updatePosition(int x, int y) {
 
+		// if the frame is focused on the save game text area, switch the focus by disabling the text area
+		saveGameName.setFocusable(false);
+		
 		if(!canClick) {
 			
 			return;
@@ -770,21 +787,6 @@ public class GameState extends State implements KeyListener, Mover {
 	
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		
-		for(int index = 0; index < potentialPathways.size(); index++) {
-			
-			if(event.getSource() == potentialPathways.get(index).getButton()) {
-				
-				AIMoveSet = potentialPathways.get(index).getTrack();
-				autoMoveTimer.start();
-				
-				clearWalkLines();
-				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
-				possiblePath.clear();
-				
-			}
-			
-		}
 		
 		if (event.getSource() == autoMoveTimer) {
 			
@@ -1000,7 +1002,67 @@ public class GameState extends State implements KeyListener, Mover {
 			
 			rotateExtraTile();
 			
-		} 
+		} else if(event.getSource().equals(saveButton)) {
+			
+			if(saveGameName.getText() == "") {
+				
+				
+				
+			} else {
+				
+				String fileName = "saved/"+saveGameName.getText();
+				
+				try {
+					
+					PrintWriter outputStream = new PrintWriter(fileName);
+					
+					ArrayList<String> savedPaths = new ArrayList<String>();
+					
+					File files = new File("saved");
+					for(File currentFile: files.listFiles()) {
+						
+						if(currentFile.getName().equals(fileName)) {
+							
+							currentFile.delete();
+							break;
+							
+						}
+						
+					}
+					
+					for(int i = 0; i < BOARD_SIZE; i++) {
+						
+						for(int j = 0; j < BOARD_SIZE; j++) {
+							
+							outputStream.print(board[i][j].getId() + " ");
+							
+						}
+						
+						outputStream.println();
+						
+					}
+					outputStream.println(extraPiece.getId());
+					
+					for(int player = 0; player < 4; player++) {
+						
+						outputStream.println(players[player].getX() + " " + players[player].getY() + " " + players[player].isAI());
+						
+					}
+					
+					outputStream.println(currentPlayer);
+					outputStream.println(canShift);
+					
+					outputStream.close();
+					
+				} catch(FileNotFoundException error) {
+					
+					System.out.println("save file not found");
+					
+				}
+				
+			}
+			
+		}
 		
 		for(int button = 0; button < tileShiftButtons.size(); button++) {
 			
@@ -1412,6 +1474,69 @@ public class GameState extends State implements KeyListener, Mover {
 	public void keyReleased(KeyEvent key) {
 
 
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent event) {
+		
+		for(int index = 0; index < potentialPathways.size(); index++) {
+			
+			if(event.getSource().equals(potentialPathways.get(index).getLabel())) {
+				
+				saveGameName.setFocusable(false);
+				
+				AIMoveSet = potentialPathways.get(index).getTrack();
+				autoMoveTimer.start();
+				
+				clearWalkLines();
+				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+				possiblePath.clear();
+				
+			}
+			
+		}
+		
+		if(event.getSource().equals(saveGameName)) {
+			
+			saveGameName.setFocusable(true);
+			
+		} 
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void saveGame() {
+		
+		File file = new File("saved/" + " .txt");
+		
+		MusicPlayer.stopMusic();
+		new MenuState();
+		this.dispose();
+		
 	}
 
 }

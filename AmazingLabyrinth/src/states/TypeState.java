@@ -65,5 +65,12 @@ public class TypeState extends State {
 		}
 		
 	}
+	
+	@Override
+	public void saveGame() {
+		
+		
+		
+	}
 
 }

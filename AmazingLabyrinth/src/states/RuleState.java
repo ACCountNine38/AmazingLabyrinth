@@ -52,8 +52,11 @@ public class RuleState extends State{
 		
 	}
 
-
-
-
+	@Override
+	public void saveGame() {
+		
+		
+		
+	}
 	
 }

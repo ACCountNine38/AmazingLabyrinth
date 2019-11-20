@@ -3,6 +3,7 @@ package states;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -84,12 +85,13 @@ public abstract class State extends JFrame implements ActionListener {
 		setJMenuBar(menuBar);
 
 		// create a new menu called control and add it to the menu bar
-		JMenu controlMenu = new JMenu("Control");
+		JMenu controlMenu = new JMenu("File");
 		menuBar.add(controlMenu);
 
 		// creating the exit option under the control menu
 		JMenuItem restartOption = new JMenuItem("Return to Menu");
-
+		
+		JFrame currentFrame = this;
 		// add an action listener for button actions when clicked
 		restartOption.addActionListener(new ActionListener() {
 
@@ -97,15 +99,33 @@ public abstract class State extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				
+				MusicPlayer.stopMusic();
+				new MenuState();
+				currentFrame.dispose();
+
+			}
+			
+		});
+
+		controlMenu.add(restartOption);
+		
+		// exit button closes the program
+		JMenuItem saveOption = new JMenuItem("Save Game");
+
+		saveOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				saveGame();
 
 			}
 		});
 
-		controlMenu.add(restartOption);
+		controlMenu.add(saveOption);
 
 		// exit button closes the program
-		JMenuItem exitOption = new JMenuItem("Exit Program");
+		JMenuItem exitOption = new JMenuItem("Exit to Menu");
 
 		exitOption.addActionListener(new ActionListener() {
 
@@ -250,5 +270,7 @@ public abstract class State extends JFrame implements ActionListener {
 	
 	// abstract method that adds all the JComponents to a state
 	public abstract void addJComponents();
+	
+	public abstract void saveGame();
 
 }
