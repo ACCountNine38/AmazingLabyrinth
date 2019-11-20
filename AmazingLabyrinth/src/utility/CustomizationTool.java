@@ -20,16 +20,16 @@ import states.State;
  * Able to setup a frame and change the cursor icon
  */
 public class CustomizationTool {
-
+	
 	// method that sets up a frame
 	public static void frameSetup(JFrame frame) {
 
 		// set the name and size of the frame, and now allowing user to resize
 		frame.setTitle("Amazing Labyrinth");
-		frame.setSize(State.ScreenWidth, State.ScreenHeight);
+		frame.setSize((int)State.unscaledScreenWidth, (int)State.unscaledScreenHeight);
 		frame.setResizable(false);
 
-		// disables auto layout, center program, exit frame when programcloses
+		// disables auto layout, center program, exit frame when program closes
 		frame.setLayout(null);
 		frame.setFocusable(true);
 		frame.setLocationRelativeTo(null);

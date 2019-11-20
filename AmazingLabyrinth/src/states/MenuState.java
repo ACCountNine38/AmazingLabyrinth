@@ -8,6 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import sounds.MusicPlayer;
+
 public class MenuState extends State {
 	
 	private JPanel menuPanel;
@@ -28,6 +30,7 @@ public class MenuState extends State {
 		startButton = new JButton("START");
 		exitButton = new JButton("EXIT");
 		
+		MusicPlayer.playMusic("audio/menuTheme.wav");
 		
 	}
 

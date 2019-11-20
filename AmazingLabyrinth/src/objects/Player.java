@@ -12,10 +12,12 @@ public class Player {
 	private int id;
 	private ImageIcon image;
 	private Color colorID;
+	private boolean AI;
 	
-	public Player(int id) {
+	public Player(int id, boolean AI) {
 		
 		this.id = id;
+		this.AI = AI;
 		
 		if(id == 0) {
 			
@@ -89,6 +91,11 @@ public class Player {
 		this.colorID = colorID;
 	}
 
+	public boolean isAI() {
+		return AI;
+	}
+
+	public void setAI(boolean aI) {
+		AI = aI;
+	}
 }
-
-

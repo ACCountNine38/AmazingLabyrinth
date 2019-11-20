@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import sounds.MusicPlayer;
+
 public class TypeState extends State {
 
 	private JPanel typePanel;
@@ -15,10 +17,15 @@ public class TypeState extends State {
 	
 	public void init() {
 		
+		// update background music
+		MusicPlayer.stopMusic();
+		MusicPlayer.playMusic("audio/playerSelection.wav");
+		
 		typePanel = new JPanel();	
 		playButton = new JButton("4 PLAYER GAME");
 		aiButton = new JButton("AI GAME");
 		backButton = new JButton("BACK");
+		
 	}
 	
 	
@@ -45,6 +52,7 @@ public class TypeState extends State {
 
 	//
 	public void actionPerformed(ActionEvent event) {
+		
 		if (event.getSource().equals(playButton)) {
 			new GameState();
 			this.dispose();
@@ -55,10 +63,7 @@ public class TypeState extends State {
 			this.dispose();
 			
 		}
-		//else if (event.getSource().equals(aiButton)) {
-			//new OptionState();
-			//this.dispose();
-		//}
+		
 	}
 
 }
