@@ -1,5 +1,7 @@
 package objects;
 
+import java.awt.Color;
+
 import javax.swing.ImageIcon;
 
 public class Player {
@@ -9,6 +11,7 @@ public class Player {
 	
 	private int id;
 	private ImageIcon image;
+	private Color colorID;
 	
 	public Player(int id) {
 		
@@ -19,24 +22,28 @@ public class Player {
 			x = 0;
 			y = 0;
 			image = new ImageIcon("images/player1.png");
+			colorID = Color.red;
 			
 		} else if(id == 1) {
 			
 			x = 6;
 			y = 0;
 			image = new ImageIcon("images/player2.png");
+			colorID = Color.yellow;
 			
 		} else if(id == 2) {
 			
 			x = 0;
 			y = 6;
 			image = new ImageIcon("images/player3.png");
+			colorID = Color.green;
 			
 		} else if(id == 3) {
 			
 			x = 6;
 			y = 6;
 			image = new ImageIcon("images/player4.png");
+			colorID = Color.blue;
 			
 		}
 		
@@ -74,4 +81,14 @@ public class Player {
 		this.image = image;
 	}
 
+	public Color getColorID() {
+		return colorID;
+	}
+
+	public void setColorID(Color colorID) {
+		this.colorID = colorID;
+	}
+
 }
+
+
