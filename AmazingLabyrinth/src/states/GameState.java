@@ -1255,10 +1255,7 @@ public class GameState extends State implements KeyListener, Mover {
 	}
 
 	public void CheckCards(int x, int y) {
-	
-		int playerX = players[currentPlayer].getX();
-		int playery = players[currentPlayer].getY();
-		
+			
 		int player0X = players[0].getX();
 		int player0Y = players[0].getY();
 
@@ -1276,7 +1273,6 @@ public class GameState extends State implements KeyListener, Mover {
 		ArrayList<Integer> Hand3 = new ArrayList<Integer>();
 		ArrayList<Integer> Hand4 = new ArrayList<Integer>();
 		
-	
 		for (int i=0; i<5; i++) 
 			Hand1.add(CardNumber.get(i));
 
