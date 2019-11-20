@@ -1272,7 +1272,7 @@ public class GameState extends State implements KeyListener, Mover {
 		ArrayList<Integer> Hand2 = new ArrayList<Integer>();
 		ArrayList<Integer> Hand3 = new ArrayList<Integer>();
 		ArrayList<Integer> Hand4 = new ArrayList<Integer>();
-		
+			
 		for (int i=0; i<5; i++) 
 			Hand1.add(CardNumber.get(i));
 
@@ -1290,25 +1290,39 @@ public class GameState extends State implements KeyListener, Mover {
 			if(board[player0X][player0Y].getItem() == CardNumber.get(i)+1) {	
 				if(Hand1.contains(CardNumber.get(i))) {
 					CardsImage[Hand1.indexOf(CardNumber.get(i))].setIcon(iconLogo);
-
+					Hand1.remove(CardNumber.get(i));
 				}
 			}
 			else if(board[player1X][player1Y].getItem() == CardNumber.get(i)+1) {
 				if(Hand2.contains(CardNumber.get(i))) {
 					CardsImage[Hand2.indexOf(CardNumber.get(i)) + 5].setIcon(iconLogo);
+					Hand2.remove(CardNumber.get(i));
 				}
 			}
 			else if(board[player2X][player2Y].getItem() == CardNumber.get(i)+1) {
 				if(Hand3.contains(CardNumber.get(i))) {
 					CardsImage[Hand3.indexOf(CardNumber.get(i)) + 10].setIcon(iconLogo);
+					Hand3.remove(CardNumber.get(i));
 				}
 			}
 			else if(board[player3X][player3Y].getItem() == CardNumber.get(i)+1) {
 				if(Hand4.contains(CardNumber.get(i))) {
 					CardsImage[Hand4.indexOf(CardNumber.get(i)) + 15].setIcon(iconLogo);
+					Hand4.remove(CardNumber.get(i));
 				}
 			}
 		}
+		
+		if (Hand1.isEmpty() == true) {
+			
+		}else if (Hand2.isEmpty() == true) {
+			
+		}else if (Hand3.isEmpty() == true) {
+			
+		}else if (Hand4.isEmpty() == true) {
+			
+		}
+		
 		
 	}
 
