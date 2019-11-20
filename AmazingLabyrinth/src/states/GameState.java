@@ -1397,11 +1397,11 @@ public class GameState extends State implements KeyListener, Mover {
 		
 		if (Hand1.isEmpty() == true) {
 			
-		}else if (Hand2.isEmpty() == true) {
+		} else if (Hand2.isEmpty() == true) {
 			
-		}else if (Hand3.isEmpty() == true) {
+		} else if (Hand3.isEmpty() == true) {
 			
-		}else if (Hand4.isEmpty() == true) {
+		} else if (Hand4.isEmpty() == true) {
 			
 		}
 		
