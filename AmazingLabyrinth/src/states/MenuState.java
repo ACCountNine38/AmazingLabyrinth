@@ -72,11 +72,4 @@ public class MenuState extends State {
 		}
 	}
 
-	@Override
-	public void saveGame() {
-		
-		
-		
-	}
-
 }

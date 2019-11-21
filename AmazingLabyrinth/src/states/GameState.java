@@ -62,6 +62,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private ArrayList<Integer> mapBits;
 	private JLabel extraPieceLabel;
 	private JLabel boardBoarder;
+	private JLabel saveInstruction;
 	private ArrayList<JButton> tileShiftButtons;
 	private ArrayList<PathTrackingButton> potentialPathways;
 	private JTextArea saveGameName;
@@ -191,43 +192,32 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		for(int a = 0; a <=19; a++) {
 
 			if (a<5){
+				
 				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-				CardsImage[a].setBounds(850+a*70, 350, 60, 90);
+				CardsImage[a].setBounds(880+a*70, 325, 60, 90);
 				gamePanel.add(CardsImage[a]);
-			}
-			else{
-
+				
+			} else if (a<10){
+				
 				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-				gamePanel.add(CardsImage[a]);			
-
-			}
+				CardsImage[a].setBounds(880+(a-5)*70, 425, 60, 90);
+				gamePanel.add(CardsImage[a]);
+				
+			} else if (a<15){
+				
+				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+				CardsImage[a].setBounds(880+(a-10)*70, 525, 60, 90);
+				gamePanel.add(CardsImage[a]);
+				
+			} else if (a<20){
+				
+				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+				CardsImage[a].setBounds(880+(a-15)*70, 625, 60, 90);
+				gamePanel.add(CardsImage[a]);
+				
+			} 
 
 		}
-
-		CardsImage[5].setBounds(850, 400, 60, 90);
-		CardsImage[6].setBounds(920, 400, 60, 90);
-		CardsImage[7].setBounds(990, 400, 60, 90);
-		CardsImage[8].setBounds(1060, 400, 60, 90);
-		CardsImage[9].setBounds(1130, 400, 60, 90);
-
-		CardsImage[10].setBounds(850, 500, 60, 90);
-		CardsImage[11].setBounds(920, 500, 60, 90);
-		CardsImage[12].setBounds(990, 500, 60, 90);
-		CardsImage[13].setBounds(1060, 500, 60, 90);
-		CardsImage[14].setBounds(1130, 500, 60, 90);
-
-		CardsImage[15].setBounds(850, 600, 60, 90);
-		CardsImage[16].setBounds(920, 600, 60, 90);
-		CardsImage[17].setBounds(990, 600, 60, 90);
-		CardsImage[18].setBounds(1060, 600, 60, 90);
-		CardsImage[19].setBounds(1130, 600, 60, 90);
-
-		// label created to display the current player's turn
-		currentTurn = new JLabel("Current Turn: Player " + (currentPlayer + 1));
-		currentTurn.setBounds(825, 50, 500, 100);
-		currentTurn.setForeground(Color.red);
-		currentTurn.setFont(new Font("TimesRoman", Font.BOLD, 36));
-		gamePanel.add(currentTurn);
 		
 		// generate all game tiles
 		for(int i = 0; i < BOARD_SIZE; i++) {
@@ -331,25 +321,34 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		}
 		
+		// label created to display the current player's turn
+		currentTurn = new JLabel("Current Turn: Player " + (currentPlayer + 1));
+		currentTurn.setBounds(830, 100, 500, 100);
+		currentTurn.setForeground(Color.red);
+		currentTurn.setFont(new Font("TimesRoman", Font.BOLD, 36));
+		gamePanel.add(currentTurn);
+		
 		rotateClockWise = new JButton(new ImageIcon(new ImageIcon("images/rotateC.png")
 				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 		
-		rotateClockWise.setBounds(880, 150, tileIconSize, tileIconSize);
+		rotateClockWise.setBounds(880, 200, tileIconSize, tileIconSize);
+		rotateClockWise.setFocusable(false);
 		rotateClockWise.addActionListener(this);
 		gamePanel.add(rotateClockWise);
 		
 		rotateCounterClockWise = new JButton(new ImageIcon(new ImageIcon("images/rotateCC.png")
 				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 		
-		rotateCounterClockWise.setBounds(900 + tileIconSize*2, 150, tileIconSize, tileIconSize);
+		rotateCounterClockWise.setBounds(900 + tileIconSize*2, 200, tileIconSize, tileIconSize);
 		rotateCounterClockWise.addActionListener(this);
+		rotateCounterClockWise.setFocusable(false);
 		gamePanel.add(rotateCounterClockWise);
 		
 		// creating the label to display the extra piece
 		extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-		extraPieceLabel.setBounds(890 + tileIconSize, 150, tileIconSize, tileIconSize);
+		extraPieceLabel.setBounds(890 + tileIconSize, 200, tileIconSize, tileIconSize);
 
 		gamePanel.add(extraPieceLabel);
 
@@ -359,28 +358,39 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		boardBoarder.setBounds(scaledOrginX, scaledOrginY, 9*tileIconSize, 9*tileIconSize);
 		gamePanel.add(boardBoarder);
 		
+		saveInstruction = new JLabel("Enter game name to save");
+		saveInstruction.setFont(new Font("times new roman", Font.ITALIC, 19));
+		saveInstruction.setBounds(scaledOrginX + 860, scaledOrginY + 85, 200, 35);
+		saveInstruction.setForeground(Color.white);
+		gamePanel.add(saveInstruction);
+		
 		saveGameName = new JTextArea();
-		saveGameName.setBounds(scaledOrginX + 800, scaledOrginY + 50, 200, 35);
+		saveGameName.setFont(new Font("times new roman", Font.BOLD | Font.ITALIC, 32));
+		saveGameName.setBounds(scaledOrginX + 860, scaledOrginY + 50, 200, 35);
 		saveGameName.addMouseListener(this);
 		saveGameName.setFocusable(false);
 		gamePanel.add(saveGameName);
 		
-		saveButton = new JButton();
-		saveButton.setBounds(scaledOrginX + 1000, scaledOrginY + 50, 100, 35);
+		saveButton = new JButton("Save Game");
+		saveButton.setBounds(scaledOrginX + 1075, scaledOrginY + 50, 100, 35);
 		saveButton.addActionListener(this);
 		saveButton.setFocusable(false);
 		gamePanel.add(saveButton);
 		
-		// displaing a series of player icons for their deck
-		Player1Label = new JLabel(new ImageIcon("images/player1.png"));
-		Player2Label = new JLabel(new ImageIcon("images/player2.png"));
-		Player3Label = new JLabel(new ImageIcon("images/player3.png"));
-		Player4Label = new JLabel(new ImageIcon("images/player4.png"));
+		// displaying a series of player icons for their deck
+		Player1Label = new JLabel(new ImageIcon(new ImageIcon("images/player1.png")
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+		Player2Label = new JLabel(new ImageIcon(new ImageIcon("images/player2.png")
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+		Player3Label = new JLabel(new ImageIcon(new ImageIcon("images/player3.png")
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+		Player4Label = new JLabel(new ImageIcon(new ImageIcon("images/player4.png")
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-		Player1Label.setBounds(700, 350, 200, 100);
-		Player2Label.setBounds(700, 450, 200, 100);
-		Player3Label.setBounds(700, 550, 200, 100);
-		Player4Label.setBounds(700, 650, 200, 100);
+		Player1Label.setBounds(800, 345, tileIconSize, tileIconSize);
+		Player2Label.setBounds(800, 445, tileIconSize, tileIconSize);
+		Player3Label.setBounds(800, 545, tileIconSize, tileIconSize);
+		Player4Label.setBounds(800, 645, tileIconSize, tileIconSize);
 
 		gamePanel.add(Player1Label);
 		gamePanel.add(Player2Label);
@@ -419,7 +429,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-			extraPieceLabel.setBounds(890 + tileIconSize, 150, tileIconSize, tileIconSize);
+			extraPieceLabel.setBounds(890 + tileIconSize, 200, tileIconSize, tileIconSize);
 			
 			for(int player = 0; player < 4; player++) {
 				
@@ -789,11 +799,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		// if the current player id is 3, go back to player 0, else it increments
 
 		do {
+			
 			currentPlayer++;
 			if (currentPlayer > 3) {
 				currentPlayer = 0;
 			}
-		}while(!players[currentPlayer].isActive());
+			
+		} while(!players[currentPlayer].isActive());
 
 		// set the text and color of the player turn label to suit the current player
 		currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
@@ -979,6 +991,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 					endTurn();
 
+				} else {
+					
+					autoMoveTimer.stop();
+					
 				}
 
 			}
@@ -1136,7 +1152,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-				extraPieceLabel.setBounds(890 + tileIconSize, 150, tileIconSize, tileIconSize);
+				extraPieceLabel.setBounds(890 + tileIconSize, 200, tileIconSize, tileIconSize);
 				extraPieceLabel.repaint();
 
 				canClick = true;
@@ -1153,7 +1169,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			
 		} else if(event.getSource().equals(saveButton)) {
 			
-			if(saveGameName.getText() == "") {
+			saveGameName.setFocusable(false);
+			
+			if(saveGameName.getText().length() == 0) {
 				
 				// display message dialogue for invalid input
 				JOptionPane.showMessageDialog(null, "File name cannot be empty to be saved \n\n"
@@ -1221,6 +1239,8 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 					
 				}
 				
+				saveGameName.setText("");
+				
 			}
 			
 		}
@@ -1233,6 +1253,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 				shiftButtonClick();
 
+			} else if(!canShift && event.getSource().equals(tileShiftButtons.get(button))) {
+				
+				AudioPlayer.playAudio("audio/deny.wav");
+				
 			}
 
 		}
@@ -1578,24 +1602,28 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			if(board[player0X][player0Y].getItem() == CardNumber.get(i)+1) {	
 				if(Hand1.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
 					CardsImage[Hand1.indexOf(CardNumber.get(i))].setIcon(iconLogo);
 					Hand1.remove(CardNumber.get(i));
 				}
 			}
 			else if(board[player1X][player1Y].getItem() == CardNumber.get(i)+1) {
 				if(Hand2.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
 					CardsImage[Hand2.indexOf(CardNumber.get(i)) + 5].setIcon(iconLogo);
 					Hand2.remove(CardNumber.get(i));
 				}
 			}
 			else if(board[player2X][player2Y].getItem() == CardNumber.get(i)+1) {
 				if(Hand3.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
 					CardsImage[Hand3.indexOf(CardNumber.get(i)) + 10].setIcon(iconLogo);
 					Hand3.remove(CardNumber.get(i));
 				}
 			}
 			else if(board[player3X][player3Y].getItem() == CardNumber.get(i)+1) {
 				if(Hand4.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
 					CardsImage[Hand4.indexOf(CardNumber.get(i)) + 15].setIcon(iconLogo);
 					Hand4.remove(CardNumber.get(i));
 				}
@@ -1605,6 +1633,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		
 		//First player
 		if (Hand1.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
 			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
 			players[0].setActive(false);
 			Hand1.add(10);
@@ -1612,6 +1641,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			endTurn();
 			
 		} else if (Hand2.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
 			JOptionPane.showMessageDialog(null, "Player 2 have finished all their cards!!!");
 			players[1].setActive(false);
 			Hand2.add(10);
@@ -1619,6 +1649,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			endTurn();
 
 		} else if (Hand3.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
 			JOptionPane.showMessageDialog(null, "Player 3 have finished all their cards!!!");
 			players[2].setActive(false);
 			Hand3.add(10);
@@ -1626,6 +1657,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			endTurn();
 
 		} else if (Hand4.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
 			JOptionPane.showMessageDialog(null, "Player 4 have finished all their cards!!!");
 			players[3].setActive(false);
 			Hand4.add(10);
@@ -1658,14 +1690,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			
 			if(event.getSource().equals(potentialPathways.get(index).getLabel())) {
 				
-				saveGameName.setFocusable(false);
-				
 				AIMoveSet = potentialPathways.get(index).getTrack();
 				autoMoveTimer.start();
 				
 				clearWalkLines();
 				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
 				possiblePath.clear();
+				return;
 				
 			}
 			
@@ -1694,17 +1725,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void saveGame() {
-		
-		File file = new File("saved/" + " .txt");
-		
-		MusicPlayer.stopMusic();
-		new MenuState();
-		this.dispose();
 		
 	}
 

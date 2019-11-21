@@ -58,11 +58,4 @@ public class OptionState extends State{
 		
 	}
 	
-	@Override
-	public void saveGame() {
-		
-		
-		
-	}
-	
 }

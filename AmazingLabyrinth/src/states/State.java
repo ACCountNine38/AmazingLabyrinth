@@ -239,7 +239,5 @@ public abstract class State extends JFrame implements ActionListener {
 	
 	// abstract method that adds all the JComponents to a state
 	public abstract void addJComponents();
-	
-	public abstract void saveGame();
 
 }

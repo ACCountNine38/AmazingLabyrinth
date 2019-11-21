@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,21 +49,24 @@ public class LoadState extends State {
 		backgroundPanel.setBackground(Color.black);
 		add(backgroundPanel);
 		
-		loadPanel = new JPanel(null);
-		loadPanel.setLayout(null);
+		loadPanel = new JPanel();
+		loadPanel.setLayout(new BoxLayout(loadPanel, BoxLayout.Y_AXIS));
 		loadPanel.setBounds(0, 0, ScreenWidth, ScreenHeight);
 		
 		int currentPath = 0;
 		for(String path: savedPaths) {
 			
 			JButton savedButton = new JButton(path);
-			savedButton.setBounds(0, 100*currentPath, 100, 100);
+			savedButton.setBounds(0, 100*currentPath, 400, 100);
 			savedButton.addActionListener(this);
+			savedButton.setMaximumSize(savedButton.getSize());
+			savedButton.setMinimumSize(savedButton.getSize());
+			savedButton.setPreferredSize(savedButton.getSize());
 			loadButtons.add(savedButton);
 			loadPanel.add(savedButton);
 			
 			JButton deleteButton = new JButton("delete game");
-			deleteButton.setBounds(400, 100*currentPath, 100, 100);
+			//deleteButton.setBounds(400, 100*currentPath, 400, 100);
 			deleteButton.addActionListener(this);
 			deleteButtons.add(deleteButton);
 			loadPanel.add(deleteButton);
@@ -73,8 +77,6 @@ public class LoadState extends State {
 		
 		gameContainer = new JScrollPane(loadPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		gameContainer.setBounds(100, 100, 800, 600);
-		gameContainer.add(loadPanel);
-		gameContainer.setVisible(true);
 		backgroundPanel.add(gameContainer);
 		
 	}
@@ -108,12 +110,6 @@ public class LoadState extends State {
 			}
 			
 		}
-		
-	}
-
-	@Override
-	public void saveGame() {
-		// TODO Auto-generated method stub
 		
 	}
 
