@@ -4,8 +4,10 @@ import java.awt.Color;
 
 import javax.swing.ImageIcon;
 
+//The object class for the player. It creates all the methiod that player has
 public class Player {
 	
+	//Declare all the variable that is being use in the game state class
 	private int x;
 	private int y;
 	
@@ -17,12 +19,14 @@ public class Player {
 	//The boolean variable to check if the player is still in the game 
 	private boolean isActive;
 	
+	//Constructor method that initialize the variables
 	public Player(int id, boolean AI) {
 
 		this.isActive = true;
 		this.id = id;
 		this.AI = AI;
 		
+		//Assign an ID to each of the players base on their image. It also sets their color
 		if(id == 0) {
 			
 			x = 0;
@@ -55,7 +59,7 @@ public class Player {
 		
 	}
 
-	//Getters and setters for the isActive variable
+	//Getters and setters for the all the variables
 	public boolean isActive() {
 		return isActive;
 	}

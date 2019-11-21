@@ -109,7 +109,6 @@ public class Deck {
 
 		}
 
-
 	}
 
 //getters and setters for the variables
