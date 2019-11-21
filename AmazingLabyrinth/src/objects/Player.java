@@ -14,8 +14,11 @@ public class Player {
 	private Color colorID;
 	private boolean AI;
 	
+	private boolean isActive;
+	
 	public Player(int id, boolean AI) {
-		
+
+		this.isActive = true;
 		this.id = id;
 		this.AI = AI;
 		
@@ -49,6 +52,14 @@ public class Player {
 			
 		}
 		
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	public int getX() {
