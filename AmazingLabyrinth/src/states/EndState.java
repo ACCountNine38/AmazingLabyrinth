@@ -1,6 +1,7 @@
 package states;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -58,10 +59,10 @@ public class EndState extends JFrame implements ActionListener {
 		ExitButton = new JButton("Exit"); 
 		startButton = new JButton("Restart");
 		
-		FirstPlace = new JLabel("First Place: Player ");
-		SecondPlace = new JLabel("Second Place: Player ");
-		ThirdPlace = new JLabel("Third Place: Player ");
-		FourthPlace = new JLabel("Fourth Place: Player ");
+		FirstPlace = new JLabel("First Place:         Player");
+		SecondPlace = new JLabel("Second Place:     Player ");
+		ThirdPlace = new JLabel("Third Place:       Player ");
+		FourthPlace = new JLabel("Fourth Place:     Player ");
 	
 		//plays the music		
 		MusicPlayer.playMusic("audio/menuTheme.wav");
@@ -78,19 +79,27 @@ public class EndState extends JFrame implements ActionListener {
 		
 		//Set the 1st/2nd/3rd/4th labels with their responsing String		
 		firstPlace.setText(First);
-		firstPlace.setBounds(500, 100, 200, 80);
+		firstPlace.setBounds(600, 120, 150, 80);
+		firstPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		firstPlace.setForeground(Color.white);
 		menuPanel.add(firstPlace);
 		
 		secondPlace.setText(Second);
-		secondPlace.setBounds(500, 250, 200, 80);
+		secondPlace.setBounds(600, 270, 150, 80);
+		secondPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		secondPlace.setForeground(Color.white);
 		menuPanel.add(secondPlace);
 		
 		thirdPlace.setText(Third);
-		thirdPlace.setBounds(500, 400, 200, 80);
+		thirdPlace.setBounds(600, 420, 150, 80);
+		thirdPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		thirdPlace.setForeground(Color.white);
 		menuPanel.add(thirdPlace);
 		
 		fourthPlace.setText(Fourth);
-		fourthPlace.setBounds(500, 550, 200, 80);
+		fourthPlace.setBounds(600, 570, 150, 80);
+		fourthPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		fourthPlace.setForeground(Color.white);
 		menuPanel.add(fourthPlace);
 		
 		// settings for the menu panel and add it to the frame
@@ -101,14 +110,25 @@ public class EndState extends JFrame implements ActionListener {
 		add(menuPanel);
 		
 		// set the required informations for all the JComponents
-		FirstPlace.setBounds(200, 100, 200, 80);
-		SecondPlace.setBounds(200, 250, 200, 80);
-		ThirdPlace.setBounds(200, 400, 200, 80);
-		FourthPlace.setBounds(200, 550, 200, 80);
+		FirstPlace.setBounds(50, 100, 600, 100);
+		FirstPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		FirstPlace.setForeground(Color.red);
 		
-		startButton.setBounds(800, 150, 197, 80);
+		SecondPlace.setBounds(50, 250, 600, 100);
+		SecondPlace.setForeground(Color.green);
+		SecondPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		
+		ThirdPlace.setBounds(50, 400, 600, 100);
+		ThirdPlace.setForeground(Color.blue);
+		ThirdPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		
+		FourthPlace.setBounds(50, 550, 600, 100);
+		FourthPlace.setForeground(Color.yellow);
+		FourthPlace.setFont(new Font("Serif", Font.BOLD, 50));
+		
+		startButton.setBounds(800, 200, 197, 80);
 		startButton.addActionListener(this);
-		ExitButton.setBounds(800, 450, 197, 80);
+		ExitButton.setBounds(800, 470, 197, 80);
 		ExitButton.addActionListener(this);
 		
 		// places the JComponents to the panel
