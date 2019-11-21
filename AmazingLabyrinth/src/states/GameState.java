@@ -129,8 +129,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		CardsImage = new JLabel[24];
 
+		//run the initializeCards method in the Deck class
 		cardObeject.initializeCards();
+		//add the Card values in the Deck to the arraylist in this class
 		cards = cardObeject.getCards();
+		//add the ID values in the Deck to the arraylist in this class
 		CardNumber = cardObeject.getIDNumber();
 
 
@@ -149,7 +152,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		Hand2 = new ArrayList<Integer>();
 		Hand3 = new ArrayList<Integer>();
 		Hand4 = new ArrayList<Integer>();
-
+		
+		//Assign the Hand arrayList base on the player, for example
+		//if you are player1 then you will get the first 5 cards on the list
+		//and if you are second you will get number 5 to 10 etc....
 		for (int i=0; i<5; i++) 
 			Hand1.add(CardNumber.get(i));
 
@@ -796,8 +802,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		// enable button shifting
 		canShift = true;
 
-		// if the current player id is 3, go back to player 0, else it increments
-
+		// this line checks if the player is still active. CurrentPlayer will keep adding 
+		//until it reaches a player that is active. If you are not active, it will skip your turn
+		//Also when it reaches beyond 3, it returns back to zero
 		do {
 			
 			currentPlayer++;
@@ -941,18 +948,203 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				.getImage().getScaledInstance(92, 92, 0)));
 
 	}
+	
+	//Check the cards on the board and the card you have on your hand
+	public void CheckCards(int x, int y) {
 
+		//the variables for the player's position
+		int player0X = players[0].getX();
+		int player0Y = players[0].getY();
+
+		int player1X = players[1].getX();
+		int player1Y = players[1].getY();
+
+		int player2X = players[2].getX();
+		int player2Y = players[2].getY();
+
+		int player3X = players[3].getX();
+		int player3Y = players[3].getY();
+	
+		//A for loop that runs 24 time because there is a total of 24 items 
+		for (int i=0; i<24; i++) {
+
+			//All of these methods are similar, the only difference is what player it is. If 
+			if(board[player0X][player0Y].getItem() == CardNumber.get(i)+1) {	
+				if(Hand1.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
+					CardsImage[Hand1.indexOf(CardNumber.get(i))].setIcon(iconLogo);
+					Hand1.remove(CardNumber.get(i));
+				}
+			}
+			else if(board[player1X][player1Y].getItem() == CardNumber.get(i)+1) {
+				if(Hand2.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
+					CardsImage[Hand2.indexOf(CardNumber.get(i)) + 5].setIcon(iconLogo);
+					Hand2.remove(CardNumber.get(i));
+				}
+			}
+			else if(board[player2X][player2Y].getItem() == CardNumber.get(i)+1) {
+				if(Hand3.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
+					CardsImage[Hand3.indexOf(CardNumber.get(i)) + 10].setIcon(iconLogo);
+					Hand3.remove(CardNumber.get(i));
+				}
+			}
+			else if(board[player3X][player3Y].getItem() == CardNumber.get(i)+1) {
+				if(Hand4.contains(CardNumber.get(i))) {
+					AudioPlayer.playAudio("audio/cardCollected.wav");
+					CardsImage[Hand4.indexOf(CardNumber.get(i)) + 15].setIcon(iconLogo);
+					Hand4.remove(CardNumber.get(i));
+				}
+			}
+
+		}
+		
+		//First player
+		if (Hand1.isEmpty() == true) {	
+			AudioPlayer.playAudio("audio/gameOver.wav");
+			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
+			players[0].setActive(false);
+			Hand1.add(10);
+			Winner.add(1);
+			endTurn();
+			
+		} else if (Hand2.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
+			JOptionPane.showMessageDialog(null, "Player 2 have finished all their cards!!!");
+			players[1].setActive(false);
+			Hand2.add(10);
+			Winner.add(2);
+			endTurn();
+
+		} else if (Hand3.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
+			JOptionPane.showMessageDialog(null, "Player 3 have finished all their cards!!!");
+			players[2].setActive(false);
+			Hand3.add(10);
+			Winner.add(3);
+			endTurn();
+
+		} else if (Hand4.isEmpty() == true) {
+			AudioPlayer.playAudio("audio/gameOver.wav");
+			JOptionPane.showMessageDialog(null, "Player 4 have finished all their cards!!!");
+			players[3].setActive(false);
+			Hand4.add(10);
+			Winner.add(4);
+			endTurn();
+
+		}
+				
+		if (Winner.size() ==3) {
+			
+			if (!Winner.contains(1)) {
+				Winner.add(1);
+			}else if (!Winner.contains(2)) {
+				Winner.add(2);
+			}else if (!Winner.contains(3)) {
+				Winner.add(3);
+			}else if (!Winner.contains(4)) {
+				Winner.add(4);
+			}
+			
+			JOptionPane.showMessageDialog(null, "Game finished!!!");
+			System.out.println(Winner);
+			this.dispose();
+			new EndState(Winner);
+		}
+	}
+	
+
+	// method that shifts the player along with shifting the tiles
+	private void shiftPlayer(Player player, int playerID, int direction) {
+
+		// 
+		shiftedPlayers.add(player);
+		
+		// checks which direction player is moving
+		switch (direction) {
+		
+			// checks if the player is moving down
+			case 1: {
+				
+				playerMoveDirection = "down";
+
+				// set the y position of the player
+				player.setY(player.getY() + 1);
+
+				// if player Y is out of the bound of the board, then bring it to the other sidee of the board
+				if(player.getY() >= BOARD_SIZE) {
+
+					player.setY(0);
+
+				} 
+				
+				break;
+				
+			} case 2: {
+				
+				// checks if the player is moving left
+				playerMoveDirection = "left";
+
+				player.setX(player.getX() - 1);
+
+				if(player.getX() < 0) {
+
+					player.setX(BOARD_SIZE-1);
+
+				} 
+				
+				break;
+				
+			} case 3: {
+				
+				// checks if the player is moving up
+				playerMoveDirection = "up";
+
+				player.setY(player.getY() - 1);
+
+				if(player.getY() < 0) {
+
+					player.setY(BOARD_SIZE-1);
+
+				} 
+				
+				break;
+				
+			} case 4: {
+				
+				// checks if the player is moving right
+				playerMoveDirection = "right";
+
+				player.setX(player.getX() + 1);
+
+				if(player.getX() >= BOARD_SIZE) {
+
+					player.setX(0);
+
+				} 
+				
+			}
+		
+		} 
+
+	}
+
+	// Inherent method from the action listener that checks JComponent actions
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		
+		// if the action source is the auto move timer, then move the player automatically
 		if (event.getSource() == autoMoveTimer) {
 
+			// if the player cannot click, then exit the method
 			if(!canClick) {
 
 				return;
 
 			}
 
+			// shift the tiles and if it is an AI and never shifted tiles before in the current turn
 			if(canShift && players[currentPlayer].isAI()) {
 
 				shiftID = (int)(Math.random()*12);
@@ -963,10 +1155,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 
+			// if the auto move set is not empty, then move the player to its next direction in the move set
 			if(!AIMoveSet.isEmpty()) {
 
+				// take the first element from the move set to use it to move the player
 				String nextMove = AIMoveSet.poll();
 
+				// update the player's position from the move set operation - up, down, left, right
 				if(nextMove.equals("up")) {
 
 					updatePosition(0, -1);
@@ -987,22 +1182,30 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			} else {
 
+				// if player is an AI and the move set is empty, then end the current turn
 				if(players[currentPlayer].isAI()) {
-
+					
+					autoMoveTimer.stop();
 					endTurn();
 
 				} else {
 					
+					// stop the moving after move set is complete and current player is not an AI
 					autoMoveTimer.stop();
 					
 				}
 
 			}
 
-		} else if (event.getSource() == playerShiftTimer) {
+		} 
+		
+		// if player shift timer is active, the move the player to its destination from tone tile to another
+		else if (event.getSource() == playerShiftTimer) {
 
+			// during the shift, player cannot click
 			canClick = false;
 
+			// checks the player's shift direction then shift the icon to the direction by a small amount of pixels to create an animation
 			if(playerMoveDirection.equals("up")) {
 
 				playerIcons[currentPlayer].setBounds(
@@ -1026,10 +1229,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 
+			// subtract the amount of pixels the players have to move 
 			playerMoveAmount -= 2;
 
+			// repaint the current player icon
 			playerIcons[currentPlayer].repaint();
 
+			// if the player shifting is complete, then enable clicking and stop the shift timer
 			if(playerMoveAmount == 0) {
 
 				playerShiftTimer.stop();
@@ -1038,7 +1244,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 
-		} else if(event.getSource() == tileShiftTimer) {
+		} 
+		
+		// 
+		else if(event.getSource() == tileShiftTimer) {
 
 			canClick = false;
 
@@ -1479,73 +1688,17 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
-	private void shiftPlayer(Player player, int playerID, int direction) {
-
-		shiftedPlayers.add(player);
-
-		if(direction == 1) {
-
-			playerMoveDirection = "down";
-
-			player.setY(player.getY() + 1);
-
-			if(player.getY() >= BOARD_SIZE) {
-
-				player.setY(0);
-
-			} 
-
-		} else if(direction == 2) {
-
-			playerMoveDirection = "left";
-
-			player.setX(player.getX() - 1);
-
-			if(player.getX() < 0) {
-
-				player.setX(BOARD_SIZE-1);
-
-			} 
-
-		} else if(direction == 3) {
-
-			playerMoveDirection = "up";
-
-			player.setY(player.getY() - 1);
-
-			if(player.getY() < 0) {
-
-				player.setY(BOARD_SIZE-1);
-
-			} 
-
-		} else if(direction == 4) {
-
-			playerMoveDirection = "right";
-
-			player.setX(player.getX() + 1);
-
-			if(player.getX() >= BOARD_SIZE) {
-
-				player.setX(0);
-
-			} 
-
-		}
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent key) {
-
-	}
-
+	// Inherit method from the key listener class
 	@Override
 	public void keyPressed(KeyEvent key) {
 
+		// key control WASD is used to check the player movement in all 4 directions
 		if(key.getKeyCode() == KeyEvent.VK_W) {
 
+			// update the current player position
 			updatePosition(0, -1);
+			
+			// check if the tile player walks on is a card in their deck
 			CheckCards(0, -1);
 
 		}
@@ -1573,118 +1726,62 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		else if(key.getKeyCode() == KeyEvent.VK_ENTER) {
 
+			// when player presses enter, the current turn ends
 			endTurn();
 
 		} else if(key.getKeyCode() == KeyEvent.VK_R) {
 
+			// key control <R> is a shortcut for rotating the leftover piece
 			rotateExtraTileClockWise();
 
 		}
 
 	}
 
-	public void CheckCards(int x, int y) {
+	// other inherent methods from key listener
+	@Override
+	public void keyTyped(KeyEvent key) {
 
-		int player0X = players[0].getX();
-		int player0Y = players[0].getY();
-
-		int player1X = players[1].getX();
-		int player1Y = players[1].getY();
-
-		int player2X = players[2].getX();
-		int player2Y = players[2].getY();
-
-		int player3X = players[3].getX();
-		int player3Y = players[3].getY();
+	}
 	
-
-		for (int i=0; i<24; i++) {
-
-			if(board[player0X][player0Y].getItem() == CardNumber.get(i)+1) {	
-				if(Hand1.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand1.indexOf(CardNumber.get(i))].setIcon(iconLogo);
-					Hand1.remove(CardNumber.get(i));
-				}
+	// method that detects if a JComponent is being pressed by a mouse
+	@Override
+	public void mousePressed(MouseEvent event) {
+		
+		// checks if a available button is being clicked
+		for(int index = 0; index < potentialPathways.size(); index++) {
+			
+			// if one of the potential pathways are clicked, then auto move to that location
+			if(event.getSource().equals(potentialPathways.get(index).getLabel())) {
+				
+				// set the auto move set into the track stored by the current potential pathway
+				AIMoveSet = potentialPathways.get(index).getTrack();
+				
+				// start the move timer for auto move
+				autoMoveTimer.start();
+				
+				// clean any leftover walk lines and generate a new set of potential pathways
+				clearWalkLines();
+				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+				possiblePath.clear();
+				
+				// exit the method in-case the same method is executed again
+				return;
+				
 			}
-			else if(board[player1X][player1Y].getItem() == CardNumber.get(i)+1) {
-				if(Hand2.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand2.indexOf(CardNumber.get(i)) + 5].setIcon(iconLogo);
-					Hand2.remove(CardNumber.get(i));
-				}
-			}
-			else if(board[player2X][player2Y].getItem() == CardNumber.get(i)+1) {
-				if(Hand3.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand3.indexOf(CardNumber.get(i)) + 10].setIcon(iconLogo);
-					Hand3.remove(CardNumber.get(i));
-				}
-			}
-			else if(board[player3X][player3Y].getItem() == CardNumber.get(i)+1) {
-				if(Hand4.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand4.indexOf(CardNumber.get(i)) + 15].setIcon(iconLogo);
-					Hand4.remove(CardNumber.get(i));
-				}
-			}
-
+			
 		}
 		
-		//First player
-		if (Hand1.isEmpty() == true) {	
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
-			players[0].setActive(false);
-			Hand1.add(10);
-			Winner.add(1);
-			endTurn();
+		// if the save text area is clicked, then focus the game to it to allow typing
+		if(event.getSource().equals(saveGameName)) {
 			
-		} else if (Hand2.isEmpty() == true) {
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 2 have finished all their cards!!!");
-			players[1].setActive(false);
-			Hand2.add(10);
-			Winner.add(2);
-			endTurn();
-
-		} else if (Hand3.isEmpty() == true) {
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 3 have finished all their cards!!!");
-			players[2].setActive(false);
-			Hand3.add(10);
-			Winner.add(3);
-			endTurn();
-
-		} else if (Hand4.isEmpty() == true) {
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 4 have finished all their cards!!!");
-			players[3].setActive(false);
-			Hand4.add(10);
-			Winner.add(4);
-			endTurn();
-
-		}
-				
-		if (Winner.size() ==3) {
+			saveGameName.setFocusable(true);
 			
-			if (!Winner.contains(1)) {
-				Winner.add(1);
-			}else if (!Winner.contains(2)) {
-				Winner.add(2);
-			}else if (!Winner.contains(3)) {
-				Winner.add(3);
-			}else if (!Winner.contains(4)) {
-				Winner.add(4);
-			}
-			
-			JOptionPane.showMessageDialog(null, "Game finished!!!");
-			System.out.println(Winner);
-			this.dispose();
-			new EndState(Winner);
-		}
+		} 
+		
 	}
-
+	
+	// over inheriented methods from the mouse listener
 	@Override
 	public void keyReleased(KeyEvent key) {
 
@@ -1694,33 +1791,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent event) {
-		
-		for(int index = 0; index < potentialPathways.size(); index++) {
-			
-			if(event.getSource().equals(potentialPathways.get(index).getLabel())) {
-				
-				AIMoveSet = potentialPathways.get(index).getTrack();
-				autoMoveTimer.start();
-				
-				clearWalkLines();
-				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
-				possiblePath.clear();
-				return;
-				
-			}
-			
-		}
-		
-		if(event.getSource().equals(saveGameName)) {
-			
-			saveGameName.setFocusable(true);
-			
-		} 
 		
 	}
 

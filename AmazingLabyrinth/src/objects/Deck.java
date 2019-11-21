@@ -6,24 +6,32 @@ import java.util.*;
 import javax.swing.ImageIcon;
 import java.io.File;
 
+//The class where all the cards and their ids are created
 public class Deck {
 
+	//two arrayList for the cards and id each of them have
 	private static ArrayList<ImageIcon> cards = new ArrayList<ImageIcon>();
 	private static ArrayList<Integer> IDNumber = new ArrayList<Integer>();
 
+	//The main method that create the id elements in the list 
 	public static void initializID() {
 
+		//for loop to add each id to the ID arrayList
 		for (int i=0; i< 24; i++) {
 			IDNumber.add(i);
 		}
 
 	}
 
+	//The method that assign the card to the ID base on their position
 	public static void initializeCards() {
 
+		//run the initializID to create the list
 		initializID();	
+		//shuffle the list so the player gets a random hand every time. 
 		Collections.shuffle(IDNumber);
 
+		//using a for loop to assign the card base on the ID. 
 		for (int i=0; i<24; i++) {
 
 			if (IDNumber.get(i) == 0) {
@@ -65,7 +73,6 @@ public class Deck {
 			else if(IDNumber.get(i) == 12) {
 				cards.add(i, new ImageIcon("cards/5.png"));
 			}
-			//5, 14, 23, 6, 16, 8, 19, 7, 20, 17, 15, 2
 			else if(IDNumber.get(i) == 13) {
 				cards.add(i, new ImageIcon("cards/14.png"));
 			}
@@ -105,7 +112,7 @@ public class Deck {
 
 	}
 
-
+//getters and setters for the variables
 	public static ArrayList<ImageIcon> getCards() {
 
 		return cards;

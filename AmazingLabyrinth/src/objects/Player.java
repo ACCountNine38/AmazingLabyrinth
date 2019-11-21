@@ -14,6 +14,7 @@ public class Player {
 	private Color colorID;
 	private boolean AI;
 	
+	//The boolean variable to check if the player is still in the game 
 	private boolean isActive;
 	
 	public Player(int id, boolean AI) {
@@ -54,6 +55,7 @@ public class Player {
 		
 	}
 
+	//Getters and setters for the isActive variable
 	public boolean isActive() {
 		return isActive;
 	}
