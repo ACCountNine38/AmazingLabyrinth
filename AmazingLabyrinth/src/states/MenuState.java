@@ -18,11 +18,6 @@ public class MenuState extends State {
 	private JButton loadGameButton;
 	//create new screen with both AI and 4 player button options
 	
-	public MenuState() {
-
-	}
-
-	
 	public void init() {
 		
 		menuPanel = new JPanel();

@@ -54,11 +54,12 @@ public class TypeState extends State {
 	public void actionPerformed(ActionEvent event) {
 		
 		if (event.getSource().equals(playButton)) {
-			new GameState();
+			new GameState(false, "");
 			this.dispose();
 		}
 		
 		else if (event.getSource().equals(backButton)) {
+			MusicPlayer.stopMusic();
 			new MenuState();
 			this.dispose();
 			

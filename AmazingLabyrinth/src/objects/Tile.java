@@ -14,7 +14,7 @@ public class Tile {
 		
 	}
 	
-	public void rotateTile() {
+	public void rotateTileClockWise() {
 		
 		up = false;
 		down = false;
@@ -50,6 +50,45 @@ public class Tile {
 		
 		else if(getId() == 9) 
 			setId(6);
+		
+	}
+	
+	public void rotateTileCounterClockWise() {
+		
+		up = false;
+		down = false;
+		left = false;
+		right = false;
+		
+		if(getId() == 0)
+			setId(1);
+		
+		else if(getId() == 1)
+			setId(0);
+		
+		else if(getId() == 2) 
+			setId(5);
+		
+		else if(getId() == 3) 
+			setId(2);
+		
+		else if(getId() == 4) 
+			setId(3);
+		
+		else if(getId() == 5) 
+			setId(4);
+		
+		else if(getId() == 6) 
+			setId(9);
+		
+		else if(getId() == 7) 
+			setId(6);
+		
+		else if(getId() == 8) 
+			setId(7);
+		
+		else if(getId() == 9) 
+			setId(8);
 		
 	}
 

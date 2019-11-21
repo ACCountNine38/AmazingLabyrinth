@@ -89,11 +89,11 @@ public abstract class State extends JFrame implements ActionListener {
 		menuBar.add(controlMenu);
 
 		// creating the exit option under the control menu
-		JMenuItem restartOption = new JMenuItem("Return to Menu");
+		JMenuItem menuOption = new JMenuItem("Return to Menu");
 		
 		JFrame currentFrame = this;
 		// add an action listener for button actions when clicked
-		restartOption.addActionListener(new ActionListener() {
+		menuOption.addActionListener(new ActionListener() {
 
 			// method handles the current button's actions
 			@Override
@@ -107,39 +107,8 @@ public abstract class State extends JFrame implements ActionListener {
 			
 		});
 
-		controlMenu.add(restartOption);
+		controlMenu.add(menuOption);
 		
-		// exit button closes the program
-		JMenuItem saveOption = new JMenuItem("Save Game");
-
-		saveOption.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				saveGame();
-
-			}
-		});
-
-		controlMenu.add(saveOption);
-
-		// exit button closes the program
-		JMenuItem exitOption = new JMenuItem("Exit to Menu");
-
-		exitOption.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				// exits the program
-				System.exit(1);
-
-			}
-		});
-
-		controlMenu.add(exitOption);
-
 		// the help menu will include all the help related menu items
 		JMenu helpMenu = new JMenu("Help");
 

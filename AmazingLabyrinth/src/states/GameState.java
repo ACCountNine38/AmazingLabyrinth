@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -60,16 +61,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private ArrayList<Integer> mapBits;
 	private JLabel extraPieceLabel;
 	private JLabel boardBoarder;
-	private JButton rotatePieceButton;
 	private ArrayList<JButton> tileShiftButtons;
 	private ArrayList<PathTrackingButton> potentialPathways;
 	private JTextArea saveGameName;
 	private JButton saveButton;
+	private JButton rotateClockWise, rotateCounterClockWise;
 
-	private JLabel Player1Label;
-	private JLabel Player2Label;
-	private JLabel Player3Label;
-	private JLabel Player4Label;
+	private JLabel Player1Label, Player2Label, Player3Label, Player4Label;
 
 	private Tile extraPiece;
 	private int currentPlayer;
@@ -78,6 +76,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private int shiftID;
 	private boolean canShift, canClick;
 	private String playerMoveDirection;
+	private String filePath;
 
 	private ArrayList<LinkedList<String>> possiblePath;
 	private ArrayList<Player> shiftedPlayers;
@@ -92,6 +91,17 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private ArrayList<Integer> Hand3;
 	private ArrayList<Integer> Hand4;
 
+	public GameState(boolean loaded, String filePath) {
+		
+		if(loaded) {
+			
+			this.filePath = filePath;
+			loadGame();
+			
+		}
+		
+	}
+	
 	@Override
 	public void init() {
 
@@ -134,7 +144,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		Hand3 = new ArrayList<Integer>();
 		Hand4 = new ArrayList<Integer>();
 
-
 		for (int i=0; i<5; i++) 
 			Hand1.add(CardNumber.get(i));
 
@@ -156,13 +165,12 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		// Method Calls
 		fillMapBits();
+		addMenuBar();
 
 	}
 
 	@Override
 	public void addJComponents() {
-
-		addMenuBar();
 
 		// create a new panel to put the JComponents on top
 		gamePanel = new JPanel(null);
@@ -178,13 +186,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		for(int a = 0; a <=19; a++) {
 
 			if (a<5){
-				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(92, 92, 0)));
-				CardsImage[a].setBounds(850+a*70, 300, 60, 90);
+				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+				CardsImage[a].setBounds(850+a*70, 350, 60, 90);
 				gamePanel.add(CardsImage[a]);
 			}
 			else{
 
-				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(92, 92, 0)));
+				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 				gamePanel.add(CardsImage[a]);			
 
 			}
@@ -215,7 +223,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		currentTurn.setForeground(Color.red);
 		currentTurn.setFont(new Font("TimesRoman", Font.BOLD, 36));
 		gamePanel.add(currentTurn);
-
+		
 		// generate all game tiles
 		for(int i = 0; i < BOARD_SIZE; i++) {
 			for(int j = 0; j < BOARD_SIZE; j++) {
@@ -234,25 +242,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 		}
-
-		// creating the label to display the extra piece
-		extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-
-		extraPieceLabel.setBounds(850, 200, tileIconSize, tileIconSize);
-
-		gamePanel.add(extraPieceLabel);
-
-		// creating a button that rotates the extra tile,
-		rotatePieceButton = new JButton("rotate tile");
-
-		rotatePieceButton.setBounds(1050, 200, 200, 50);
-
-		// enable button action and disable auto focus
-		rotatePieceButton.addActionListener(this);
-		rotatePieceButton.setFocusable(false);
-
-		gamePanel.add(rotatePieceButton);
 
 		// adding all 12 shift tile buttons, assigning each tile at a location
 		/*
@@ -336,6 +325,28 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			gamePanel.add(playerIcons[i], 0);
 
 		}
+		
+		rotateClockWise = new JButton(new ImageIcon(new ImageIcon("images/rotateC.png")
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+		
+		rotateClockWise.setBounds(880, 150, tileIconSize, tileIconSize);
+		rotateClockWise.addActionListener(this);
+		gamePanel.add(rotateClockWise);
+		
+		rotateCounterClockWise = new JButton(new ImageIcon(new ImageIcon("images/rotateCC.png")
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+		
+		rotateCounterClockWise.setBounds(900 + tileIconSize*2, 150, tileIconSize, tileIconSize);
+		rotateCounterClockWise.addActionListener(this);
+		gamePanel.add(rotateCounterClockWise);
+		
+		// creating the label to display the extra piece
+		extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+
+		extraPieceLabel.setBounds(890 + tileIconSize, 150, tileIconSize, tileIconSize);
+
+		gamePanel.add(extraPieceLabel);
 
 		// add the board boarder to the panel
 		boardBoarder = new JLabel(new ImageIcon(new ImageIcon("images/boardBoarder.png")
@@ -376,6 +387,92 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+
+	private void loadGame() {
+		
+		try {
+			
+			Scanner input = new Scanner(new File(filePath));
+			
+			for(int x = 0; x < BOARD_SIZE; x++) {
+				
+				for(int y = 0; y < BOARD_SIZE; y++) {
+					
+					board[x][y] = new Tile(input.nextInt(), input.nextInt());
+					
+					// re-scale an image icon to fit the screen and position it on the screen;
+					boardIcons[x][y].setIcon(new ImageIcon(new ImageIcon(board[x][y].getFilePath())
+							.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+					
+				}
+				
+			}
+			
+			extraPiece = new Tile(input.nextInt(), input.nextInt());
+			
+			// creating the label to display the extra piece
+			extraPieceLabel = new JLabel(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+					.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+
+			extraPieceLabel.setBounds(890 + tileIconSize, 150, tileIconSize, tileIconSize);
+			
+			for(int player = 0; player < 4; player++) {
+				
+				int xLocation = input.nextInt();
+				int yLocation = input.nextInt();
+				int isAI = input.nextInt();
+				
+				if(isAI == 1) {
+					
+					players[player] = new Player(player, true);
+					
+				} else {
+					
+					players[player] = new Player(player, false);
+					
+				}
+				
+				players[player].setX(xLocation);
+				players[player].setY(yLocation);
+				
+				playerIcons[player].setBounds(tileIconSize + playerIcons[player].getIcon().getIconWidth()*players[player].getX(), 
+						tileIconSize + playerIcons[player].getIcon().getIconHeight()*players[player].getY(), 
+						playerIcons[player].getIcon().getIconWidth(),
+						playerIcons[player].getIcon().getIconHeight());
+				
+			}
+			
+			currentPlayer = input.nextInt();
+			
+			// label created to display the current player's turn
+			currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
+			currentTurn.setForeground(players[currentPlayer].getColorID());
+			
+			if(input.next().equals("false")) {
+				
+				canShift = false;
+				
+			} else {
+				
+				canShift = true;
+				
+			}
+			
+			updateTileShiftButtonIcon();
+			
+			clearWalkLines();
+			viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+			
+			repaint();
+			
+		} catch (FileNotFoundException error) {
+			
+			error.printStackTrace();
+			
+		}
+		
+	}
+	
 	private void updateTileShiftButtonIcon() {
 
 		if(!canShift) {
@@ -797,11 +894,22 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
-	public void rotateExtraTile() {
+	public void rotateExtraTileClockWise() {
 
 		AudioPlayer.playAudio("audio/rotate.wav");
 
-		extraPiece.rotateTile();
+		extraPiece.rotateTileClockWise();
+
+		extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+				.getImage().getScaledInstance(92, 92, 0)));
+
+	}
+	
+	public void rotateExtraTileCounterClockWise() {
+
+		AudioPlayer.playAudio("audio/rotate.wav");
+
+		extraPiece.rotateTileCounterClockWise();
 
 		extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 				.getImage().getScaledInstance(92, 92, 0)));
@@ -1014,22 +1122,29 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 						.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 
-				extraPieceLabel.setBounds(850, 200, tileIconSize, tileIconSize);
+				extraPieceLabel.setBounds(890 + tileIconSize, 150, tileIconSize, tileIconSize);
 				extraPieceLabel.repaint();
 
 				canClick = true;
 
 			}
 
-		} else if(event.getSource().equals(rotatePieceButton)) {
+		} else if(event.getSource().equals(rotateClockWise)) {
 
-			rotateExtraTile();
+			rotateExtraTileClockWise();
+			
+		} else if(event.getSource().equals(rotateCounterClockWise)) {
+
+			rotateExtraTileCounterClockWise();
 			
 		} else if(event.getSource().equals(saveButton)) {
 			
 			if(saveGameName.getText() == "") {
 				
-				
+				// display message dialogue for invalid input
+				JOptionPane.showMessageDialog(null, "File name cannot be empty to be saved \n\n"
+								+ "click 'ok' to continue...",
+						"INVALID FILE NAME", JOptionPane.WARNING_MESSAGE);
 				
 			} else {
 				
@@ -1038,8 +1153,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				try {
 					
 					PrintWriter outputStream = new PrintWriter(fileName);
-					
-					ArrayList<String> savedPaths = new ArrayList<String>();
 					
 					File files = new File("saved");
 					for(File currentFile: files.listFiles()) {
@@ -1057,18 +1170,26 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 						
 						for(int j = 0; j < BOARD_SIZE; j++) {
 							
-							outputStream.print(board[i][j].getId() + " ");
+							outputStream.print(board[i][j].getId() + " " + board[i][j].getItem() + " ");
 							
 						}
 						
 						outputStream.println();
 						
 					}
-					outputStream.println(extraPiece.getId());
+					outputStream.println(extraPiece.getId() + " " + extraPiece.getItem());
 					
 					for(int player = 0; player < 4; player++) {
 						
-						outputStream.println(players[player].getX() + " " + players[player].getY() + " " + players[player].isAI());
+						if(players[player].isAI()) {
+							
+							outputStream.println(players[player].getX() + " " + players[player].getY() + " " + 1);
+							
+						} else {
+							
+							outputStream.println(players[player].getX() + " " + players[player].getY() + " " + 0);
+							
+						}
 						
 					}
 					
@@ -1415,7 +1536,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		} else if(key.getKeyCode() == KeyEvent.VK_R) {
 
-			rotateExtraTile();
+			rotateExtraTileClockWise();
 
 		}
 
