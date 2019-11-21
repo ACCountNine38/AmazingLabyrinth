@@ -35,8 +35,6 @@ public class ControlState extends State{
 		
 	}
 
-	
-
 	public void actionPerformed(ActionEvent e) {
 		
 		

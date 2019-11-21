@@ -1,10 +1,13 @@
 package states;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import sounds.MusicPlayer;
@@ -15,6 +18,8 @@ public class MenuState extends State {
 	private JButton startButton;
 	private JButton optionsButton;
 	private JButton loadGameButton;
+	private JLabel titleLabel;
+	private JLabel background;
 	//create new screen with both AI and 4 player button options
 	
 	public void init() {
@@ -39,25 +44,39 @@ public class MenuState extends State {
 		add(menuPanel);
 		
 		// set the required informations for all the JComponents
-		startButton.setBounds(550, 280, 197, 80);
+		startButton.setBounds(550, 230, 197, 80);
 		startButton.addActionListener(this);
-		optionsButton.setBounds(550, 560, 197, 80);
+		startButton.setFont(new Font("times new roman", Font.ITALIC, 28));
+		optionsButton.setBounds(550, 510, 197, 80);
 		optionsButton.addActionListener(this);
-		loadGameButton.setBounds(550, 420, 197, 80);
+		optionsButton.setFont(new Font("times new roman", Font.ITALIC, 28));
+		loadGameButton.setBounds(550, 370, 197, 80);
 		loadGameButton.addActionListener(this);
+		loadGameButton.setFont(new Font("times new roman", Font.ITALIC, 28));
 		
+		titleLabel = new JLabel("AMAZING LABYRINTH");
+		titleLabel.setBounds(320, 75, 800, 180);
+		titleLabel.setFont((new Font( "Serif", Font.PLAIN, 60)));
+		titleLabel.setForeground(Color.white);
+		
+		background = new JLabel(new ImageIcon(new ImageIcon("images/background.jpg")
+				.getImage().getScaledInstance(ScreenWidth, ScreenHeight, 0)));
+		background.setBounds(0, 0, ScreenWidth, ScreenHeight);
 		
 		// places the JComponents to the panel
+		
+		menuPanel.add(titleLabel);
+		menuPanel.add(loadGameButton);
 		menuPanel.add(startButton);
 		menuPanel.add(optionsButton);
-		menuPanel.add(loadGameButton);
+		menuPanel.add(background);
 		
 	}
 
 	
 	public void actionPerformed(ActionEvent event) {
 		if (event.getSource().equals(startButton)) {
-			new TypeState();
+			new GameState(false, "");
 			this.dispose();
 		}
 		

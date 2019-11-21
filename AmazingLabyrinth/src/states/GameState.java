@@ -1517,6 +1517,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 					
 					outputStream.close();
 					
+					// display message dialogue for invalid input
+					JOptionPane.showMessageDialog(null, "Game Successfully saved \n\n"
+									+ "click 'ok' to continue...",
+							"SAVE COMPLETE", JOptionPane.INFORMATION_MESSAGE);
+					
 				} catch(FileNotFoundException error) {
 					
 					System.out.println("save file not found");
