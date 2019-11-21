@@ -92,7 +92,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private ArrayList<Integer> Hand3;
 	private ArrayList<Integer> Hand4;
 	
-	private int Winner;
+	private ArrayList<Integer> Winner;
 	
 	public GameState(boolean loaded, String filePath) {
 		
@@ -115,7 +115,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		// Initializing constants
 		currentPlayer = 0;
 		
-		Winner = 0;
+		Winner = new ArrayList<Integer>();
 		
 		// Initializing JComponents
 		board = new Tile[BOARD_SIZE][BOARD_SIZE];
@@ -1604,38 +1604,52 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		}
 		
 		//First player
-		if (Hand1.isEmpty() == true) {
+		if (Hand1.size() == 4) {
 			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
 			players[0].setActive(false);
 			Hand1.add(10);
-			Winner++;
+			Winner.add(1);
 			endTurn();
 			
-		} else if (Hand2.isEmpty() == true) {
+		} else if (Hand2.size() == 4) {
 			JOptionPane.showMessageDialog(null, "Player 2 have finished all their cards!!!");
 			players[1].setActive(false);
 			Hand2.add(10);
-			Winner++;
+			Winner.add(2);
 			endTurn();
 
-		} else if (Hand3.isEmpty() == true) {
+		} else if (Hand3.size() == 4) {
 			JOptionPane.showMessageDialog(null, "Player 3 have finished all their cards!!!");
 			players[2].setActive(false);
 			Hand3.add(10);
-			Winner++;
+			Winner.add(3);
 			endTurn();
 
-		} else if (Hand4.isEmpty() == true) {
+		} else if (Hand4.size() == 4) {//.isEmpty() == true) {
 			JOptionPane.showMessageDialog(null, "Player 4 have finished all their cards!!!");
 			players[3].setActive(false);
 			Hand4.add(10);
-			Winner++;
+			Winner.add(4);
 			endTurn();
 
 		}
-		if (Winner == 3) {
+				
+		if (Winner.size() ==3) {
+			
+			if (!Winner.contains(1)) {
+				Winner.add(1);
+			}else if (!Winner.contains(2)) {
+				Winner.add(2);
+			}else if (!Winner.contains(3)) {
+				Winner.add(3);
+			}else if (!Winner.contains(4)) {
+				Winner.add(4);
+			}
+			
 			JOptionPane.showMessageDialog(null, "Game finished!!!");
-			new MenuState();
+			System.out.println(Winner);
+			this.dispose();
+			new EndState(Winner);
 		}
 	}
 

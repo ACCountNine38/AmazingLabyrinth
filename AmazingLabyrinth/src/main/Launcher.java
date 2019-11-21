@@ -1,5 +1,6 @@
 package main;
 
+import states.EndState;
 import states.GameState;
 import states.MenuState;
 
