@@ -10,7 +10,6 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -44,11 +43,12 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	// final variables
 	private static final int BOARD_SIZE = 7;
 
+	//
 	private Deck cardObeject = new Deck();
 	private ArrayList<ImageIcon> cards;
 	private ArrayList<Integer> CardNumber;
 
-	ImageIcon iconLogo = new ImageIcon("cards/CardBack.jpg");
+	private ImageIcon iconLogo;
 
 	private JPanel gamePanel;
 
@@ -95,8 +95,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	
 	private ArrayList<Integer> Winner;
 	
+	// the constructor is used for loading a game
 	public GameState(boolean loaded, String filePath) {
 		
+		// if the game is loaded, then load the game from existing file, else init will be called
 		if(loaded) {
 			
 			this.filePath = filePath;
@@ -106,6 +108,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		
 	}
 
+	// method that initializes every instance, override from the State class
 	@Override
 	public void init() {
 
@@ -124,30 +127,33 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		playerIcons = new JLabel[4];
 		extraPieceLabel = new JLabel(new ImageIcon(""));
 		potentialPathways = new ArrayList<PathTrackingButton>();
+		iconLogo = new ImageIcon("cards/CardBack.jpg");
 
 		tileShiftButtons = new ArrayList<JButton>();
 
 		CardsImage = new JLabel[24];
 
 		//run the initializeCards method in the Deck class
-		cardObeject.initializeCards();
-		//add the Card values in the Deck to the arraylist in this class
-		cards = cardObeject.getCards();
-		//add the ID values in the Deck to the arraylist in this class
-		CardNumber = cardObeject.getIDNumber();
+		Deck.initializeCards();
+		//add the Card values in the Deck to the array list in this class
+		cards = Deck.getCards();
+		//add the ID values in the Deck to the array list in this class
+		CardNumber = Deck.getIDNumber();
 
 
 		// Initializing others types
 		players = new Player[4];
 		mapBits = new ArrayList<Integer>();
-		canShift = true;
 		possiblePath = new ArrayList<LinkedList<String>>();
 		shiftedPlayers = new ArrayList<Player>();
 		AIMoveSet = new LinkedList<String>();
 		autoMoveTimer = new Timer(300, this);
 		playerShiftTimer = new Timer(1, this);
 		tileShiftTimer = new Timer(1, this);
+		canShift = true;
+		canClick = true;
 		
+		// initializing player's deck
 		Hand1 = new ArrayList<Integer>();
 		Hand2 = new ArrayList<Integer>();
 		Hand3 = new ArrayList<Integer>();
@@ -168,10 +174,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		for (int i=15; i<20; i++) 
 			Hand4.add(CardNumber.get(i));
 
-		canClick = true;
-
+		// enable key listener for this state
 		addKeyListener(this);
 
+		// initializes all the players
 		for(int i = 0; i < 4; i++)
 			players[i] = new Player(i, false);
 
@@ -195,27 +201,38 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		// add panel to the frame
 		add(gamePanel);
 		
+		// a for loop that draws all the cards in each player;s deck
 		for(int a = 0; a <=19; a++) {
 
+			// draws player 1's deck
 			if (a<5){
 				
 				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 				CardsImage[a].setBounds(880+a*70, 325, 60, 90);
 				gamePanel.add(CardsImage[a]);
 				
-			} else if (a<10){
+			} 
+			
+			// draws player 2's deck
+			else if (a<10){
 				
 				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 				CardsImage[a].setBounds(880+(a-5)*70, 425, 60, 90);
 				gamePanel.add(CardsImage[a]);
 				
-			} else if (a<15){
+			} 
+			
+			// draws player 3's deck
+			else if (a<15){
 				
 				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 				CardsImage[a].setBounds(880+(a-10)*70, 525, 60, 90);
 				gamePanel.add(CardsImage[a]);
 				
-			} else if (a<20){
+			} 
+			
+			// draws player 4's deck
+			else if (a<20){
 				
 				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 				CardsImage[a].setBounds(880+(a-15)*70, 625, 60, 90);
@@ -309,6 +326,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		}
 
+		// updates the button icons for the tile shift buttons
 		updateTileShiftButtonIcon();
 
 		// displaying the player icons on the screen
@@ -334,6 +352,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		currentTurn.setFont(new Font("TimesRoman", Font.BOLD, 36));
 		gamePanel.add(currentTurn);
 		
+		// the two rotate buttons allows the player to rotate the extra tile clockwise or counterclockwise
 		rotateClockWise = new JButton(new ImageIcon(new ImageIcon("images/rotateC.png")
 				.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
 		
@@ -364,12 +383,14 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		boardBoarder.setBounds(scaledOrginX, scaledOrginY, 9*tileIconSize, 9*tileIconSize);
 		gamePanel.add(boardBoarder);
 		
+		// creating a save instruction label to help the player to save the game
 		saveInstruction = new JLabel("Enter game name to save");
 		saveInstruction.setFont(new Font("times new roman", Font.ITALIC, 19));
 		saveInstruction.setBounds(scaledOrginX + 860, scaledOrginY + 85, 200, 35);
 		saveInstruction.setForeground(Color.white);
 		gamePanel.add(saveInstruction);
 		
+		// creating a save game text area for the player to enter a valid game name
 		saveGameName = new JTextArea();
 		saveGameName.setFont(new Font("times new roman", Font.BOLD | Font.ITALIC, 32));
 		saveGameName.setBounds(scaledOrginX + 860, scaledOrginY + 50, 200, 35);
@@ -377,6 +398,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		saveGameName.setFocusable(false);
 		gamePanel.add(saveGameName);
 		
+		// creating a button to allow the player to save game
 		saveButton = new JButton("Save Game");
 		saveButton.setBounds(scaledOrginX + 1075, scaledOrginY + 50, 100, 35);
 		saveButton.addActionListener(this);
@@ -408,17 +430,23 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
-
+	// method that loads the game from the saved files
 	private void loadGame() {
 		
+		// a scanner is declared to read inputs from a path
+		Scanner input = null;
+		
+		// try an catch is used to detect if the file path is valid
 		try {
 			
-			Scanner input = new Scanner(new File(filePath));
+			input = new Scanner(new File(filePath));
 			
+			// loop through the board to update every icon from the saved file
 			for(int x = 0; x < BOARD_SIZE; x++) {
 				
 				for(int y = 0; y < BOARD_SIZE; y++) {
 					
+					// the values for the tile id and item will be side by side from the input file
 					board[x][y] = new Tile(input.nextInt(), input.nextInt());
 					
 					// re-scale an image icon to fit the screen and position it on the screen;
@@ -429,6 +457,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				
 			}
 			
+			// the extra piece information is contained after the board info
 			extraPiece = new Tile(input.nextInt(), input.nextInt());
 			
 			// creating the label to display the extra piece
@@ -437,6 +466,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			extraPieceLabel.setBounds(890 + tileIconSize, 200, tileIconSize, tileIconSize);
 			
+			// load in all the player informations
 			for(int player = 0; player < 4; player++) {
 				
 				int xLocation = input.nextInt();
@@ -444,6 +474,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				int isAI = input.nextInt();
 				String isActive = input.next();
 				
+				// if the player is an AI, then change the AI variable to true
 				if(isAI == 1) {
 					
 					players[player] = new Player(player, true);
@@ -454,9 +485,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 					
 				}
 				
+				// set the locations of the player to the location stored in file
 				players[player].setX(xLocation);
 				players[player].setY(yLocation);
 				
+				// updates if the player is active (if the player completed the game or not)
 				if(isActive.equals("false")) {
 					
 					players[player].setActive(false);
@@ -474,12 +507,14 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				
 			}
 			
+			// read the current player input from file
 			currentPlayer = input.nextInt();
 			
 			// label created to display the current player's turn
 			currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
 			currentTurn.setForeground(players[currentPlayer].getColorID());
 			
+			// update if boolean for if the tiles can still be shifted
 			if(input.next().equals("false")) {
 				
 				canShift = false;
@@ -490,14 +525,20 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				
 			}
 			
+			// updates the shift button icons based on if tiles can still be shifted
 			updateTileShiftButtonIcon();
 			
+			// clearing previous potential pathways and generates a new set
 			clearWalkLines();
 			viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
 			
+			// repaint the board to update the JComponents
 			repaint();
 			
-		} catch (FileNotFoundException error) {
+		} 
+		
+		// if file is not found, then print the error message
+		catch (FileNotFoundException error) {
 			
 			error.printStackTrace();
 			
@@ -505,8 +546,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		
 	}
 	
+	// method that updates the icons for the tile shift buttons
 	private void updateTileShiftButtonIcon() {
 
+		// if tiles cannot be shifted, then change the icons into the invalid icons
 		if(!canShift) {
 
 			for(int i = 0; i < tileShiftButtons.size(); i++) {
@@ -516,8 +559,18 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 
-		} else {
+		} 
+		
+		// if tiles can be shifted, then update the icons into arrows pointing at the direction of the sift
+		else {
 
+			// every direction has 3 buttons
+			/*
+			 * 0-2: down arrow
+			 * 3-5: left arrow
+			 * 6-8: up arrows
+			 * 9-11: right arrows
+			 */
 			for(int i = 0; i <= 2; i++) {
 
 				tileShiftButtons.get(i).setIcon(new ImageIcon(new ImageIcon("images/arrowDown.png")
@@ -835,28 +888,34 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		}
 
+		// updates the icons of the tile shift buttons
 		updateTileShiftButtonIcon();
 
 	}
-
+	
+	// method that updates the position of the players
 	@Override
 	public void updatePosition(int x, int y) {
 
 		// if the frame is focused on the save game text area, switch the focus by disabling the text area
 		saveGameName.setFocusable(false);
 		
+		// the player can only move if the can click variable is true
 		if(!canClick) {
 
 			return;
 
 		}
 
+		// stores the position of the tile the current player is moving towards
 		int moveX = players[currentPlayer].getX() + x;
 		int moveY = players[currentPlayer].getY() + y;
 
+		// if the moving is within the board in the x direction, then update player's position
 		if(x != 0 && moveX < BOARD_SIZE && moveX >= 0 && 
 				movable(players[currentPlayer].getX(), players[currentPlayer].getY(), x, y)) {
 
+			// set the new positions of the player
 			players[currentPlayer].setX(moveX);
 
 			if(x > 0)
@@ -865,12 +924,15 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				playerMoveDirection = "left";
 
 			playerMoveAmount = tileIconSize;
+			
+			// start the shifting animation by starting the player shifting timer
 			playerShiftTimer.start();
 
 			AudioPlayer.playAudio("audio/move.wav");
 
 		}
 
+		// if the moving is within the board in the y direction, then update player's position
 		if(y != 0 && moveY < BOARD_SIZE && moveY >= 0 &&
 				movable(players[currentPlayer].getX(), players[currentPlayer].getY(), x, y)) {
 
@@ -882,6 +944,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				playerMoveDirection = "up";
 
 			playerMoveAmount = tileIconSize;
+			
 			playerShiftTimer.start();
 
 			AudioPlayer.playAudio("audio/move.wav");
@@ -890,6 +953,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+	// method from the interface mover, checks if two tiles can be connected with a path
 	@Override
 	public boolean movable(int x, int y, int moveX, int moveY) {
 
@@ -927,17 +991,21 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+	// method that rotates the extra tile clockwise
 	public void rotateExtraTileClockWise() {
 
 		AudioPlayer.playAudio("audio/rotate.wav");
 
+		// call the rotate clock wise method from within the tile class itself
 		extraPiece.rotateTileClockWise();
 
+		// reset the new icon for the extra tile
 		extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
 				.getImage().getScaledInstance(92, 92, 0)));
 
 	}
 	
+	// method that rotates the extra tile counterclockwise
 	public void rotateExtraTileCounterClockWise() {
 
 		AudioPlayer.playAudio("audio/rotate.wav");
@@ -1054,7 +1122,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		}
 	}
 	
-
 	// method that shifts the player along with shifting the tiles
 	private void shiftPlayer(Player player, int playerID, int direction) {
 
@@ -1472,6 +1539,8 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+	// method that makes sure the player is within the board
+	// if not, then move the player to the other side of the board
 	private void playerShiftValidation(int id) {
 
 		// if player is being shifted above the tiles, reset location to the bottom
@@ -1516,13 +1585,16 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+	// method that executes the actions of the shift buttons
 	private void shiftButtonClick() {
 
 		// move the movable columns downwards
 		if(shiftID >= 0 && shiftID <= 2) {
 
+			// create a temporary extra piece tile at the last tile of the shift
 			Tile tempExtraPiece = board[1 + shiftID*2][BOARD_SIZE-1];
 
+			// shift each tile to the adjacent tiles
 			for(int j = BOARD_SIZE - 1; j > 0; j--) {
 
 				board[1 + shiftID*2][j] = board[1 + shiftID*2][j-1];
@@ -1532,9 +1604,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 
+			// set the extra piece label to the button location for it to animate sliding in
 			extraPieceLabel.setBounds(boardIcons[1 + shiftID*2][0].getX(), 
 					boardIcons[1 + shiftID*2][0].getY() - tileIconSize, tileIconSize, tileIconSize);
 
+			// checks if any players are on the tile, if there are, then shift them also by calling shiftPlayer method
 			for(int index = 0; index < players.length; index++) {
 
 				if(players[index].getX() == 1 + shiftID*2) {
@@ -1545,8 +1619,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			}
 
+			// updates the extra piece tile to the appropriate location
 			board[1 + shiftID*2][0] = extraPiece;
 
+			// update the current extra piece tile
 			extraPiece = tempExtraPiece;
 
 		}
@@ -1650,18 +1726,25 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		}	
 
+		// to start the animation, the amount of pixels the tile have to move is exactly the tile size
 		tileMoveAmount = tileIconSize;
 
+		// there can be only one shift every turn, disable tile shifting
 		canShift = false;
 
+		// clear potential pathways so new ones can be generated
 		clearWalkLines();
 
+		// generate new potential pathways
 		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
 
+		// if the current player is an AI, then generate a move set for it to move
 		if(players[currentPlayer].isAI()) {
 
+			// checks if there is a path available for the AI to move
 			if(!possiblePath.isEmpty()) {
 
+				// update the move set to a random one within the possible path
 				int AIMoveSetID = (int)(Math.random()*possiblePath.size());
 
 				for(String direction: possiblePath.get(AIMoveSetID)) {
@@ -1670,17 +1753,23 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 				}
 
+				// start the move timer for the AI to auto move
 				autoMoveTimer.start();
 
 			}
 
 		}
 
+		// clean the possible pathways so that next time it can be empty to begin with
 		possiblePath.clear();
 
+		// update the shift button icons to the invalid icon
 		updateTileShiftButtonIcon();
 
+		// the player on the tile's move amount will also be the size of a tile
 		playerMoveAmount = tileIconSize;
+		
+		// start the timer for the tiles to shift in animation
 		tileShiftTimer.start();
 
 		AudioPlayer.playAudio("audio/buttonSlide.wav");
@@ -1784,7 +1873,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	// over inheriented methods from the mouse listener
 	@Override
 	public void keyReleased(KeyEvent key) {
-
+		// TODO Auto-generated method stub
 
 	}
 
