@@ -1,7 +1,6 @@
 package states;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -10,12 +9,15 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
 import sounds.MusicPlayer;
 
+/*
+ * class the enables the player to load a previously saved game
+ */
 public class LoadState extends State {
 
+	// JComponents of this screen
 	private JPanel backgroundPanel;
 	private JPanel loadPanel;
 	private JScrollPane gameContainer;
@@ -23,6 +25,7 @@ public class LoadState extends State {
 	private ArrayList<JButton> loadButtons;
 	private ArrayList<JButton> deleteButtons;
 	
+	// method that initializes every instance, override from the State class
 	@Override
 	public void init() {
 		
@@ -30,19 +33,23 @@ public class LoadState extends State {
 		MusicPlayer.stopMusic();
 		MusicPlayer.playMusic("audio/playerSelection.wav");
 				
+		// initializes all the JComponents
 		savedPaths = new ArrayList<String>();
 		loadButtons = new ArrayList<JButton>();
 		deleteButtons = new ArrayList<JButton>();
 		
+		// loads all the files and puts their name in a list
 		File files = new File("saved");
 		for(int i = 0; i < files.listFiles().length; i++) 
 			savedPaths.add(files.listFiles()[i].getAbsolutePath());
 		
 	}
 	
+	// method that creates all the JComponents for this state, Override from the State class 
 	@Override
 	public void addJComponents() {
 	
+		// background panel is created to put all the JComponents on top
 		backgroundPanel = new JPanel(null);
 		backgroundPanel.setLayout(null);
 		backgroundPanel.setBounds(0, 0, ScreenWidth, ScreenHeight);

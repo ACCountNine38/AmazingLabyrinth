@@ -16,8 +16,6 @@ import sounds.MusicPlayer;
 import utility.CustomizationTool;
 
 /*
- * Author: Alan Sun
- * 
  * The parent class of all states, top of the class hierarchy
  * contains default information to be used for other states and abstract methods
  */

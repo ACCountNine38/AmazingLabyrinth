@@ -1,11 +1,18 @@
 package objects;
 
+/*
+ * An object that is placed on the game board
+ * contains 4 direction variables, up, down, left, right
+ * able to be rotated clockwise or counterclockwise
+ */
 public class Tile {
 
+	// base properties of the a tile
 	private int id, item;
 	private String filePath;
 	private boolean up, down, left, right;
 	
+	// constructor that initializes the tile 
 	public Tile(int id, int item) {
 		
 		this.item = item;
@@ -13,7 +20,7 @@ public class Tile {
 		setId(id);
 		
 	}
-	
+	//The method that sets the id base on the direction
 	public void rotateTileClockWise() {
 		
 		up = false;

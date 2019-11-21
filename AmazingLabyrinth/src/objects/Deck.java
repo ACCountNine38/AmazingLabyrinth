@@ -111,7 +111,7 @@ public class Deck {
 
 	}
 
-//getters and setters for the variables
+	//getters and setters for the variables
 	public static ArrayList<ImageIcon> getCards() {
 
 		return cards;

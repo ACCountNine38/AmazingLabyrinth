@@ -187,6 +187,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+	// method that creates all the JComponents for this state, Override from the State class 
 	@Override
 	public void addJComponents() {
 
