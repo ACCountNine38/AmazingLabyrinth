@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -90,7 +91,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private ArrayList<Integer> Hand2;
 	private ArrayList<Integer> Hand3;
 	private ArrayList<Integer> Hand4;
-
+	
+	private int Winner;
+	
 	public GameState(boolean loaded, String filePath) {
 		
 		if(loaded) {
@@ -101,7 +104,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		}
 		
 	}
-	
+
 	@Override
 	public void init() {
 
@@ -111,7 +114,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		// Initializing constants
 		currentPlayer = 0;
-
+		
+		Winner = 0;
+		
 		// Initializing JComponents
 		board = new Tile[BOARD_SIZE][BOARD_SIZE];
 		boardIcons = new JLabel[BOARD_SIZE][BOARD_SIZE];
@@ -138,7 +143,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		autoMoveTimer = new Timer(300, this);
 		playerShiftTimer = new Timer(1, this);
 		tileShiftTimer = new Timer(1, this);
-
+		
 		Hand1 = new ArrayList<Integer>();
 		Hand2 = new ArrayList<Integer>();
 		Hand3 = new ArrayList<Integer>();
@@ -421,6 +426,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				int xLocation = input.nextInt();
 				int yLocation = input.nextInt();
 				int isAI = input.nextInt();
+				String isActive = input.next();
 				
 				if(isAI == 1) {
 					
@@ -434,6 +440,16 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				
 				players[player].setX(xLocation);
 				players[player].setY(yLocation);
+				
+				if(isActive.equals("false")) {
+					
+					players[player].setActive(false);
+					
+				} else {
+					
+					players[player].setActive(true);
+					
+				}
 				
 				playerIcons[player].setBounds(tileIconSize + playerIcons[player].getIcon().getIconWidth()*players[player].getX(), 
 						tileIconSize + playerIcons[player].getIcon().getIconHeight()*players[player].getY(), 
@@ -771,15 +787,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		canShift = true;
 
 		// if the current player id is 3, go back to player 0, else it increments
-		if(currentPlayer == 3) {
 
-			currentPlayer = 0;
-
-		} else {
-
+		do {
 			currentPlayer++;
-
-		}
+			if (currentPlayer > 3) {
+				currentPlayer = 0;
+			}
+		}while(!players[currentPlayer].isActive());
 
 		// set the text and color of the player turn label to suit the current player
 		currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
@@ -1177,6 +1191,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 						outputStream.println();
 						
 					}
+					
 					outputStream.println(extraPiece.getId() + " " + extraPiece.getItem());
 					
 					for(int player = 0; player < 4; player++) {
@@ -1190,6 +1205,8 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 							outputStream.println(players[player].getX() + " " + players[player].getY() + " " + 0);
 							
 						}
+						
+						outputStream.println(players[player].isActive());
 						
 					}
 					
@@ -1555,7 +1572,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		int player3X = players[3].getX();
 		int player3Y = players[3].getY();
-
+	
 
 		for (int i=0; i<24; i++) {
 
@@ -1585,26 +1602,41 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			}
 
 		}
-
-		if (Hand1.size() == 3) {
-			JOptionPane.showMessageDialog(null, "Player 1 won!!!");
-			new MenuState();
-
+		
+		//First player
+		if (Hand1.isEmpty() == true) {
+			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
+			players[0].setActive(false);
+			Hand1.add(10);
+			Winner++;
+			endTurn();
+			
 		} else if (Hand2.isEmpty() == true) {
-			JOptionPane.showMessageDialog(null, "Player 2 won!!!");
-			new MenuState();
+			JOptionPane.showMessageDialog(null, "Player 2 have finished all their cards!!!");
+			players[1].setActive(false);
+			Hand2.add(10);
+			Winner++;
+			endTurn();
 
 		} else if (Hand3.isEmpty() == true) {
-			JOptionPane.showMessageDialog(null, "Player 3 won!!!");
-			new MenuState();
+			JOptionPane.showMessageDialog(null, "Player 3 have finished all their cards!!!");
+			players[2].setActive(false);
+			Hand3.add(10);
+			Winner++;
+			endTurn();
 
 		} else if (Hand4.isEmpty() == true) {
-			JOptionPane.showMessageDialog(null, "Player 4 won!!!");
-			new MenuState();
+			JOptionPane.showMessageDialog(null, "Player 4 have finished all their cards!!!");
+			players[3].setActive(false);
+			Hand4.add(10);
+			Winner++;
+			endTurn();
 
 		}
-
-
+		if (Winner == 3) {
+			JOptionPane.showMessageDialog(null, "Game finished!!!");
+			new MenuState();
+		}
 	}
 
 	@Override
