@@ -130,11 +130,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		CardsImage = new JLabel[24];
 
 		//run the initializeCards method in the Deck class
-		cardObeject.initializeCards();
+		Deck.initializeCards();
 		//add the Card values in the Deck to the arraylist in this class
-		cards = cardObeject.getCards();
+		cards = Deck.getCards();
 		//add the ID values in the Deck to the arraylist in this class
-		CardNumber = cardObeject.getIDNumber();
+		CardNumber = Deck.getIDNumber();
 
 
 		// Initializing others types
@@ -968,7 +968,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		//A for loop that runs 24 time because there is a total of 24 items 
 		for (int i=0; i<24; i++) {
 
-			//All of these methods are similar, the only difference is what player it is. If 
+			//All of these methods are similar, the only difference is what player it is. 
+			//It first checks if the tile contains an item that the player has in his hands. If it returns true it turns the image of the item into a black car
+			//and remove it from the hand list. Depends on the player, the position of the cards will move. 
 			if(board[player0X][player0Y].getItem() == CardNumber.get(i)+1) {	
 				if(Hand1.contains(CardNumber.get(i))) {
 					AudioPlayer.playAudio("audio/cardCollected.wav");
@@ -1000,7 +1002,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		}
 		
-		//First player
+		//This checks the winning condition. If any players hand is empty, it means they win and it will show a message and their turn will be force to end. 
+		//It also set their isActive to false because they are out of the game and is will ensure they don't get a turn again.
+		//The Winner list is an ArrayList that checks the order of winners.
 		if (Hand1.isEmpty() == true) {	
 			AudioPlayer.playAudio("audio/gameOver.wav");
 			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
@@ -1034,9 +1038,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			endTurn();
 
 		}
-				
+		
+		//When their is 3 winner, that means that game is completely finished and it will stops and create a new state
 		if (Winner.size() ==3) {
 			
+			//since the winner class has only the size of 3, add whatever that is missing and they will be in last place. 
 			if (!Winner.contains(1)) {
 				Winner.add(1);
 			}else if (!Winner.contains(2)) {
@@ -1050,6 +1056,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			JOptionPane.showMessageDialog(null, "Game finished!!!");
 			System.out.println(Winner);
 			this.dispose();
+			//opens the last frame
 			new EndState(Winner);
 		}
 	}
