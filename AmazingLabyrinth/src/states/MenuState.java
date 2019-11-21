@@ -2,6 +2,7 @@ package states;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -69,6 +70,14 @@ public class MenuState extends State {
 		else if (event.getSource().equals(optionsButton)) {
 			new OptionState();
 			this.dispose();
+		}
+	}
+	
+	private class CloseListener implements ActionListener{
+
+		public void actionPerformed(ActionEvent e) {
+			
+			System.exit(0);
 		}
 	}
 
