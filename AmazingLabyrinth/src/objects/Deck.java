@@ -16,6 +16,7 @@ public class Deck {
 	//The main method that create the id elements in the list 
 	public static void initializID() {
 
+		IDNumber.clear();
 		//for loop to add each id to the ID arrayList
 		for (int i=0; i< 24; i++) {
 			IDNumber.add(i);

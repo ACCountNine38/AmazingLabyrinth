@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.color.*;
 
 public class ControlState extends State{
 

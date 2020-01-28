@@ -47,7 +47,7 @@ public class EndState extends JFrame implements ActionListener {
 		setVisible(true);
 		
 		//Set the size of the frame
-		setSize(1250, 850);
+		setSize(1280, 800);
 		setTitle("End");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}

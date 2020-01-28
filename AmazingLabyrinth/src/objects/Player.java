@@ -15,16 +15,18 @@ public class Player {
 	private ImageIcon image;
 	private Color colorID;
 	private boolean AI;
+	private int AILevel;
 	
 	//The boolean variable to check if the player is still in the game 
 	private boolean isActive;
 	
 	//Constructor method that initialize the variables
-	public Player(int id, boolean AI) {
+	public Player(int id, boolean AI, int AILevel) {
 
 		this.isActive = true;
 		this.id = id;
 		this.AI = AI;
+		this.AILevel = AILevel;
 		
 		//Assign an ID to each of the players base on their image. It also sets their color
 		if(id == 0) {
@@ -115,4 +117,13 @@ public class Player {
 	public void setAI(boolean aI) {
 		AI = aI;
 	}
+
+	public int getAILevel() {
+		return AILevel;
+	}
+
+	public void setAILevel(int aILevel) {
+		AILevel = aILevel;
+	}
+	
 }

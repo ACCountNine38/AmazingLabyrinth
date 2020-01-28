@@ -18,6 +18,7 @@ public class MenuState extends State {
 	private JButton startButton;
 	private JButton optionsButton;
 	private JButton loadGameButton;
+	private JButton exitButton;
 	private JLabel titleLabel;
 	private JLabel background;
 	//create new screen with both AI and 4 player button options
@@ -28,6 +29,7 @@ public class MenuState extends State {
 		optionsButton = new JButton("OPTIONS"); 
 		loadGameButton = new JButton("LOAD GAME");
 		startButton = new JButton("START");
+		exitButton = new JButton("EXIT");
 		
 		MusicPlayer.playMusic("audio/menuTheme.wav");
 		
@@ -44,31 +46,50 @@ public class MenuState extends State {
 		add(menuPanel);
 		
 		// set the required informations for all the JComponents
-		startButton.setBounds(550, 230, 197, 80);
+		startButton.setBounds(50, ScreenHeight - 325, 225, 50);
 		startButton.addActionListener(this);
 		startButton.setFont(new Font("times new roman", Font.ITALIC, 28));
-		optionsButton.setBounds(550, 510, 197, 80);
+		startButton.setForeground(Color.white);
+		startButton.setBackground(Color.DARK_GRAY);
+		startButton.setOpaque(true);
+		startButton.setBorderPainted(false);
+		optionsButton.setBounds(50, ScreenHeight - 250, 225, 50);
 		optionsButton.addActionListener(this);
 		optionsButton.setFont(new Font("times new roman", Font.ITALIC, 28));
-		loadGameButton.setBounds(550, 370, 197, 80);
+		optionsButton.setForeground(Color.white);
+		optionsButton.setBackground(Color.DARK_GRAY);
+		optionsButton.setOpaque(true);
+		optionsButton.setBorderPainted(false);
+		loadGameButton.setBounds(50, ScreenHeight - 175, 225, 50);
 		loadGameButton.addActionListener(this);
 		loadGameButton.setFont(new Font("times new roman", Font.ITALIC, 28));
+		loadGameButton.setForeground(Color.white);
+		loadGameButton.setBackground(Color.DARK_GRAY);
+		loadGameButton.setOpaque(true);
+		loadGameButton.setBorderPainted(false);
+		exitButton.setBounds(50, ScreenHeight - 100, 225, 50);
+		exitButton.addActionListener(this);
+		exitButton.setFont(new Font("times new roman", Font.ITALIC, 28));
+		exitButton.setForeground(Color.white);
+		exitButton.setBackground(Color.DARK_GRAY);
+		exitButton.setOpaque(true);
+		exitButton.setBorderPainted(false);
 		
 		titleLabel = new JLabel("AMAZING LABYRINTH");
-		titleLabel.setBounds(320, 75, 800, 180);
-		titleLabel.setFont((new Font( "Serif", Font.PLAIN, 60)));
+		titleLabel.setBounds(50, -25, 800, 180);
+		titleLabel.setFont((new Font( "times new roman", Font.PLAIN | Font.BOLD, 60)));
 		titleLabel.setForeground(Color.white);
 		
-		background = new JLabel(new ImageIcon(new ImageIcon("images/background.jpg")
-				.getImage().getScaledInstance(ScreenWidth, ScreenHeight, 0)));
+		background = new JLabel(new ImageIcon(new ImageIcon("images/menuBackground.png")
+				.getImage().getScaledInstance(ScreenWidth+500, ScreenHeight, 0)));
 		background.setBounds(0, 0, ScreenWidth, ScreenHeight);
 		
 		// places the JComponents to the panel
-		
 		menuPanel.add(titleLabel);
 		menuPanel.add(loadGameButton);
 		menuPanel.add(startButton);
 		menuPanel.add(optionsButton);
+		menuPanel.add(exitButton);
 		menuPanel.add(background);
 		
 	}
@@ -76,7 +97,7 @@ public class MenuState extends State {
 	
 	public void actionPerformed(ActionEvent event) {
 		if (event.getSource().equals(startButton)) {
-			new GameState(false, "");
+			new TypeState();
 			this.dispose();
 		}
 		
@@ -88,13 +109,8 @@ public class MenuState extends State {
 			new OptionState();
 			this.dispose();
 		}
-	}
-	
-	private class CloseListener implements ActionListener{
-
-		public void actionPerformed(ActionEvent e) {
-			
-			System.exit(0);
+		else if (event.getSource().equals(exitButton)) {
+			System.exit(1);
 		}
 	}
 

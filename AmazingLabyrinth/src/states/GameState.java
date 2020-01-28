@@ -3,6 +3,7 @@ package states;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -18,7 +20,11 @@ import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -54,17 +60,19 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	private JLabel[][] boardIcons;
 	private JLabel[] playerIcons;
-	private JLabel[] CardsImage;
+	private ArrayList<JLabel>[] cardImages;
 	private JLabel currentTurn;
 
 	private Tile[][] board;
 	private Player players[];
 	private ArrayList<Integer> mapBits;
+	private ArrayList<Tile>[] directItems;
 	private JLabel extraPieceLabel;
 	private JLabel boardBoarder;
 	private JLabel saveInstruction;
 	private ArrayList<JButton> tileShiftButtons;
 	private ArrayList<PathTrackingButton> potentialPathways;
+	private ArrayList<JLabel> highlightedPath;
 	private JTextArea saveGameName;
 	private JButton saveButton;
 	private JButton rotateClockWise, rotateCounterClockWise;
@@ -79,8 +87,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private boolean canShift, canClick;
 	private String playerMoveDirection;
 	private String filePath;
-
-	private ArrayList<LinkedList<String>> possiblePath;
+	
 	private ArrayList<Player> shiftedPlayers;
 	private Queue<String> AIMoveSet;
 
@@ -88,12 +95,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	private Timer playerShiftTimer;
 	private Timer tileShiftTimer;
 
-	private ArrayList<Integer> Hand1;
-	private ArrayList<Integer> Hand2;
-	private ArrayList<Integer> Hand3;
-	private ArrayList<Integer> Hand4;
+	private ArrayList<Integer>[] hands;
 	
 	private ArrayList<Integer> Winner;
+	
+	private boolean gameEnded;
+	
+	public static int[] playerAILevel = new int[4];
 	
 	// the constructor is used for loading a game
 	public GameState(boolean loaded, String filePath) {
@@ -127,11 +135,10 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		playerIcons = new JLabel[4];
 		extraPieceLabel = new JLabel(new ImageIcon(""));
 		potentialPathways = new ArrayList<PathTrackingButton>();
+		highlightedPath = new ArrayList<JLabel>();
 		iconLogo = new ImageIcon("cards/CardBack.jpg");
 
 		tileShiftButtons = new ArrayList<JButton>();
-
-		CardsImage = new JLabel[24];
 
 		//run the initializeCards method in the Deck class
 		Deck.initializeCards();
@@ -144,7 +151,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		// Initializing others types
 		players = new Player[4];
 		mapBits = new ArrayList<Integer>();
-		possiblePath = new ArrayList<LinkedList<String>>();
 		shiftedPlayers = new ArrayList<Player>();
 		AIMoveSet = new LinkedList<String>();
 		autoMoveTimer = new Timer(300, this);
@@ -153,33 +159,37 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		canShift = true;
 		canClick = true;
 		
-		// initializing player's deck
-		Hand1 = new ArrayList<Integer>();
-		Hand2 = new ArrayList<Integer>();
-		Hand3 = new ArrayList<Integer>();
-		Hand4 = new ArrayList<Integer>();
+		directItems = new ArrayList[4];
 		
-		//Assign the Hand arrayList base on the player, for example
-		//if you are player1 then you will get the first 5 cards on the list
-		//and if you are second you will get number 5 to 10 etc....
-		for (int i=0; i<5; i++) 
-			Hand1.add(CardNumber.get(i));
-
-		for (int i=5; i<10; i++) 
-			Hand2.add(CardNumber.get(i));
-
-		for (int i=10; i<15; i++) 
-			Hand3.add(CardNumber.get(i));
-
-		for (int i=15; i<20; i++) 
-			Hand4.add(CardNumber.get(i));
+		for(int i = 0; i < 4; i++) {
+			
+			directItems[i] = new ArrayList<Tile>();
+			
+		}
+		
+		// initializing player's deck
+		hands = new ArrayList[4];
+		cardImages = new ArrayList[4];
 
 		// enable key listener for this state
 		addKeyListener(this);
 
 		// initializes all the players
-		for(int i = 0; i < 4; i++)
-			players[i] = new Player(i, false);
+		for(int i = 0; i < 4; i++) {
+			
+			if(playerAILevel[i] == 0)
+				players[i] = new Player(i, false, 0);
+			
+			else if(playerAILevel[i] == 1)
+				players[i] = new Player(i, true, 1);
+			
+			else if(playerAILevel[i] == 2)
+				players[i] = new Player(i, true, 2);
+			
+			else if(playerAILevel[i] == 3)
+				players[i] = new Player(i, true, 3);
+			
+		}
 
 		// Method Calls
 		fillMapBits();
@@ -201,46 +211,23 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		// add panel to the frame
 		add(gamePanel);
+				
+		int currentCard = 0;
 		
-		// a for loop that draws all the cards in each player;s deck
-		for(int a = 0; a <=19; a++) {
-
-			// draws player 1's deck
-			if (a<5){
-				
-				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-				CardsImage[a].setBounds(880+a*70, 325, 60, 90);
-				gamePanel.add(CardsImage[a]);
-				
-			} 
+		for(int i = 0; i < cardImages.length; i++) {
 			
-			// draws player 2's deck
-			else if (a<10){
-				
-				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-				CardsImage[a].setBounds(880+(a-5)*70, 425, 60, 90);
-				gamePanel.add(CardsImage[a]);
-				
-			} 
+			hands[i] = new ArrayList<Integer>();
+			cardImages[i] = new ArrayList<JLabel>();
 			
-			// draws player 3's deck
-			else if (a<15){
+			for(int j = 0; j < 5; j++) {
 				
-				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-				CardsImage[a].setBounds(880+(a-10)*70, 525, 60, 90);
-				gamePanel.add(CardsImage[a]);
+				hands[i].add(CardNumber.get(currentCard));
+				cardImages[i].add(new JLabel(new ImageIcon(cards.get(currentCard).getImage().getScaledInstance(tileIconSize, tileIconSize, 0))));
+				cardImages[i].get(j).setBounds(880 + j*70, 325 + 100*i, 60, 90);
+				gamePanel.add(cardImages[i].get(j));
+				currentCard++;
 				
-			} 
-			
-			// draws player 4's deck
-			else if (a<20){
-				
-				CardsImage[a] = new JLabel(new ImageIcon(cards.get(a).getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
-				CardsImage[a].setBounds(880+(a-15)*70, 625, 60, 90);
-				gamePanel.add(CardsImage[a]);
-				
-			} 
-
+			}
 		}
 		
 		// generate all game tiles
@@ -428,9 +415,177 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		// generate the walkable paths
 		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
-
+		blockPlayerTest();
+		highlightTiles();
+		
+		if(playerAILevel[0] > 0) {
+			
+			AIFindCard();
+			
+		}
+		
 	}
 
+	// method that adds the items relating to the menu bar
+	public void addMenuBar() {
+
+		// create a new JMenuBar item that stores different menus
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+
+		// create a new menu called control and add it to the menu bar
+		JMenu controlMenu = new JMenu("File");
+		menuBar.add(controlMenu);
+
+		// creating the exit option under the control menu
+		JMenuItem menuOption = new JMenuItem("Return to Menu");
+		
+		JFrame currentFrame = this;
+		// add an action listener for button actions when clicked
+		menuOption.addActionListener(new ActionListener() {
+
+			// method handles the current button's actions
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				autoMoveTimer.stop();
+				playerShiftTimer.stop();
+				tileShiftTimer.stop();
+				MusicPlayer.stopMusic();
+				new MenuState();
+				currentFrame.dispose();
+
+			}
+			
+		});
+
+		controlMenu.add(menuOption);
+		
+		// the help menu will include all the help related menu items
+		JMenu helpMenu = new JMenu("Help");
+
+		menuBar.add(helpMenu);
+
+		// the description menu item will specify the screen descriptions and controls
+		JMenuItem descriptionOption = new JMenuItem("Rules");
+		descriptionOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				new RuleState();
+				
+			}
+
+		});
+
+		helpMenu.add(descriptionOption);
+
+		// the description menu item will specify the screen descriptions and controls
+		JMenuItem controlOption = new JMenuItem("Controls");
+		controlOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				// shows control description and controls upon clicking
+				JOptionPane.showMessageDialog(null,
+						"- Use the W-A-S-D keys to move the player\n"
+								+ "- use the arrow keys to break the wall, if a hammer is avaliable\n"
+								+ "- the score is based on how fast you escape the keep ***WITHOUT DYING***\n"
+								+ "- you may purchase items by clicking the 3 item buttons on the side\n\n"
+								+ "click 'ok' to continue...",
+						"Controls", JOptionPane.INFORMATION_MESSAGE);
+
+			}
+
+		});
+
+		helpMenu.add(controlOption);
+
+		// add audio menu is used to control sound effects
+		JMenu audioMenu = new JMenu("Audio");
+
+		menuBar.add(audioMenu);
+
+		// this menu item allows the user to disable music
+		JMenuItem disableMusicOption = new JMenuItem("Disable Background Music");
+		disableMusicOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				// stops the music from playing
+				MusicPlayer.stopMusic();
+				
+
+			}
+
+		});
+
+		audioMenu.add(disableMusicOption);
+
+		// this menu item allows the user to play a random Music music
+		JMenuItem enableMusicOption = new JMenuItem("Enable Background Music");
+		enableMusicOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				playGameBackground();
+
+			}
+
+		});
+
+		audioMenu.add(enableMusicOption);
+
+		// this menu item allows the user to play a random Music music
+		JMenuItem disableSFXOption = new JMenuItem("Disable Sound Effect");
+		disableSFXOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				// disabling all sounds by turning sound playing into false
+				AudioPlayer.mute = true;
+
+			}
+
+		});
+
+		audioMenu.add(disableSFXOption);
+
+		// this menu item allows the user to play a random Music music
+		JMenuItem enableSFXOption = new JMenuItem("Enable Sound Effect");
+		enableSFXOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				// enable sound effects to play for this screen
+				AudioPlayer.mute = false;
+
+			}
+
+		});
+
+		audioMenu.add(enableSFXOption);
+
+	}
+	
+	// method that plays a random background for the game state
+	public void playGameBackground() {
+		
+		// stop any previously existing music
+		MusicPlayer.stopMusic();
+		
+		// play a brand new game music
+		int musicID = (int)(Math.random()*2) + 1;
+		MusicPlayer.playMusic("audio/gameTheme" + musicID + ".wav");
+		
+	}
+	
 	// method that loads the game from the saved files
 	private void loadGame() {
 		
@@ -478,11 +633,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				// if the player is an AI, then change the AI variable to true
 				if(isAI == 1) {
 					
-					players[player] = new Player(player, true);
+					players[player] = new Player(player, true, 0);
 					
 				} else {
 					
-					players[player] = new Player(player, false);
+					players[player] = new Player(player, false, 0);
 					
 				}
 				
@@ -525,6 +680,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				canShift = true;
 				
 			}
+			
+			unhighlightTiles();
+			highlightTiles();
 			
 			// updates the shift button icons based on if tiles can still be shifted
 			updateTileShiftButtonIcon();
@@ -710,7 +868,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			upPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 
 			// because the path will be erased after turn ends, it will be added to an array
-			potentialPathways.add(new PathTrackingButton(upPath, newPath));
+			potentialPathways.add(new PathTrackingButton(upPath, newPath, board[x][y]));
 
 			// draw the path at index 4 on the panel so that the 4 players are drawn on top of it
 			gamePanel.add(upPath, 4);
@@ -722,7 +880,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				// this is used in a Queue for the AI to seek to a location without confusion 
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("up");
-				possiblePath.add(newWalkablePath);
 
 				// creating a temporary array list to be passed to the next recursive call for backtracking
 				ArrayList<Point> tempPoint = visited;
@@ -745,15 +902,14 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			downPath.addMouseListener(this);
 			downPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 
-			potentialPathways.add(new PathTrackingButton(downPath, newPath));
+			potentialPathways.add(new PathTrackingButton(downPath, newPath, board[x][y]));
 			gamePanel.add(downPath, 4);
 
 			if(previousDirection != 1) {
 
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("down");
-				possiblePath.add(newWalkablePath);
-
+				
 				ArrayList<Point> tempPoint = visited;
 				tempPoint.add(new Point(x, y));
 
@@ -773,14 +929,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			leftPath.addMouseListener(this);
 			leftPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 
-			potentialPathways.add(new PathTrackingButton(leftPath, newPath));
+			potentialPathways.add(new PathTrackingButton(leftPath, newPath, board[x][y]));
 			gamePanel.add(leftPath, 4);
 
 			if(previousDirection != 4) {
 
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("left");
-				possiblePath.add(newWalkablePath);
 
 				ArrayList<Point> tempPoint = visited;
 				tempPoint.add(new Point(x, y));
@@ -801,14 +956,13 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			rightPath.addMouseListener(this);
 			rightPath.setBounds(tileIconSize + tileIconSize*x, tileIconSize + tileIconSize*y, tileIconSize, tileIconSize);
 
-			potentialPathways.add(new PathTrackingButton(rightPath, newPath));
+			potentialPathways.add(new PathTrackingButton(rightPath, newPath, board[x][y]));
 			gamePanel.add(rightPath, 4);
 
 			if(previousDirection != 3) {
 
 				LinkedList<String> newWalkablePath = new LinkedList<String>(newPath);
 				newWalkablePath.add("right");
-				possiblePath.add(newWalkablePath);
 
 				ArrayList<Point> tempPoint = visited;
 				tempPoint.add(new Point(x, y));
@@ -838,66 +992,76 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		potentialPathways.clear();
 
 	}
-
+		
 	// method that handles the action of when a turn ends
 	// it can be called by the AI and player
 	private void endTurn() {
-
-		AudioPlayer.playAudio("audio/startTurn.wav");
-
-		// if the current turn is AI
-		if(players[currentPlayer].isAI()) {
-
-			// stop the AI movement by shutting down the timer
-			autoMoveTimer.stop();
-
-		}
-
-		// enable button shifting
-		canShift = true;
-
-		// this line checks if the player is still active. CurrentPlayer will keep adding 
-		//until it reaches a player that is active. If you are not active, it will skip your turn
-		//Also when it reaches beyond 3, it returns back to zero
-		do {
+		
+		if(gameEnded) {
 			
-			currentPlayer++;
-			if (currentPlayer > 3) {
-				currentPlayer = 0;
+			System.out.println("~~~~~~~~~~~~~~!!!GAME OVER!!!~~~~~~~~~~~~~~");
+			
+		} else {
+		
+			System.out.println("~~~~~~~~~~~~~~+Player " + (currentPlayer+1) +"'s +Turn Ended~~~~~~~~~~~~~~");
+			AudioPlayer.playAudio("audio/startTurn.wav");
+	
+			// if the current turn is AI
+			if(players[currentPlayer].isAI()) {
+	
+				// stop the AI movement by shutting down the timer
+				autoMoveTimer.stop();
+	
+			}
+	
+			// enable button shifting
+			canShift = true;
+	
+			// this line checks if the player is still active. CurrentPlayer will keep adding 
+			//until it reaches a player that is active. If you are not active, it will skip your turn
+			//Also when it reaches beyond 3, it returns back to zero
+			do {
+				
+				currentPlayer++;
+				if (currentPlayer > 3) {
+					currentPlayer = 0;
+				}
+				
+			} while(!players[currentPlayer].isActive());
+	
+			// set the text and color of the player turn label to suit the current player
+			currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
+			currentTurn.setForeground(players[currentPlayer].getColorID());
+	
+			// clear the walk lines because a turn has ended
+			clearWalkLines();
+	
+			// if the current player is AI, then start the timer for it to make actions
+			if(players[currentPlayer].isAI()) {
+	
+				AIFindCard();
+	
+			} else {
+	
+				// generate new walk lines for the next player
+				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+	
 			}
 			
-		} while(!players[currentPlayer].isActive());
-
-		// set the text and color of the player turn label to suit the current player
-		currentTurn.setText("Current Turn: Player " + (currentPlayer + 1));
-		currentTurn.setForeground(players[currentPlayer].getColorID());
-
-		// clear the walk lines because a turn has ended
-		clearWalkLines();
-
-		// if the current player is AI, then start the timer for it to make actions
-		if(players[currentPlayer].isAI()) {
-
-			autoMoveTimer.start();
-			// clear the previous AI path lines
-			possiblePath.clear();
-
-		} else {
-
-			// generate new walk lines for the next player
-			viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
-
+			unhighlightTiles();
+			highlightTiles();
+	
+			// updates the icons of the tile shift buttons
+			updateTileShiftButtonIcon();
+			
 		}
-
-		// updates the icons of the tile shift buttons
-		updateTileShiftButtonIcon();
 
 	}
 	
 	// method that updates the position of the players
 	@Override
 	public void updatePosition(int x, int y) {
-
+		
 		// if the frame is focused on the save game text area, switch the focus by disabling the text area
 		saveGameName.setFocusable(false);
 		
@@ -993,124 +1157,68 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 	}
 
 	// method that rotates the extra tile clockwise
-	public void rotateExtraTileClockWise() {
+	public void rotateExtraTileClockWise(boolean testing) {
 
-		AudioPlayer.playAudio("audio/rotate.wav");
+		if(!testing)
+			AudioPlayer.playAudio("audio/rotate.wav");
 
 		// call the rotate clock wise method from within the tile class itself
 		extraPiece.rotateTileClockWise();
 
-		// reset the new icon for the extra tile
-		extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-				.getImage().getScaledInstance(92, 92, 0)));
+		if(!testing)
+			// reset the new icon for the extra tile
+			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+					.getImage().getScaledInstance(92, 92, 0)));
 
 	}
 	
 	// method that rotates the extra tile counterclockwise
-	public void rotateExtraTileCounterClockWise() {
-
-		AudioPlayer.playAudio("audio/rotate.wav");
+	public void rotateExtraTileCounterClockWise(boolean testing) {
+		
+		if(!testing)
+			AudioPlayer.playAudio("audio/rotate.wav");
 
 		extraPiece.rotateTileCounterClockWise();
 
-		extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
-				.getImage().getScaledInstance(92, 92, 0)));
+		if(!testing)
+			extraPieceLabel.setIcon(new ImageIcon(new ImageIcon(extraPiece.getFilePath())
+					.getImage().getScaledInstance(92, 92, 0)));
 
 	}
 	
 	//Check the cards on the board and the card you have on your hand
-	public void CheckCards(int x, int y) {
-
-		//the variables for the player's position
-		int player0X = players[0].getX();
-		int player0Y = players[0].getY();
-
-		int player1X = players[1].getX();
-		int player1Y = players[1].getY();
-
-		int player2X = players[2].getX();
-		int player2Y = players[2].getY();
-
-		int player3X = players[3].getX();
-		int player3Y = players[3].getY();
-	
-		//A for loop that runs 24 time because there is a total of 24 items 
-		for (int i=0; i<24; i++) {
-
-			//All of these methods are similar, the only difference is what player it is. 
-			//It first checks if the tile contains an item that the player has in his hands. If it returns true it turns the image of the item into a black car
-			//and remove it from the hand list. Depends on the player, the position of the cards will move. 
-			if(board[player0X][player0Y].getItem() == CardNumber.get(i)+1) {	
-				if(Hand1.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand1.indexOf(CardNumber.get(i))].setIcon(iconLogo);
-					Hand1.remove(CardNumber.get(i));
-				}
+	public void checkCards() {
+		
+		for(int i = 0; i < hands[currentPlayer].size(); i++) {
+			
+			if(hands[currentPlayer].get(i)+1 == board[players[currentPlayer].getX()][players[currentPlayer].getY()].getItem()) {
+				
+				cardImages[currentPlayer].get(i).setIcon(iconLogo);
+				cardImages[currentPlayer].remove(i);
+				hands[currentPlayer].remove(i);
+				unhighlightTiles();
+				highlightTiles();
+				AudioPlayer.playAudio("audio/cardCollected.wav");
+				break;
+				
 			}
-			else if(board[player1X][player1Y].getItem() == CardNumber.get(i)+1) {
-				if(Hand2.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand2.indexOf(CardNumber.get(i)) + 5].setIcon(iconLogo);
-					Hand2.remove(CardNumber.get(i));
-				}
-			}
-			else if(board[player2X][player2Y].getItem() == CardNumber.get(i)+1) {
-				if(Hand3.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand3.indexOf(CardNumber.get(i)) + 10].setIcon(iconLogo);
-					Hand3.remove(CardNumber.get(i));
-				}
-			}
-			else if(board[player3X][player3Y].getItem() == CardNumber.get(i)+1) {
-				if(Hand4.contains(CardNumber.get(i))) {
-					AudioPlayer.playAudio("audio/cardCollected.wav");
-					CardsImage[Hand4.indexOf(CardNumber.get(i)) + 15].setIcon(iconLogo);
-					Hand4.remove(CardNumber.get(i));
-				}
-			}
-
+			
 		}
 		
-		//This checks the winning condition. If any players hand is empty, it means they win and it will show a message and their turn will be force to end. 
-		//It also set their isActive to false because they are out of the game and is will ensure they don't get a turn again.
-		//The Winner list is an ArrayList that checks the order of winners.
-		if (Hand1.isEmpty() == true) {	
+		if(hands[currentPlayer].isEmpty()) {
+			
 			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 1 have finished all their cards!!!");
-			players[0].setActive(false);
-			Hand1.add(10);
-			Winner.add(1);
+			JOptionPane.showMessageDialog(null, "Player " + (currentPlayer+1) + " have finished all their cards!!!");
+			players[currentPlayer].setActive(false);
+			Winner.add(currentPlayer);
 			endTurn();
 			
-		} else if (Hand2.isEmpty() == true) {
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 2 have finished all their cards!!!");
-			players[1].setActive(false);
-			Hand2.add(10);
-			Winner.add(2);
-			endTurn();
-
-		} else if (Hand3.isEmpty() == true) {
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 3 have finished all their cards!!!");
-			players[2].setActive(false);
-			Hand3.add(10);
-			Winner.add(3);
-			endTurn();
-
-		} else if (Hand4.isEmpty() == true) {
-			AudioPlayer.playAudio("audio/gameOver.wav");
-			JOptionPane.showMessageDialog(null, "Player 4 have finished all their cards!!!");
-			players[3].setActive(false);
-			Hand4.add(10);
-			Winner.add(4);
-			endTurn();
-
 		}
 		
 		//When their is 3 winner, that means that game is completely finished and it will stops and create a new state
 		if (Winner.size() ==3) {
 			
+			gameEnded = true;
 			//since the winner class has only the size of 3, add whatever that is missing and they will be in last place. 
 			if (!Winner.contains(1)) {
 				Winner.add(1);
@@ -1123,11 +1231,56 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			}
 			
 			JOptionPane.showMessageDialog(null, "Game finished!!!");
-			System.out.println(Winner);
-			this.dispose();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			//opens the last frame
+			autoMoveTimer.stop();
+			playerShiftTimer.stop();
+			tileShiftTimer.stop();
+			MusicPlayer.stopMusic();
 			new EndState(Winner);
+			this.dispose();
+			
 		}
+		
+	}
+	
+	private void highlightTiles() {
+		
+		for(int i = 0; i < BOARD_SIZE; i++) {
+			for(int j = 0; j < BOARD_SIZE; j++) {
+				
+				if(hands[currentPlayer].contains(board[i][j].getItem()-1)) {
+					
+					JLabel highlight = new JLabel(new ImageIcon(new ImageIcon("images/walkableButton.png")
+							.getImage().getScaledInstance(tileIconSize, tileIconSize, 0)));
+					highlight.setBounds(boardIcons[i][j].getX(), boardIcons[i][j].getY(), tileIconSize, tileIconSize);
+					highlightedPath.add(highlight);
+					
+					gamePanel.add(highlight, 0);
+					
+				}
+				
+			}
+		}
+		
+	}
+	
+	private void unhighlightTiles() {
+		
+		for(int i = 0; i < highlightedPath.size(); i++) {
+			
+			gamePanel.remove(highlightedPath.get(i));
+			
+		}
+		
+		repaint();
+		highlightedPath.clear();
+		
 	}
 	
 	// method that shifts the player along with shifting the tiles
@@ -1218,18 +1371,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				return;
 
 			}
-
-			// shift the tiles and if it is an AI and never shifted tiles before in the current turn
-			if(canShift && players[currentPlayer].isAI()) {
-
-				shiftID = (int)(Math.random()*12);
-
-				shiftButtonClick();
-
-				return;
-
-			}
-
+			
 			// if the auto move set is not empty, then move the player to its next direction in the move set
 			if(!AIMoveSet.isEmpty()) {
 
@@ -1240,33 +1382,43 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				if(nextMove.equals("up")) {
 
 					updatePosition(0, -1);
+					checkCards();
 
 				} else if(nextMove.equals("down")) {
 
 					updatePosition(0, 1);
+					checkCards();
 
 				} else if(nextMove.equals("left")) {
 
 					updatePosition(-1, 0);
+					checkCards();
 
 				} else if(nextMove.equals("right")) {
 
 					updatePosition(1, 0);
+					checkCards();
 
 				}
 
 			} else {
 
 				// if player is an AI and the move set is empty, then end the current turn
-				if(players[currentPlayer].isAI()) {
+				if(players[currentPlayer].isAI() && findNumAvaliableItem() == 0) {
 					
-					autoMoveTimer.stop();
-					endTurn();
+					if(canShift) {
+						
+						preventWin();
+						
+					} else {
+						
+						endTurn();
+						
+					}
 
-				} else {
+				} else if (players[currentPlayer].isAI()){
 					
-					// stop the moving after move set is complete and current player is not an AI
-					autoMoveTimer.stop();
+					AIFindCard();
 					
 				}
 
@@ -1445,11 +1597,11 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		} else if(event.getSource().equals(rotateClockWise)) {
 
-			rotateExtraTileClockWise();
+			rotateExtraTileClockWise(false);
 			
 		} else if(event.getSource().equals(rotateCounterClockWise)) {
 
-			rotateExtraTileCounterClockWise();
+			rotateExtraTileCounterClockWise(false);
 			
 		} else if(event.getSource().equals(saveButton)) {
 			
@@ -1533,14 +1685,17 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			}
 			
 		}
-
+		
 		for(int button = 0; button < tileShiftButtons.size(); button++) {
 
 			if(canShift && event.getSource().equals(tileShiftButtons.get(button))) {
 
 				shiftID = button;
 
-				shiftButtonClick();
+				if(canShift) {
+					shiftButtonClick();
+					canShift = false;
+				}
 
 			} else if(!canShift && event.getSource().equals(tileShiftButtons.get(button))) {
 				
@@ -1598,16 +1753,554 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 	}
 
+	private void AIFindCard() {
+		
+		clearWalkLines();
+		// generate new walk lines for the next player
+		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+
+		// checks if there is a path available for the AI to move
+		if(!potentialPathways.isEmpty()) {
+
+			for(int i = 0; i < potentialPathways.size(); i++) {
+				
+				if(hands[currentPlayer].contains(potentialPathways.get(i).getTile().getItem()-1)) {
+					
+					AIMoveSet = potentialPathways.get(i).getTrack();
+						
+				}
+				
+			}
+			
+			// start the move timer for the AI to auto move
+			autoMoveTimer.start();
+
+		} else {
+			
+			if(canShift) {
+				
+				selectAIRotateButton();
+				// start the move timer for the AI to auto move
+				autoMoveTimer.start();
+				
+			}
+			
+		}
+		
+	}
+	
+	private void preventWin() {
+		
+		blockPlayerTest();
+		
+		int tempCurrentPlayer = currentPlayer;
+		
+		currentPlayer = 0;
+		
+		boolean playerHasDirectItem = false;
+		
+		for(int i = 0; i < directItems.length; i++) {
+			
+			if(hands[currentPlayer].size() - directItems[i].size() == 0 && players[currentPlayer].isActive()) {
+				
+				currentPlayer = i;
+				
+				if(directItems[i].size() > 0) {
+					
+					playerHasDirectItem = true;
+					
+				} else {
+					
+					playerHasDirectItem = false;
+					
+				}
+				
+				break;
+				
+			}
+			
+		}
+		
+		if(players[tempCurrentPlayer].getAILevel() >= 2 && playerHasDirectItem) {
+			
+			System.out.println("prevented win: Player " + (currentPlayer+1));
+			
+			Tile tempExtraTile = extraPiece;
+			
+			int minIndex = 0;
+			int minAmount = Integer.MAX_VALUE;
+			int rotate = 0;
+			
+			ArrayList<Integer> directItems = new ArrayList<Integer>();
+			
+			for(int i = 0; i < 4; i++) {
+				
+				directItems.add(numItemsCanGet(0, 6, i));
+				directItems.add(numItemsCanGet(1, 7, i));
+				directItems.add(numItemsCanGet(2, 8, i));
+				directItems.add(numItemsCanGet(3, 9, i));
+				directItems.add(numItemsCanGet(4, 10, i));
+				directItems.add(numItemsCanGet(5, 11, i));
+				directItems.add(numItemsCanGet(6, 0, i));
+				directItems.add(numItemsCanGet(7, 1, i));
+				directItems.add(numItemsCanGet(8, 2, i));
+				directItems.add(numItemsCanGet(9, 3, i));
+				directItems.add(numItemsCanGet(10, 4, i));
+				directItems.add(numItemsCanGet(11, 5, i));
+				
+				for(int j = 0; j < directItems.size(); j++) {
+					
+					if(directItems.get(j) < minAmount) {
+						minIndex = j;
+						minAmount = directItems.get(minIndex);
+						rotate = i;
+					}
+				}
+				
+				directItems.clear();
+				
+			}
+			
+			extraPiece = tempExtraTile;
+			
+			if(rotate == 1) {
+				rotateExtraTileClockWise(true);
+			} else if(rotate == 2) {
+				rotateExtraTileClockWise(true);
+				rotateExtraTileClockWise(true);
+			} else if(rotate == 3) {
+				rotateExtraTileCounterClockWise(true);
+			}
+			
+			currentPlayer = tempCurrentPlayer;
+			
+			shiftID = minIndex;
+			
+			if(canShift) {
+				
+				shiftButtonClick();
+				canShift = false;
+				
+			}
+			
+		} else {
+			
+			currentPlayer = tempCurrentPlayer;
+			selectAIRotateButton();
+			
+		}
+		
+	}
+	
+	private void blockPlayer() {
+		
+		blockPlayerTest();
+		
+		int tempCurrentPlayer = currentPlayer;
+		
+		currentPlayer = 0;
+		
+		boolean playerHasDirectItem = false;
+		
+		for(int i = 0; i < directItems.length; i++) {
+			
+			if(directItems[i].size() > directItems[currentPlayer].size()) {
+				
+				currentPlayer = i;
+				
+				if(directItems[i].size() > 0) {
+					
+					playerHasDirectItem = true;
+					
+				} else {
+					
+					playerHasDirectItem = false;
+					
+				}
+				
+			}
+			
+		}
+		
+		//System.out.println(playerHasDirectItem + "   " + players[currentPlayer].getAILevel());
+		if(!playerHasDirectItem && players[tempCurrentPlayer].getAILevel() == 3) {
+			currentPlayer = tempCurrentPlayer;
+			findFuturePath();
+			return;
+			
+		} else if(!playerHasDirectItem) {
+			System.out.println("no players to block and collectable treasures are not near, shift randomized");
+			System.out.println("AI Level too low for improved steps");
+			
+			currentPlayer = tempCurrentPlayer;
+			
+			shiftID = (int)(Math.random()*3);
+			
+			if(shiftID == 1) {
+				
+				endTurn();
+				return;
+				
+			}
+			
+			shiftID = (int)(Math.random()*12);
+			
+			if(canShift) {
+				
+				shiftButtonClick();
+				canShift = false;
+				
+			}
+			
+			return;
+			
+		}
+
+		System.out.println("blocked player: " + (currentPlayer+1));
+		
+		Tile tempExtraTile = extraPiece;
+		
+		int minIndex = 0;
+		int minAmount = Integer.MAX_VALUE;
+		int rotate = 0;
+		
+		ArrayList<Integer> directItems = new ArrayList<Integer>();
+		
+		for(int i = 0; i < 4; i++) {
+			
+			directItems.add(numItemsCanGet(0, 6, i));
+			directItems.add(numItemsCanGet(1, 7, i));
+			directItems.add(numItemsCanGet(2, 8, i));
+			directItems.add(numItemsCanGet(3, 9, i));
+			directItems.add(numItemsCanGet(4, 10, i));
+			directItems.add(numItemsCanGet(5, 11, i));
+			directItems.add(numItemsCanGet(6, 0, i));
+			directItems.add(numItemsCanGet(7, 1, i));
+			directItems.add(numItemsCanGet(8, 2, i));
+			directItems.add(numItemsCanGet(9, 3, i));
+			directItems.add(numItemsCanGet(10, 4, i));
+			directItems.add(numItemsCanGet(11, 5, i));
+			
+			for(int j = 0; j < directItems.size(); j++) {
+				
+				if(directItems.get(j) < minAmount) {
+					minIndex = j;
+					minAmount = directItems.get(minIndex);
+					rotate = i;
+				}
+			}
+			
+			directItems.clear();
+			
+		}
+		
+		extraPiece = tempExtraTile;
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		currentPlayer = tempCurrentPlayer;
+		
+		shiftID = minIndex;
+		
+		if(canShift) {
+			
+			shiftButtonClick();
+			canShift = false;
+			
+		}
+		
+	}
+	
+	private void blockPlayerTest() {
+		
+		for(int i = 0; i < 4; i++) {
+			
+			directItems[i].clear();
+			
+		}
+		
+		int tempCurrentPlayer = currentPlayer;
+		
+		for(currentPlayer = 0; currentPlayer < 4; currentPlayer++) {
+			
+			clearWalkLines();
+			// generate new potential pathways
+			viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+
+			for(int j = 0; j < potentialPathways.size(); j++) {
+				
+				if(hands[currentPlayer].contains(potentialPathways.get(j).getTile().getItem()-1) && 
+						!directItems[currentPlayer].contains(potentialPathways.get(j).getTile())) {
+					
+					directItems[currentPlayer].add(potentialPathways.get(j).getTile());
+					
+				}
+				
+			}
+			
+		}
+		
+		currentPlayer = tempCurrentPlayer;
+		clearWalkLines();
+		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+		
+	}
+	
+	private void findFuturePath() {
+		
+		Tile tempExtraTile = extraPiece;
+		
+		int maxIndex = 0;
+		int maxAmount = 0;
+		int rotate = 0;
+		
+		ArrayList<Integer> directItems = new ArrayList<Integer>();
+		
+		for(int i = 0; i < 4; i++) {
+			
+			directItems.add(findPotentialPathwaySize(0, 6, i));
+			directItems.add(findPotentialPathwaySize(1, 7, i));
+			directItems.add(findPotentialPathwaySize(2, 8, i));
+			directItems.add(findPotentialPathwaySize(3, 9, i));
+			directItems.add(findPotentialPathwaySize(4, 10, i));
+			directItems.add(findPotentialPathwaySize(5, 11, i));
+			directItems.add(findPotentialPathwaySize(6, 0, i));
+			directItems.add(findPotentialPathwaySize(7, 1, i));
+			directItems.add(findPotentialPathwaySize(8, 2, i));
+			directItems.add(findPotentialPathwaySize(9, 3, i));
+			directItems.add(findPotentialPathwaySize(10, 4, i));
+			directItems.add(findPotentialPathwaySize(11, 5, i));
+			
+			for(int j = 0; j < directItems.size(); j++) {
+				
+				if(directItems.get(j) > maxAmount) {
+					maxIndex = j;
+					maxAmount = directItems.get(maxIndex);
+					rotate = i;
+				}
+				
+			}
+			
+			directItems.clear();
+			
+		}
+		
+		extraPiece = tempExtraTile;
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		System.out.println("moveable path size expanded for future move");
+			
+		shiftID = maxIndex;
+			
+		if(canShift) {
+			shiftButtonClick();
+			canShift = false;
+		}
+		
+	}
+	
+	private void expandSpace() {
+		
+		Tile tempExtraTile = extraPiece;
+		
+		int maxIndex = 0;
+		int maxAmount = 0;
+		int rotate = 0;
+		
+		ArrayList<Integer> directItems = new ArrayList<Integer>();
+		
+		for(int i = 0; i < 4; i++) {
+			
+			directItems.add(findPotentialPathwaySize(0, 6, i));
+			directItems.add(findPotentialPathwaySize(1, 7, i));
+			directItems.add(findPotentialPathwaySize(2, 8, i));
+			directItems.add(findPotentialPathwaySize(3, 9, i));
+			directItems.add(findPotentialPathwaySize(4, 10, i));
+			directItems.add(findPotentialPathwaySize(5, 11, i));
+			directItems.add(findPotentialPathwaySize(6, 0, i));
+			directItems.add(findPotentialPathwaySize(7, 1, i));
+			directItems.add(findPotentialPathwaySize(8, 2, i));
+			directItems.add(findPotentialPathwaySize(9, 3, i));
+			directItems.add(findPotentialPathwaySize(10, 4, i));
+			directItems.add(findPotentialPathwaySize(11, 5, i));
+			
+			for(int j = 0; j < directItems.size(); j++) {
+				
+				if(directItems.get(j) > maxAmount) {
+					maxIndex = j;
+					maxAmount = directItems.get(maxIndex);
+					rotate = i;
+				}
+				
+			}
+			
+			directItems.clear();
+			
+		}
+		
+		extraPiece = tempExtraTile;
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		System.out.println("moveable path size expanded");
+			
+		shiftID = maxIndex;
+			
+		if(canShift) {
+			shiftButtonClick();
+			canShift = false;
+		}
+		
+	}
+	
+	private int findNumAvaliableItem() {
+		
+		int numItem = 0;
+		for(int i = 0; i < potentialPathways.size(); i++) {
+			
+			if(hands[currentPlayer].contains(potentialPathways.get(i).getTile().getItem()-1)) {
+				
+				numItem++;
+					
+			}
+			
+		}
+		
+		return numItem;
+		
+	}
+	
+	private void selectAIRotateButton() {
+		
+		Tile tempExtraTile = extraPiece;
+		
+		int maxIndex = 0;
+		int maxAmount = 0;
+		int rotate = 0;
+		
+		int[] directItems = new int[12];
+		
+		for(int i = 0; i < 4; i++) {
+			
+			directItems[0] = (numItemsCanGet(0, 6, i));
+			directItems[1] = (numItemsCanGet(1, 7, i));
+			directItems[2] = (numItemsCanGet(2, 8, i));
+			directItems[3] = (numItemsCanGet(3, 9, i));
+			directItems[4] = (numItemsCanGet(4, 10, i));
+			directItems[5] = (numItemsCanGet(5, 11, i));
+			directItems[6] = (numItemsCanGet(6, 0, i));
+			directItems[7] = (numItemsCanGet(7, 1, i));
+			directItems[8] = (numItemsCanGet(8, 2, i));
+			directItems[9] = (numItemsCanGet(9, 3, i));
+			directItems[10] = (numItemsCanGet(10, 4, i));
+			directItems[11] = (numItemsCanGet(11, 5, i));
+			
+			for(int j = 0; j < directItems.length; j++) {
+				
+				if(directItems[j] > maxAmount) {
+					
+					maxIndex = j;
+					maxAmount = directItems[j];
+					rotate = i;
+					
+				}
+				
+			}
+			
+			Arrays.fill(directItems, 0);
+			
+		}
+		
+		extraPiece = tempExtraTile;
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		if(maxAmount == 0 && players[currentPlayer].getAILevel() >= 2) {
+			
+			blockPlayer();
+			
+		} else if(maxAmount == 0) {
+			
+			System.out.println("no collectable treasures, shift randomized");
+			System.out.println("AI Level too low for improved steps");
+			
+			shiftID = (int)(Math.random()*3);
+			
+			if(shiftID == 1) {
+				
+				endTurn();
+				return;
+				
+			}
+
+			shiftID = (int)(Math.random()*12);
+			
+			if(shiftID == 12) {
+				
+				endTurn();
+				return;
+				
+			}
+			
+			if(canShift) {
+				shiftButtonClick();
+				canShift = false;
+			}
+			
+		} else {
+			
+			System.out.println("Shifted Tile: " + maxIndex + " Amount: " + maxAmount + " Rotate: " + rotate);
+			
+			shiftID = maxIndex;
+			
+			if(canShift) {
+				shiftButtonClick();
+				canShift = false;
+			}
+		
+		}
+		
+	}
+	
 	// method that executes the actions of the shift buttons
 	private void shiftButtonClick() {
 
 		// move the movable columns downwards
 		if(shiftID >= 0 && shiftID <= 2) {
 
-			// create a temporary extra piece tile at the last tile of the shift
+			// create a temporary extra piece tile at the last tile of the shiftID
 			Tile tempExtraPiece = board[1 + shiftID*2][BOARD_SIZE-1];
 
-			// shift each tile to the adjacent tiles
+			// shiftID each tile to the adjacent tiles
 			for(int j = BOARD_SIZE - 1; j > 0; j--) {
 
 				board[1 + shiftID*2][j] = board[1 + shiftID*2][j-1];
@@ -1621,7 +2314,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 			extraPieceLabel.setBounds(boardIcons[1 + shiftID*2][0].getX(), 
 					boardIcons[1 + shiftID*2][0].getY() - tileIconSize, tileIconSize, tileIconSize);
 
-			// checks if any players are on the tile, if there are, then shift them also by calling shiftPlayer method
+			// checks if any players are on the tile, if there are, then shiftID them also by calling shiftPlayer method
 			for(int index = 0; index < players.length; index++) {
 
 				if(players[index].getX() == 1 + shiftID*2) {
@@ -1739,6 +2432,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		}	
 
+		unhighlightTiles();
+		highlightTiles();
+		
 		// to start the animation, the amount of pixels the tile have to move is exactly the tile size
 		tileMoveAmount = tileIconSize;
 
@@ -1751,31 +2447,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		// generate new potential pathways
 		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
 
-		// if the current player is an AI, then generate a move set for it to move
-		if(players[currentPlayer].isAI()) {
-
-			// checks if there is a path available for the AI to move
-			if(!possiblePath.isEmpty()) {
-
-				// update the move set to a random one within the possible path
-				int AIMoveSetID = (int)(Math.random()*possiblePath.size());
-
-				for(String direction: possiblePath.get(AIMoveSetID)) {
-
-					AIMoveSet.add(direction);
-
-				}
-
-				// start the move timer for the AI to auto move
-				autoMoveTimer.start();
-
-			}
-
-		}
-
-		// clean the possible pathways so that next time it can be empty to begin with
-		possiblePath.clear();
-
+		if(players[currentPlayer].isAI())
+			AIFindCard();
+		
 		// update the shift button icons to the invalid icon
 		updateTileShiftButtonIcon();
 
@@ -1787,7 +2461,324 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 		AudioPlayer.playAudio("audio/buttonSlide.wav");
 
+	}	
+	private void shiftTiles(int shift) {
+		
+		// move the movable columns downwards
+		if(shift >= 0 && shift <= 2) {
 
+			// create a temporary extra piece tile at the last tile of the shiftID
+			Tile tempExtraPiece = board[1 + shift*2][BOARD_SIZE-1];
+						
+			// shift each tile to the adjacent tiles
+			for(int j = BOARD_SIZE - 1; j > 0; j--) {
+
+				board[1 + shift*2][j] = board[1 + shift*2][j-1];
+
+			}
+
+			// checks if any players are on the tile, if there are, then shift them also by calling shiftPlayer method
+			for(int index = 0; index < players.length; index++) {
+
+				if(players[index].getX() == 1 + shift*2) {
+
+					players[index].setY(players[index].getY()+1);
+
+				}
+				
+				if(players[index].getY() > BOARD_SIZE-1)
+					players[index].setY(0);
+
+			}
+
+			// updates the extra piece tile to the appropriate location
+			board[1 + shift*2][0] = extraPiece;
+			
+			extraPiece = tempExtraPiece;
+
+		}
+
+		// move movable rows leftwards
+		else if(shift >= 3 && shift <= 5) {
+			
+			Tile tempExtraPiece = board[0][1 + (shift-3)*2];
+			
+			for(int j = 0; j < BOARD_SIZE-1; j++) {
+
+				board[j][1 + (shift-3)*2] = board[j+1][1 + (shift-3)*2];
+				
+			}
+			
+			for(int index = 0; index < players.length; index++) {
+
+				if(players[index].getY() == 1 + (shift-3)*2) {
+
+					players[index].setX(players[index].getX()-1);
+
+				}
+				
+				if(players[index].getX() < 0)
+					players[index].setX(BOARD_SIZE-1);
+
+			}
+
+			board[BOARD_SIZE-1][1 + (shift-3)*2] = extraPiece;
+
+			extraPiece = tempExtraPiece;
+			
+		}	
+
+		// move the movable columns upwards
+		else if(shift >= 6 && shift <= 8) {
+			
+			Tile tempExtraPiece = board[1 + (shift-6)*2][0];
+			
+			for(int j = 0; j < BOARD_SIZE - 1; j++) {
+
+				board[1 + (shift-6)*2][j] = board[1 + (shift-6)*2][j+1];
+
+			}
+
+			for(int index = 0; index < players.length; index++) {
+
+				if(players[index].getX() == 1 + (shift-6)*2) {
+
+					players[index].setY(players[index].getY()-1);
+
+				}
+				
+				if(players[index].getY() < 0)
+					players[index].setY(BOARD_SIZE-1);
+
+			}
+
+			board[1 + (shift-6)*2][BOARD_SIZE-1] = extraPiece;
+			
+			extraPiece = tempExtraPiece;
+
+		}
+
+		// move movable rows rightwards
+		else if(shift >= 9 && shift <= 11) {
+
+			Tile tempExtraPiece = board[BOARD_SIZE - 1][1 + (shift-9)*2];
+			
+			for(int j = BOARD_SIZE - 1; j > 0; j--) {
+
+				board[j][1 + (shift-9)*2] = board[j-1][1 + (shift-9)*2];
+
+			}
+			
+			for(int index = 0; index < players.length; index++) {
+
+				if(players[index].getY() == 1 + (shift-9)*2) {
+
+					players[index].setX(players[index].getX()+1);
+
+				}
+				
+				if(players[index].getX() > BOARD_SIZE-1)
+					players[index].setX(0);
+
+			}
+
+			board[0][1 + (shift-9)*2] = extraPiece;
+
+			extraPiece = tempExtraPiece;
+		}	
+		
+	}
+	
+
+	private int numItemsCanGet(int shift, int back, int rotate) {
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		shiftTiles(shift);
+		clearWalkLines();
+		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+		
+		ArrayList<Integer> itemList = new ArrayList<Integer>();
+		
+		for(int i = 0; i < potentialPathways.size(); i++) {
+			
+			if(hands[currentPlayer].contains(potentialPathways.get(i).getTile().getItem()-1)
+					&& !itemList.contains(potentialPathways.get(i).getTile().getItem()-1)) {
+				
+				itemList.add(potentialPathways.get(i).getTile().getItem()-1);
+				
+			}
+			
+		}
+		
+		shiftTiles(back);
+		//clearWalkLines();
+		
+		if(rotate == 1) {
+			rotateExtraTileCounterClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileCounterClockWise(true);
+			rotateExtraTileCounterClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileClockWise(true);
+		}
+		
+		return itemList.size();
+		
+	}
+	
+	private int findPotentialPathwaySize(int shift, int back, int rotate) {
+		
+		int maxSize = 0;
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		shiftTiles(shift);
+		clearWalkLines();
+		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+		
+		ArrayList<Tile> tileList = new ArrayList<Tile>();
+		
+		for(int i = 0; i < potentialPathways.size(); i++) {
+			
+			if(!tileList.contains(potentialPathways.get(i).getTile())) {
+				
+				tileList.add(potentialPathways.get(i).getTile());
+				
+				if(tileList.size() > maxSize)
+					maxSize = tileList.size();
+				
+			}
+			
+		}
+		
+		clearWalkLines();
+		shiftTiles(back);
+		
+		if(rotate == 1) {
+			rotateExtraTileCounterClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileCounterClockWise(true);
+			rotateExtraTileCounterClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileClockWise(true);
+		}
+		
+		return maxSize;
+		
+	}
+	
+	private int findPotentialPathwaySize2(int shift, int back, int rotate) {
+		
+		int maxSize = 0;
+		
+		if(rotate == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		shiftTiles(shift);
+		clearWalkLines();
+		viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
+		
+		ArrayList<Tile> tileList = new ArrayList<Tile>();
+		
+		for(int i = 0; i < potentialPathways.size(); i++) {
+			
+			if(!tileList.contains(potentialPathways.get(i).getTile())) {
+				
+				tileList.add(potentialPathways.get(i).getTile());
+				
+				if(tileList.size() > maxSize)
+					maxSize = tileList.size();
+				
+			}
+			
+		}
+		
+		clearWalkLines();
+		
+		Tile tempExtraTile = extraPiece;
+		
+		int maxIndex = 0;
+		int maxAmount = 0;
+		int rotating = 0;
+		
+		int[] directItems = new int[12];
+		
+		for(int i = 0; i < 4; i++) {
+			
+			directItems[0] = (numItemsCanGet(0, 6, i));
+			directItems[1] = (numItemsCanGet(1, 7, i));
+			directItems[2] = (numItemsCanGet(2, 8, i));
+			directItems[3] = (numItemsCanGet(3, 9, i));
+			directItems[4] = (numItemsCanGet(4, 10, i));
+			directItems[5] = (numItemsCanGet(5, 11, i));
+			directItems[6] = (numItemsCanGet(6, 0, i));
+			directItems[7] = (numItemsCanGet(7, 1, i));
+			directItems[8] = (numItemsCanGet(8, 2, i));
+			directItems[9] = (numItemsCanGet(9, 3, i));
+			directItems[10] = (numItemsCanGet(10, 4, i));
+			directItems[11] = (numItemsCanGet(11, 5, i));
+			
+			for(int j = 0; j < directItems.length; j++) {
+				
+				if(directItems[j] > maxAmount) {
+					
+					maxIndex = j;
+					maxAmount = directItems[j];
+					rotating = i;
+					
+				}
+				
+			}
+			
+			Arrays.fill(directItems, 0);
+			
+		}
+		
+		extraPiece = tempExtraTile;
+		
+		if(rotating == 1) {
+			rotateExtraTileClockWise(true);
+		} else if(rotating == 2) {
+			rotateExtraTileClockWise(true);
+			rotateExtraTileClockWise(true);
+		} else if(rotating == 3) {
+			rotateExtraTileCounterClockWise(true);
+		}
+		
+		shiftTiles(back);
+		
+		if(rotate == 1) {
+			rotateExtraTileCounterClockWise(true);
+		} else if(rotate == 2) {
+			rotateExtraTileCounterClockWise(true);
+			rotateExtraTileCounterClockWise(true);
+		} else if(rotate == 3) {
+			rotateExtraTileClockWise(true);
+		}
+		
+		return maxSize + maxAmount;
+		
 	}
 
 	// Inherit method from the key listener class
@@ -1799,30 +2790,28 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 
 			// update the current player position
 			updatePosition(0, -1);
+			checkCards();
 			
-			// check if the tile player walks on is a card in their deck
-			CheckCards(0, -1);
-
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_S) {
 
 			updatePosition(0, 1);
-			CheckCards(0, 1);
-
+			checkCards();
+			
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_A) {
 
 			updatePosition(-1, 0);
-			CheckCards(-1, 0);
+			checkCards();
 
 		}
 
 		else if(key.getKeyCode() == KeyEvent.VK_D) {
 
 			updatePosition(1, 0);
-			CheckCards(1, 0);
+			checkCards();
 
 		}
 
@@ -1834,9 +2823,9 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		} else if(key.getKeyCode() == KeyEvent.VK_R) {
 
 			// key control <R> is a shortcut for rotating the leftover piece
-			rotateExtraTileClockWise();
+			rotateExtraTileClockWise(false);
 
-		}
+		} 
 
 	}
 
@@ -1865,7 +2854,6 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 				// clean any leftover walk lines and generate a new set of potential pathways
 				clearWalkLines();
 				viewPath(players[currentPlayer].getX(), players[currentPlayer].getY(), 0, new LinkedList<String>(), new ArrayList<Point>());
-				possiblePath.clear();
 				
 				// exit the method in-case the same method is executed again
 				return;
@@ -1883,7 +2871,7 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		
 	}
 	
-	// over inheriented methods from the mouse listener
+	// methods from the mouse listener
 	@Override
 	public void keyReleased(KeyEvent key) {
 		// TODO Auto-generated method stub
@@ -1914,6 +2902,14 @@ public class GameState extends State implements KeyListener, MouseListener, Move
 		
 	}
 
+	public Player[] getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(Player[] players) {
+		this.players = players;
+	}
+	
 }
 
 
