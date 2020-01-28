@@ -5,7 +5,7 @@ Each player have a randomly assigned deck with 5 random cards(treasures). The pl
 During each turn, the current player can shift tiles around the map to get closer to a treasure, or block others to prevent them from winning.
 
 # Development
-This project was created in the ICS4U1 class with a team of 4 and it focuses on the concept of recursion. 
+This project was created in the Grade 12 Computer Science Course (ICS4U1) with a team of 4 and it focuses on the concept of recursion. 
 
 # Simple AI
 Able to seek for treasures and shift tiles logically to get to the nearest treasure
